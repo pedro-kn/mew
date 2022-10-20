@@ -3,7 +3,7 @@
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
                 <ul class="nav">
                     <li class="nav-item">
-                    <a class="nav-link" href="index.html">
+                    <a class="nav-link" href="index.php">
                         <span class="menu-title">Dashboard</span>
                         <span class="menu-sub-title">( 2 new updates )</span>
                         <i class="mdi mdi-home menu-icon"></i>
@@ -17,31 +17,31 @@
                     </a>
                     <div class="collapse" id="ui-basic">
                         <ul class="nav flex-column sub-menu">
-                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Buttons</a></li>
-                        <li class="nav-item"> <a class="nav-link" href="pages/ui-features/typography.html">Typography</a></li>
+                        <li class="nav-item"> <a class="nav-link" href="assets/purpleadmin/pages/ui-features/buttons.html">Buttons</a></li>
+                        <li class="nav-item"> <a class="nav-link" href="assets/purpleadmin/pages/ui-features/typography.html">Typography</a></li>
                         </ul>
                         </div>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link" href="pages/icons/font-awesome.html">
+                    <a class="nav-link" href="assets/purpleadmin/pages/icons/font-awesome.html">
                         <span class="menu-title">Icons</span>
                         <i class="mdi mdi-contacts menu-icon"></i>
                     </a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link" href="pages/forms/basic_elements.html">
+                    <a class="nav-link" href="assets/purpleadmin/pages/forms/basic_elements.html">
                         <span class="menu-title">Form Elements</span>
                         <i class="mdi mdi-format-list-bulleted menu-icon"></i>
                     </a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link" href="pages/charts/chartjs.html">
+                    <a class="nav-link" href="assets/purpleadmin/pages/charts/chartjs.html">
                         <span class="menu-title">Chart</span>
                         <i class="mdi mdi-chart-bar menu-icon"></i>
                     </a>
                     </li>
                     <li class="nav-item">
-                    <a class="nav-link" href="pages/tables/bootstrap-table.html">
+                    <a class="nav-link" href="assets/purpleadmin/pages/tables/bootstrap-table.html">
                         <span class="menu-title">Table</span>
                         <i class="mdi mdi-table-large menu-icon"></i>
                     </a>
@@ -54,11 +54,11 @@
                     </a>
                     <div class="collapse" id="auth">
                         <ul class="nav flex-column sub-menu">
-                        <li class="nav-item"> <a class="nav-link" href="pages/samples/blank-page.html"> Blank Page </a></li>
-                        <li class="nav-item"> <a class="nav-link" href="pages/samples/login.html"> Login </a></li>
-                        <li class="nav-item"> <a class="nav-link" href="pages/samples/register.html"> Register </a></li>
-                        <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> 404 </a></li>
-                        <li class="nav-item"> <a class="nav-link" href="pages/samples/error-500.html"> 500 </a></li>
+                        <li class="nav-item"> <a class="nav-link" href="assets/purpleadmin/pages/samples/blank-page.html"> Blank Page </a></li>
+                        <li class="nav-item"> <a class="nav-link" href="assets/purpleadmin/pages/samples/login.html"> Login </a></li>
+                        <li class="nav-item"> <a class="nav-link" href="assets/purpleadmin/pages/samples/register.html"> Register </a></li>
+                        <li class="nav-item"> <a class="nav-link" href="assets/purpleadmin/pages/samples/error-404.html"> 404 </a></li>
+                        <li class="nav-item"> <a class="nav-link" href="assets/purpleadmin/pages/samples/error-500.html"> 500 </a></li>
                         </ul>
                     </div>
                     </li>
