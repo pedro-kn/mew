@@ -11,7 +11,6 @@
 </div>
 <!-- container-scroller -->
 <!-- plugins:js -->
-<script src="assets/coronafree/template/assets/vendors/js/vendor.bundle.base.js"></script>
 <!-- endinject -->
 <!-- Plugin js for this page -->
 <script src="assets/coronafree/template/assets/vendors/chart.js/Chart.min.js"></script>
@@ -30,6 +29,5 @@
 <!-- Custom js for this page -->
 <script src="assets/coronafree/template/assets/js/dashboard.js"></script>
 <!-- End custom js for this page -->
-
 
 </html>

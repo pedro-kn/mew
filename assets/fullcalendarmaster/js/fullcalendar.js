@@ -119,7 +119,7 @@ var fc = $.fullCalendar = { version: "1.6.4" };
 var fcViews = fc.views = {};
 
 
-$.fn.fullCalendar = function(options) {
+$.fc.fullCalendar = function(options) {
 
 
 	// method calling

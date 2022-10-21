@@ -5,31 +5,6 @@ include('navbar.php');
 ?>
 
 
-<head>
-	<body>
-		<div id='wrap'>
-			<div id='teste'>teste</div>
-			<div id='calendar'></div>
-
-			<div style='clear:both'></div>
-		</div>
-	</body>
-</head>
-
-<link href='assets/fullcalendarmaster/css/fullcalendar.css' rel='stylesheet' />
-<link href='assets/fullcalendarmaster/css/fullcalendar.print.css' rel='stylesheet' media='print' />
-
-<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js'></script>
-<script src="http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery-ui.custom.min.js"></script>
-<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/lib/moment.min.js'></script>
-<script src='http://fullcalendar.io/js/fullcalendar-2.1.1/fullcalendar.min.js'></script>
-
-
-<!--
-<script src='assets/fullcalendarmaster/js/jquery-1.10.2.js' type="text/javascript"></script>
-<script src='assets/fullcalendarmaster/js/fullcalendar.js' type="text/javascript"></script>
-<script src='assets/fullcalendarmaster/js/jquery-ui.custom.min.js' type="text/javascript"></script>
--->
 <script>
 	$(document).ready(function() {
 		var date = new Date();
@@ -242,6 +217,18 @@ include('navbar.php');
 		box-shadow: 0 1px 2px #C3C3C3;
 	}
 </style>
+
+
+
+
+<body>
+		<div id='wrap'>
+			<div id='teste'></div>
+			<div id='calendar'>teste</div>
+
+			<div style='clear:both'></div>
+		</div>
+	</body>
 
 <?php
 
