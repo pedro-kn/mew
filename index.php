@@ -1,3 +1,3 @@
 <?php
-header('location: ./fullcalendar.php');
+header('location: ./main.php');
 ?>

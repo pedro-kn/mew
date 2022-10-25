@@ -4,6 +4,13 @@ include('sidebar.php');
 include('navbar.php');
 ?>
 
+<head>
+<link href='assets/fullcalendarmaster/css/fullcalendar.css' rel='stylesheet' />
+	<link href='assets/fullcalendarmaster/css/fullcalendar.print.css' rel='stylesheet' media='print' />
+  <script src="assets/coronafree/template/assets/vendors/js/vendor.bundle.base.js"></script>
+	<script src='assets/fullcalendarmaster/js/jquery-1.10.2.js' type="text/javascript"></script>
+  <script src='assets/fullcalendarmaster/js/jquery-ui.custom.min.js' type="text/javascript"></script>
+	<script src='assets/fullcalendarmaster/js/fullcalendar.js' type="text/javascript"></script>
 
 <script>
 	$(document).ready(function() {
@@ -53,7 +60,7 @@ include('navbar.php');
 				right: 'prev,next today'
 			},
 			editable: true,
-			firstDay: 1, //  1(Monday) this can be changed to 0(Sunday) for the USA system
+			firstDay: 0, //  1(Monday) this can be changed to 0(Sunday) for the USA system
 			selectable: true,
 			defaultView: 'month',
 
@@ -217,18 +224,15 @@ include('navbar.php');
 		box-shadow: 0 1px 2px #C3C3C3;
 	}
 </style>
-
-
-
-
+</head>
 <body>
 		<div id='wrap'>
-			<div id='teste'></div>
-			<div id='calendar'>teste</div>
-
+			<div></div>
+			<div id='calendar'></div>
+			<div>""</div>
 			<div style='clear:both'></div>
 		</div>
-	</body>
+</body>
 
 <?php
 

@@ -4,13 +4,13 @@
         <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
     </div>
 </footer>
-</div>
-<!-- main-panel ends -->
+
 </div>
 <!-- page-body-wrapper ends -->
 </div>
 <!-- container-scroller -->
-<!-- plugins:js -->
+<!-- plugins:js ESTA CAUSANDO O PROBLEMA DE FAZER A TABELA CALENDARIO SUMIR-->
+<!--<script src="assets/coronafree/template/assets/vendors/js/vendor.bundle.base.js"></script> -->
 <!-- endinject -->
 <!-- Plugin js for this page -->
 <script src="assets/coronafree/template/assets/vendors/chart.js/Chart.min.js"></script>
