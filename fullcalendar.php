@@ -5,12 +5,7 @@ include('navbar.php');
 ?>
 
 <head>
-<link href='assets/fullcalendarmaster/css/fullcalendar.css' rel='stylesheet' />
-	<link href='assets/fullcalendarmaster/css/fullcalendar.print.css' rel='stylesheet' media='print' />
-  <script src="assets/coronafree/template/assets/vendors/js/vendor.bundle.base.js"></script>
-	<script src='assets/fullcalendarmaster/js/jquery-1.10.2.js' type="text/javascript"></script>
-  <script src='assets/fullcalendarmaster/js/jquery-ui.custom.min.js' type="text/javascript"></script>
-	<script src='assets/fullcalendarmaster/js/fullcalendar.js' type="text/javascript"></script>
+
 
 <script>
 	$(document).ready(function() {
@@ -168,17 +163,69 @@ include('navbar.php');
 	});
 </script>
 <style>
+	
+	.fc-widget-header{
+		color: black;
+	}
+	.fc-header-title{
+		color: black;
+	}
+	.fc-day-number{
+		color: black;
+	}
+
+	
+/* Cell Styles
+------------------------------------------------------------------------*/
+
+    /* <th>, usually */
+.fc-widget-content {  /* <td>, usually */
+	border: 1px solid #FFF;
+	}
+.fc-widget-header{
+    border-bottom: 1px solid #EEE; 
+}	
+.fc-state-highlight { /* <td> today cell */ /* TODO: add .fc-today to <th> */
+	/*  background: #fcf8e3; */
+}
+
+.fc-state-highlight > div > div.fc-day-number{
+    background-color: #424178;
+    color: #FFFFFF;
+    border-radius: 50%;
+    margin: 4px;
+}
+	
+.fc-cell-overlay { /* semi-transparent rectangle while dragging */
+	background: #bce8f1;
+	opacity: .3;
+	filter: alpha(opacity=30); /* for IE */
+	}
+
+	.fc-state-default {
+	border-color: #000;
+	color: #000;	
+	}
+	.fc-state-hover,
+	.fc-state-down,
+	.fc-state-active,
+	.fc-state-disabled {
+	color: #000;
+	background-color: #e5e5e5;
+	}
+
+
 	body {
 		margin-top: 40px;
 		text-align: center;
 		font-size: 14px;
 		font-family: "Helvetica Nueue", Arial, Verdana, sans-serif;
-		background-color: #DDDDDD;
+		background-color: #000;
 	}
 
 	#wrap {
 		width: 1100px;
-		margin: 0 auto;
+		margin: auto auto;
 	}
 
 	#external-events {
@@ -217,11 +264,11 @@ include('navbar.php');
 
 	#calendar {
 		/* 		float: right; */
-		margin: 0 auto;
-		width: 900px;
-		background-color: #FFFFFF;
+		margin: auto auto;
+		width: 1000px;
+		background-color: #EEEEEE;
 		border-radius: 6px;
-		box-shadow: 0 1px 2px #C3C3C3;
+		box-shadow: 200px 20px 200px 200px #C3C3C3;
 	}
 </style>
 </head>

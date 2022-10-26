@@ -59,7 +59,7 @@
     <li class="nav-item menu-items">
       <a class="nav-link" href="fullcalendar.php">
         <span class="menu-icon">
-          <i class="mdi mdi-speedometer"></i>
+          <i class="mdi mdi-calendar"></i>
         </span>
         <span class="menu-title">Corona Calendar</span>
       </a>
@@ -67,15 +67,15 @@
     <li class="nav-item menu-items">
       <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
         <span class="menu-icon">
-          <i class="mdi mdi-laptop"></i>
+          <i class="mdi mdi-account-multiple"></i>
         </span>
-        <span class="menu-title">Basic UI Elements</span>
+        <span class="menu-title">User</span>
         <i class="menu-arrow"></i>
       </a>
       <div class="collapse" id="ui-basic">
         <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/ui-features/buttons.html">Buttons</a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/ui-features/dropdowns.html">Dropdowns</a></li>
+          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/ui-features/buttons.html">Clients</a></li>
+          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/ui-features/dropdowns.html">Employees</a></li>
           <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/ui-features/typography.html">Typography</a></li>
         </ul>
       </div>
@@ -140,3 +140,8 @@
     </li>
   </ul>
 </nav>
+<style>
+  .profile-name{
+    color: white;
+  }
+</style>

@@ -20804,6 +20804,7 @@ div.tagsinput {
               color: #6c7293;
               white-space: nowrap; }
             .sidebar .nav .nav-item.profile .profile-desc .profile-name h5 {
+              color: #000;
               white-space: nowrap; }
           .sidebar .nav .nav-item.profile .profile-desc .profile-pic {
             display: flex;
