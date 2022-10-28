@@ -665,6 +665,7 @@ include('navbar.php');
                 </div>
               </div>
             </div>
+                      
 </body>          
 <?php
 

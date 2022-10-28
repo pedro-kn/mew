@@ -268,11 +268,11 @@ include('navbar.php');
 		width: 1000px;
 		background-color: #EEEEEE;
 		border-radius: 6px;
-		box-shadow: 200px 20px 200px 200px #C3C3C3;
+		box-shadow: 0 #C3C3C3;
 	}
 </style>
 </head>
-<body>
+<body   style="background-image: url('assets/coronafree/template/assets/images/pillars.png');  background-repeat: no-repeat; background-size: cover">
 		<div id='wrap'>
 			<div></div>
 			<div id='calendar'></div>

@@ -67,15 +67,15 @@
     <li class="nav-item menu-items">
       <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
         <span class="menu-icon">
-          <i class="mdi mdi-account-multiple"></i>
+          <i class="mdi mdi-account-card-details"></i>
         </span>
         <span class="menu-title">User</span>
         <i class="menu-arrow"></i>
       </a>
       <div class="collapse" id="ui-basic">
         <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/ui-features/buttons.html">Clients</a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/ui-features/dropdowns.html">Employees</a></li>
+          <li class="nav-item"> <a class="nav-link" href="vendedor.php">Employees</a></li>
+          <li class="nav-item"> <a class="nav-link" href="clientes.php">Clients</a></li>
           <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/ui-features/typography.html">Typography</a></li>
         </ul>
       </div>
@@ -83,17 +83,17 @@
     <li class="nav-item menu-items">
       <a class="nav-link" href="assets/coronafree/template/pages/forms/basic_elements.html">
         <span class="menu-icon">
-          <i class="mdi mdi-playlist-play"></i>
+          <i class="mdi mdi-pill"></i>
         </span>
-        <span class="menu-title">Form Elements</span>
+        <span class="menu-title">Products</span>
       </a>
     </li>
     <li class="nav-item menu-items">
       <a class="nav-link" href="assets/coronafree/template/pages/tables/basic-table.html">
         <span class="menu-icon">
-          <i class="mdi mdi-table-large"></i>
+          <i class="mdi mdi-nutrition"></i>
         </span>
-        <span class="menu-title">Tables</span>
+        <span class="menu-title">Proceidures</span>
       </a>
     </li>
     <li class="nav-item menu-items">
