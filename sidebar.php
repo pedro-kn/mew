@@ -1,3 +1,8 @@
+<style>
+  .sidebar .nav .nav-item.profile .profile-desc .profile-name h5{
+    color: white;
+  }
+</style>
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
   <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
     <a class="sidebar-brand brand-logo" href="main.php"><img src="assets/coronafree/template/assets/images/logo.svg" alt="logo" /></a>
@@ -140,8 +145,3 @@
     </li>
   </ul>
 </nav>
-<style>
-  .profile-name{
-    color: white;
-  }
-</style>

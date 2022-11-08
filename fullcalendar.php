@@ -167,7 +167,7 @@ include('navbar.php');
 	.fc-widget-header{
 		color: black;
 	}
-	.fc-header-title{
+	.fc-header-title-2{
 		color: black;
 	}
 	.fc-day-number{
@@ -185,9 +185,7 @@ include('navbar.php');
 .fc-widget-header{
     border-bottom: 1px solid #EEE; 
 }	
-.fc-state-highlight { /* <td> today cell */ /* TODO: add .fc-today to <th> */
-	/*  background: #fcf8e3; */
-}
+
 
 .fc-state-highlight > div > div.fc-day-number{
     background-color: #424178;

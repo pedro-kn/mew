@@ -26,7 +26,7 @@ if(isset($_GET["a"])){
 		
 		if(count($res) > 0){
 			echo '<div class="table-responsive">';
-			echo '<table id="tb_lista" class="table table-striped table-hover table-sm" style="font-size: 10pt">';
+			echo '<table id="tb_lista" class="table table-striped table-hover table-md" style="font-size: 10pt">';
 				echo '<thead>';
 					echo '<tr>';
 						echo '<th style="text-align: left">Nome</th>';
