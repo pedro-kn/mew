@@ -23,7 +23,7 @@ if (isset($_GET["a"])) {
 			$where .= "WHERE (Nome LIKE '%{$pesquisa}%' OR CPF LIKE '%{$pesquisa}%' OR Comissão LIKE '%{$pesquisa}%')";
 		}
 
-		$res = $db->select("SELECT * FROM vendedor {$where}");
+		$res = $db->select("SELECT * FROM usuarios {$where}");
 
 		if (count($res) > 0) {
 			echo '<div class="table-responsive">';

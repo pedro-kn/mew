@@ -6,9 +6,9 @@ ini_set('max_input_vars', 10000);
 class Database extends PDO
 {
 
-    public $host = "127.0.0.1";
+    public $host = "127.0.0.2";
     public $port = 3306;
-    public $schema = "bancoteste1";
+    public $schema = "db_corona";
     public $username = "root";
     public $password = "";
 
@@ -16,9 +16,9 @@ class Database extends PDO
     {
         set_time_limit(3600);
 
-        $this->host = "127.0.0.1";
+        $this->host = "127.0.0.2";
         $this->port = 3306;
-        $this->schema = "bancoteste1";
+        $this->schema = "db_corona";
         $this->username = "root";
         $this->password = "";
 

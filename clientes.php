@@ -22,7 +22,7 @@ if(isset($_GET["a"])){
             $where .= "WHERE (Nome LIKE '%{$pesquisa}%' OR Data_Nasc LIKE '%{$pesquisa}%' OR CPF LIKE '%{$pesquisa}%')";
         }    
     
-		$res = $db->select("SELECT * FROM cliente {$where}");
+		$res = $db->select("SELECT * FROM clientes {$where}");
 		
 		if(count($res) > 0){
 			echo '<div class="table-responsive">';
