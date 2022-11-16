@@ -30,6 +30,11 @@
     <script src='assets/fullcalendarmaster/js/jquery-3.6.1.min.js' type="text/javascript"></script>
     <script src='assets/fullcalendarmaster/js/jquery-ui.custom.min.js' type="text/javascript"></script>
     <script src='assets/fullcalendarmaster/js/fullcalendar.js' type="text/javascript"></script>
+    <script src='assets/js/jQuery-Mask-Plugin-master/src/jquery.mask.js' type="text/javascript"></script>
+
+    <!-- Bootstrap core CSS -->
+		
+		<link href="./assets/bootstrap/js/bootstrap.min.js" rel="stylesheet">
   
   </head>
  

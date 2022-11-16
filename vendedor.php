@@ -20,34 +20,37 @@ if (isset($_GET["a"])) {
 		$where = "";
 
 		if ($pesquisa != "") {
-			$where .= "WHERE (Nome LIKE '%{$pesquisa}%' OR CPF LIKE '%{$pesquisa}%' OR Comissão LIKE '%{$pesquisa}%')";
+			$where .= "WHERE (nome LIKE '%{$pesquisa}%' OR telefone LIKE '%{$pesquisa}%' OR email LIKE '%{$pesquisa}%' OR statuscli LIKE '%{$pesquisa}%')";
 		}
 
 		$res = $db->select("SELECT * FROM usuarios {$where}");
 
 		if (count($res) > 0) {
 			echo '<div class="table-responsive">';
-			echo '<table id="tb_lista" class="table table-striped table-hover table-md" style="font-size: 10pt">';
+			echo '<table id="tb_lista" class="table table-hover table-md" style="font-size: 10pt">';
 			echo '<thead>';
 			echo '<tr>';
 			echo '<th style="text-align: left">Nome</th>';
-			echo '<th style="text-align: center">CPF</th>';
-			echo '<th style="text-align: center">Comissão</th>';
+			echo '<th style="text-align: center">Telefone</th>';
+			echo '<th style="text-align: center">E-mail</th>';
+			echo '<th style="text-align: center">Status</th>';
 			echo '<th style="text-align: center">Editar</th>';
 			echo '<th style="text-align: center">Deletar</th>';
 			echo '</tr>';
 			echo '</thead>';
 			echo '<tbody>';
 			foreach ($res as $r) {
+
 				echo '<tr>';
-				echo '<td style="text-align: left">' . $r["Nome"] . '</td>';
-				echo '<td style="text-align: center">' . $r["CPF"] . '</td>';
-				echo '<td style="text-align: center">' . $r["Comissão"] . '</td>';
+				echo '<td style="text-align: left">' . $r["nome"] . '</td>';
+				echo '<td style="text-align: center">' . $r["telefone"] . '</td>';
+				echo '<td style="text-align: center">' . $r["email"] . '</td>';
+				echo '<td style="text-align: center">' . $r["statuscli"] . '</td>';
 				echo '<td style="text-align: center">';
-				echo '<i title="Editar" onclick="get_item(\'' . $r["idVendedor"] . '\')" class="fas fa-edit" style="cursor: pointer"></i>';
+				echo '<i title="Editar" onclick="get_item(\'' . $r["idUsuario"] . '\')" class="mdi mdi-table-edit" style="cursor: pointer"></i>';
 				echo '</td>';
 				echo '<td style="text-align: center">';
-				echo '<i title="Deletar" onclick="del_item(\'' . $r["idVendedor"] . '\')" class="fas fa-trash" style="cursor: pointer"></i>';
+				echo '<i title="Deletar" onclick="del_item(\'' . $r["idUsuario"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
 				echo '</td>';
 				echo '</tr>';
 			}
@@ -65,17 +68,17 @@ if (isset($_GET["a"])) {
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "inclui_user") {
 
+	
 		$nome = $_POST["nome"];
-		$cpf = $_POST["cpf"];
-		$comissao = $_POST["comissao"];
+		$telefone = $_POST["telefone"];
+		$email = $_POST["email"];
+		$status = 1;
+		
 
-		$s = $db->select("SELECT idVendedor FROM vendedor ORDER BY idVendedor DESC LIMIT 1");
-		foreach ($s as $s1) {
-			$codVendedor = intval($s1["idVendedor"]) + 1;
-		}
-		$res = $db->_exec("INSERT INTO vendedor (idVendedor,Nome,CPF,Comissão) VALUES ('$codVendedor','$nome','$cpf','$comissao')");
+		$res = $db->_exec("INSERT INTO usuarios (idUsuario,nome,telefone,email,statuscli) VALUES ('','$nome','$telefone','$email','$status')");
 
-		echo $res;
+		echo $telefone;
+		//echo $res;
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -86,12 +89,12 @@ if (isset($_GET["a"])) {
 
 		$id = $_POST["id"];
 		$nome = $_POST["nome"];
-		$cpf = $_POST["cpf"];
-		$comissao = $_POST["comissao"];
+		$telefone = $_POST["telefone"];
+		$email = $_POST["email"];
 
-		$res = $db->_exec("UPDATE vendedor 
-			SET idVendedor = '{$id}', Nome = '{$nome}', CPF = '{$cpf}', Comissão = '{$comissao}'
-			WHERE idVendedor = '{$id}'");
+		$res = $db->_exec("UPDATE usuarios 
+			SET idUsuario = '{$id}', nome = '{$nome}', telefone = '{$telefone}', email = '{$email}'
+			WHERE idUsuario = '{$id}'");
 
 		echo $res;
 	}
@@ -104,7 +107,7 @@ if (isset($_GET["a"])) {
 
 		$id = $_POST["id"];
 
-		$res = $db->_exec("DELETE FROM vendedor WHERE idVendedor = '{$id}'");
+		$res = $db->_exec("DELETE FROM usuarios WHERE idUsuario = '{$id}'");
 
 		echo $res;
 	}
@@ -117,12 +120,12 @@ if (isset($_GET["a"])) {
 
 		$id = $_POST["id"];
 
-		$res = $db->select("SELECT Nome, CPF, Comissão FROM vendedor WHERE idVendedor = '{$id}'");
+		$res = $db->select("SELECT nome, telefone, email FROM usuarios WHERE idUsuario = '{$id}'");
 
 		if (count($res) > 0) {
-			$res[0]['Nome'] = utf8_encode($res[0]['Nome']);
-			$res[0]['CPF'] = utf8_encode($res[0]['CPF']);
-			$res[0]['Comissão'] = utf8_encode($res[0]['Comissão']);
+			$res[0]['nome'] = utf8_encode($res[0]['nome']);
+			$res[0]['telefone'] = utf8_encode($res[0]['telefone']);
+			$res[0]['email'] = utf8_encode($res[0]['email']);
 
 			$a_retorno["res"] = $res;
 			$c_retorno = json_encode($a_retorno["res"]);
@@ -173,8 +176,8 @@ include('navbar.php');
 			type: 'post',
 			data: { 
                 nome: $('#Nome').val(),
-                cpf: $('#CPF').val(),
-                comissao: $('#Comissão').val(),
+                telefone: $('#phone').val(),
+                email: $('#email').val(),
             },
 			beforeSend: function(){
 
@@ -221,9 +224,9 @@ include('navbar.php');
                     
 					var obj_ret = JSON.parse(retorno);
 
-					$("#frm_nome_edit").val(obj_ret[0].Nome);
-					$("#frm_cpf_edit").val(obj_ret[0].CPF);
-					$("#frm_comissao_edit").val(obj_ret[0].Comissão);	
+					$("#frm_nome_edit").val(obj_ret[0].nome);
+					$("#frm_phone_edit").val(obj_ret[0].telefone);
+					$("#frm_email_edit").val(obj_ret[0].email);	
 				}
 			}
 		});
@@ -243,8 +246,8 @@ include('navbar.php');
 			data: { 
                 id: $("#frm_id").val(),
                 nome: $("#frm_nome_edit").val(),
-                cpf: $("#frm_cpf_edit").val(),
-                comissao: $("#frm_comissao_edit").val(),
+                telefone: $("#frm_phone_edit").val(),
+                email: $("#frm_email_edit").val(),
             },
 			beforeSend: function(){
                 $('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
@@ -287,8 +290,15 @@ include('navbar.php');
 		    });
         }else{
             lista_itens();
-        }
+        }	
 	}
+	
+	//Mascaras para inputs e exibição com JSMASK
+	$(document).ready(function(){
+  		$('#phone').mask('(00) 0 0000-0000');
+		$('#frm_phone_edit').mask('(00) 0 0000-0000');
+	});
+
 </script>
 
 <style>
@@ -300,7 +310,7 @@ include('navbar.php');
 
 	<!-- Modal formulário de inclusao-->
 	<div class="modal" id='mod_formul'>
-		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 70%;">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 50%;">
 			<div class="modal-content">
 				<div class="modal-header" style="align-items: center">
 					<div style="display: flex; align-items: center">
@@ -313,39 +323,89 @@ include('navbar.php');
 					</div>
 					<button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul').modal('hide');">X</button>
 				</div>
-				<div class="modal-body modal-dialog-scrollable">
-					<form id="frm_general" name="frm_general">
-						<div class="row mb-3">
+				<div class="modal-body modal-dialog-scrollable container-fluid" style="max-width: 300 px">
+					<form id="frm_general" name="frm_general" class= "col">
+						<div class="row">
 							<div class="col">
 								<label for="Nome" class="form-label">Nome:</label>
-								<input type="text" style="text-align: left" aria-describedby="Nome" class="form-control form-control-lg" name="Nome" id="Nome" placeholder="">
+								<input type="text" style="text-align: left" aria-describedby="Nome" class="form-control form-control-lg" name="Nome" id="Nome" placeholder="" style="max-width: 300 px">
 							</div>
 						</div>
 
-						<div class="row mb-3">
+						<div class="row">
 							<div class="col">
-								<label for="CPF" class="form-label">CPF:</label>
-								<input type="number" style="text-align: left" aria-describedby="CPF" class="form-control form-control-lg" name="CPF" id="CPF" placeholder="">
+								<label for="phone" class="form-label">Número de Telefone:</label>
+								<input type="tel" style="text-align: left" aria-describedby="phone" maxlength="11" class="form-control form-control-lg" name="phone" id="phone" placeholder="(XX) X XXXX-XXXX">
+								<small>Formato: [XX] X XXXX-XXXX</small>
 							</div>
 						</div>
 
-						<div class="input-group">
+						<div class="row">
 							<div class="col">
-								<label for="Comissão" class="form-label">Comissão:</label>
-								<input type="number" style="text-align: left" aria-describedby="basic-addon2" class="form-control form-control-lg" name="Comissão" id="Comissão" placeholder="">
-									
+								<label for="Comissão" class="form-label">E-mail:</label>
+								<input type="email" style="text-align: left" aria-describedby="email" class="form-control form-control-lg" name="email" id="email" placeholder="">
+								<small>Exemplo: joao12@endereco.com</small><br><br>	
 							</div>
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" onclick="$('#mod_formul').modal('hide');">Cancelar</button>
-					<button type="button" class="btn btn-primary" id="OK" onclick="incluiUser();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
+					<button type="button" class="btn btn-primary" id="OK" onclick="incluiUser();"><img id="img_btn_ok" style="width: 15px; color: black; display: none; margin-right: 10px">OK</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
+	<!-- Modal formulário de edição -->
+	<div class="modal" id="mod_formul_edit">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 50%;">
+			<div class="modal-content">
+				<div class="modal-header" style="align-items: center">
+					<div style="display: flex; align-items: center">
+						<div style="margin-right: 5px">
+							<h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
+						</div>
+						<div>
+							<h5 id="tit_frm_formul_edit" class="modal-title">Editar Usuário</h5>
+						</div>
+					</div>
+					<button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul_edit').modal('hide');">X</button>
+				</div>
+				<div class="modal-body modal-dialog-scrollable">
+					<form id="frm_general_edit" name="frm_general" class="col">
+						<div class="row mb-3">
+							<div class="col">
+								<input type="text" style="text-align: left" aria-describedby="frm_id" class="form-control form-control-lg" name="frm_id" id="frm_id" hidden>
+								<label for="frm_nome_edit" class="form-label">Nome:</label>
+								<input type="text" style="text-align: left" aria-describedby="frm_nome_edit" class="form-control form-control-lg" name="frm_nome_edit" id="frm_nome_edit" placeholder="">
+							</div>
+						</div>
+
+						<div class="row mb-3">
+							<div class="col">
+								<label for="frm_phone_edit" class="form-label">Número de Telefone:</label>
+								<input type="text" style="text-align: left" aria-describedby="frm_phone_edit" class="form-control form-control-lg" name="frm_phone_edit" id="frm_phone_edit" placeholder="">
+							</div>
+						</div>
+
+						<div class="row mb-3">
+							<div class="col">
+								<label for="frm_email_edit" class="form-label">E-mail:</label>
+								<input type="text" style="text-align: left" aria-describedby="frm_email_edit" class="form-control form-control-lg" name="frm_email_edit" id="frm_email_edit" placeholder="">
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" onclick="$('#mod_formul_edit').modal('hide');">Cancelar</button>
+					<button type="button" class="btn btn-primary" id="frm_OK" onclick="editUser();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Pagina principal -->
 	<button class="btn btn-inverse-light btn-lg align-items-center grid-margin">
 		<h3 style="font-size: 28px; text-align: center; vertical-align: baseline;"> Anuncie aqui! </h3>
 	</button>

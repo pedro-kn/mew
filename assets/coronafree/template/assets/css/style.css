@@ -8605,7 +8605,7 @@ pre {
 
 .table-hover tbody tr:hover {
   color: #212529;
-  background-color: #000000; }
+  background-color: #7c7c7c; }
 
 .table-primary,
 .table-primary > th,
@@ -8777,7 +8777,7 @@ pre {
     background-color: rgba(255, 255, 255, 0.05); }
   .table-dark.table-hover tbody tr:hover {
     color: #fff;
-    background-color: rgba(255, 255, 255, 0.075); }
+    background-color: rgba(139, 18, 18, 0.075); }
 
 @media (max-width: 575.98px) {
   .table-responsive-sm {

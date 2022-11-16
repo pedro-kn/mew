@@ -28,6 +28,8 @@
 <!-- endinject -->
 <!-- Custom js for this page -->
 <script src="assets/coronafree/template/assets/js/dashboard.js"></script>
+
+<script src="./assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- End custom js for this page -->
 
 </html>
