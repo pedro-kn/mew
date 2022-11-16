@@ -27,7 +27,7 @@
     <link href='assets/fullcalendarmaster/css/fullcalendar.css' rel='stylesheet' />
     <link href='assets/fullcalendarmaster/css/fullcalendar.print.css' rel='stylesheet' media='print' />
     <script src="assets/coronafree/template/assets/vendors/js/vendor.bundle.base.js"></script>
-    <script src='assets/fullcalendarmaster/js/jquery-1.10.2.js' type="text/javascript"></script>
+    <script src='assets/fullcalendarmaster/js/jquery-3.6.1.min.js' type="text/javascript"></script>
     <script src='assets/fullcalendarmaster/js/jquery-ui.custom.min.js' type="text/javascript"></script>
     <script src='assets/fullcalendarmaster/js/fullcalendar.js' type="text/javascript"></script>
   

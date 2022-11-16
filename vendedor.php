@@ -297,6 +297,55 @@ include('navbar.php');
  
 	
 	</style>
+
+	<!-- Modal formulário de inclusao-->
+	<div class="modal" id='mod_formul'>
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 70%;">
+			<div class="modal-content">
+				<div class="modal-header" style="align-items: center">
+					<div style="display: flex; align-items: center">
+						<div style="margin-right: 5px">
+							<h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
+						</div>
+						<div>
+							<h5 id="tit_frm_formul" class="modal-title">Incluir Usuário</h5>
+						</div>
+					</div>
+					<button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul').modal('hide');">X</button>
+				</div>
+				<div class="modal-body modal-dialog-scrollable">
+					<form id="frm_general" name="frm_general">
+						<div class="row mb-3">
+							<div class="col">
+								<label for="Nome" class="form-label">Nome:</label>
+								<input type="text" style="text-align: left" aria-describedby="Nome" class="form-control form-control-lg" name="Nome" id="Nome" placeholder="">
+							</div>
+						</div>
+
+						<div class="row mb-3">
+							<div class="col">
+								<label for="CPF" class="form-label">CPF:</label>
+								<input type="number" style="text-align: left" aria-describedby="CPF" class="form-control form-control-lg" name="CPF" id="CPF" placeholder="">
+							</div>
+						</div>
+
+						<div class="input-group">
+							<div class="col">
+								<label for="Comissão" class="form-label">Comissão:</label>
+								<input type="number" style="text-align: left" aria-describedby="basic-addon2" class="form-control form-control-lg" name="Comissão" id="Comissão" placeholder="">
+									
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" onclick="$('#mod_formul').modal('hide');">Cancelar</button>
+					<button type="button" class="btn btn-primary" id="OK" onclick="incluiUser();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<button class="btn btn-inverse-light btn-lg align-items-center grid-margin">
 		<h3 style="font-size: 28px; text-align: center; vertical-align: baseline;"> Anuncie aqui! </h3>
 	</button>
@@ -325,7 +374,7 @@ include('navbar.php');
 							</div>
 							<div class="col-2">
 								<div class="input-group">
-									<button type="button" onclick="$('#mod_formul').modal('show');" class="btn btn-inverse-light btn-fw btn-md" style="height: 38px"><i class="mdi mdi-library-plus" style="margin-right: 5px"></i>Include</button>
+									<button type="button" onclick="$('#mod_formul').modal('show');" class="btn btn-inverse-light btn-fw btn-md" style="height: 38px"><i class="mdi mdi-library-plus" style="margin-right: 5px"></i>Incluir</button>
 								</div>
 							</div>
 						</div>	
