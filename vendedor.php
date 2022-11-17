@@ -77,8 +77,7 @@ if (isset($_GET["a"])) {
 
 		$res = $db->_exec("INSERT INTO usuarios (idUsuario,nome,telefone,email,statuscli) VALUES ('','$nome','$telefone','$email','$status')");
 
-		echo $telefone;
-		//echo $res;
+		echo $res;
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -411,11 +410,11 @@ include('navbar.php');
 	</button>
 	<div class="content-wrapper"   style="background-image: url('assets/coronafree/template/assets/images/galaxy3.png'); background-repeat: no-repeat; background-size: cover;">
 		<div class="page-header">
-			<h3 class="page-title"> User </h3>
+			<h3 class="page-title"> Usuários </h3>
 			<nav aria-label="breadcrumb">
 				<ol class="breadcrumb">
-					<li class="breadcrumb-item"><a href="clientes.php">Clients</a></li>
-					<li class="breadcrumb-item active" aria-current="page">Employees</li>
+					<li class="breadcrumb-item"><a href="clientes.php">Clientes</a></li>
+					<li class="breadcrumb-item active" aria-current="page">Funcionários</li>
 				</ol>
 			</nav>
 		</div>
@@ -423,13 +422,13 @@ include('navbar.php');
 			<div class="col-12 grid-margin stretch-card">
 				<div class="card">
 					<div class="card-body">
-						<h4 class="card-title ">Employees</h4>
-						<p class="card-description">Visualize your employees' register sheet</p>
+						<h4 class="card-title ">Funcionários</h4>
+						<p class="card-description">Visualize a lista de registros de funcionários</p>
 
 						<div class="form-group row">
 							<div class="col-10" class="size-md">
 								<div class="input-group">
-								<input type="text" class="form-control" onkeyup="lista_itens()" id="input_pesquisa" placeholder="Browse...">
+								<input type="text" class="form-control" onkeyup="lista_itens()" id="input_pesquisa" placeholder="Pesquise">
 								</div>
 							</div>
 							<div class="col-2">

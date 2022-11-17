@@ -20,22 +20,20 @@ if (isset($_GET["a"])) {
 		$where = "";
 
 		if ($pesquisa != "") {
-			$where .= "WHERE (nome LIKE '%{$pesquisa}%' OR cpf LIKE '%{$pesquisa}%' OR telefone LIKE '%{$pesquisa}%' OR email LIKE '%{$pesquisa}%' OR obs LIKE '%{$pesquisa}%' OR statuscli LIKE '%{$pesquisa}%')";
+			$where .= "WHERE (descricao LIKE '%{$pesquisa}%' OR valor LIKE '%{$pesquisa}%' OR obs LIKE '%{$pesquisa}%' OR codbar LIKE '%{$pesquisa}%')";
 		}
 
-		$res = $db->select("SELECT * FROM clientes {$where}");
+		$res = $db->select("SELECT * FROM produtos {$where}");
 
 		if (count($res) > 0) {
 			echo '<div class="table-responsive">';
 			echo '<table id="tb_lista" class="table table-hover table-md" style="font-size: 10pt">';
 			echo '<thead>';
 			echo '<tr>';
-			echo '<th style="text-align: left">Nome</th>';
-			echo '<th style="text-align: center">CPF</th>';
-			echo '<th style="text-align: center">Telefone</th>';
-			echo '<th style="text-align: center">E-mail</th>';
+			echo '<th style="text-align: left">Descrição</th>';
+			echo '<th style="text-align: center">Valor</th>';
 			echo '<th style="text-align: center">Observação</th>';
-			echo '<th style="text-align: center">Status</th>';
+			echo '<th style="text-align: center">Codigo de Barras</th>';
 			echo '<th style="text-align: center">Editar</th>';
 			echo '<th style="text-align: center">Deletar</th>';
 			echo '</tr>';
@@ -44,17 +42,15 @@ if (isset($_GET["a"])) {
 			foreach ($res as $r) {
 
 				echo '<tr>';
-				echo '<td style="text-align: left">' . $r["nome"] . '</td>';
-				echo '<td style="text-align: center">' . $r["cpf"] . '</td>';
-				echo '<td style="text-align: center">' . $r["telefone"] . '</td>';
-				echo '<td style="text-align: center">' . $r["email"] . '</td>';
+				echo '<td style="text-align: left">' . $r["descricao"] . '</td>';
+				echo '<td style="text-align: center">' . $r["valor"] . '</td>';
 				echo '<td style="text-align: center">' . $r["obs"] . '</td>';
-				echo '<td style="text-align: center">' . $r["statuscli"] . '</td>';
+				echo '<td style="text-align: center">' . $r["codbar"] . '</td>';
 				echo '<td style="text-align: center">';
-				echo '<i title="Editar" onclick="get_item(\'' . $r["idCliente"] . '\')" class="mdi mdi-table-edit" style="cursor: pointer"></i>';
+				echo '<i title="Editar" onclick="get_item(\'' . $r["idProduto"] . '\')" class="mdi mdi-table-edit" style="cursor: pointer"></i>';
 				echo '</td>';
 				echo '<td style="text-align: center">';
-				echo '<i title="Deletar" onclick="del_item(\'' . $r["idCliente"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
+				echo '<i title="Deletar" onclick="del_item(\'' . $r["idProduto"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
 				echo '</td>';
 				echo '</tr>';
 			}
@@ -73,15 +69,12 @@ if (isset($_GET["a"])) {
 	if ($_GET["a"] == "inclui_user") {
 
 	
-		$nome = $_POST["nome"];
-		$cpf = $_POST["cpf"];
-		$telefone = $_POST["telefone"];
-		$email = $_POST["email"];
+		$descricao = $_POST["descricao"];
+		$valor = $_POST["valor"];
+		$codbar = $_POST["codbar"];
 		$obs = $_POST["obs"];
-		$status = 1;
 		
-
-		$res = $db->_exec("INSERT INTO clientes (idCliente,nome,cpf,telefone,email,obs,statuscli) VALUES ('','$nome','$cpf','$telefone','$email','$obs','$status')");
+		$res = $db->_exec("INSERT INTO produtos (idProduto,descricao,valor,obs,codbar) VALUES ('','$descricao','$valor','$obs', '$codbar')");
 
 		echo $res;
 	}
@@ -93,15 +86,14 @@ if (isset($_GET["a"])) {
 
 
 		$id = $_POST["id"];
-		$nome = $_POST["nome"];
-		$cpf = $_POST["cpf"];
-		$telefone = $_POST["telefone"];
-		$email = $_POST["email"];
+		$descricao = $_POST["descricao"];
+		$valor = $_POST["valor"];
+		$codbar = $_POST["codbar"];
 		$obs = $_POST["obs"];
 
-		$res = $db->_exec("UPDATE clientes 
-			SET idCliente = '{$id}', nome = '{$nome}', cpf = '{$cpf}', telefone = '{$telefone}', email = '{$email}', obs = '{$obs}'
-			WHERE idCliente = '{$id}'");
+		$res = $db->_exec("UPDATE produtos 
+			SET idProduto = '{$id}', descricao = '{$descricao}', valor = '{$valor}', codbar = '{$codbar}', obs = '{$obs}'
+			WHERE idProduto = '{$id}'");
 
 		echo $res;
 	}
@@ -114,7 +106,7 @@ if (isset($_GET["a"])) {
 
 		$id = $_POST["id"];
 
-		$res = $db->_exec("DELETE FROM clientes WHERE idCliente = '{$id}'");
+		$res = $db->_exec("DELETE FROM produtos WHERE idProduto = '{$id}'");
 
 		echo $res;
 	}
@@ -127,14 +119,13 @@ if (isset($_GET["a"])) {
 
 		$id = $_POST["id"];
 
-		$res = $db->select("SELECT nome, cpf, telefone, email, obs FROM clientes WHERE idCliente = '{$id}'");
+		$res = $db->select("SELECT descricao, valor, obs, codbar FROM produtos WHERE idProduto = '{$id}'");
 
 		if (count($res) > 0) {
-			$res[0]['nome'] = utf8_encode($res[0]['nome']);
-			$res[0]['cpf'] = utf8_encode($res[0]['cpf']);
-			$res[0]['telefone'] = utf8_encode($res[0]['telefone']);
-			$res[0]['email'] = utf8_encode($res[0]['email']);
+			$res[0]['descricao'] = utf8_encode($res[0]['descricao']);
+			$res[0]['valor'] = utf8_encode($res[0]['valor']);
 			$res[0]['obs'] = utf8_encode($res[0]['obs']);
+			$res[0]['codbar'] = utf8_encode($res[0]['codbar']);
 
 			$a_retorno["res"] = $res;
 			$c_retorno = json_encode($a_retorno["res"]);
@@ -149,7 +140,7 @@ include('header.php');
 include('sidebar.php');
 include('navbar.php');
 ?>
-
+<script src="assets/js/plentz-jquery-maskmoney-cdbeeac/src/jquery.maskMoney.js" type="text/javascript"></script>
 <script>
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* Listar itens:
@@ -184,10 +175,9 @@ include('navbar.php');
 			url: '?a=inclui_user',
 			type: 'post',
 			data: { 
-                nome: $('#Nome').val(),
-				cpf: $('#cpf').val(),
-                telefone: $('#phone').val(),
-                email: $('#email').val(),
+                descricao: $('#descricao').val(),
+				valor: $('#valor').val(),
+                codbar: $('#codbar').val(),
 				obs: $('#obs').val(),
             },
 			beforeSend: function(){
@@ -235,10 +225,9 @@ include('navbar.php');
                     
 					var obj_ret = JSON.parse(retorno);
 
-					$("#frm_nome_edit").val(obj_ret[0].nome);
-					$("#frm_cpf_edit").val(obj_ret[0].cpf);
-					$("#frm_phone_edit").val(obj_ret[0].telefone);
-					$("#frm_email_edit").val(obj_ret[0].email);	
+					$("#frm_descricao_edit").val(obj_ret[0].descricao);
+					$("#frm_valor_edit").val(obj_ret[0].valor);
+					$("#frm_codbar_edit").val(obj_ret[0].codbar);
 					$("#frm_obs_edit").val(obj_ret[0].obs);
 				}
 			}
@@ -258,10 +247,9 @@ include('navbar.php');
 			type: 'post',
 			data: { 
                 id: $("#frm_id").val(),
-                nome: $("#frm_nome_edit").val(),
-				cpf: $("#frm_cpf_edit").val(),
-                telefone: $("#frm_phone_edit").val(),
-                email: $("#frm_email_edit").val(),
+                descricao: $("#frm_descricao_edit").val(),
+				valor: $("#frm_valor_edit").val(),
+                codbar: $("#frm_codbar_edit").val(),
 				obs: $("#frm_obs_edit").val(),
             },
 			beforeSend: function(){
@@ -308,12 +296,13 @@ include('navbar.php');
         }	
 	}
 	
+    
 	//Mascaras para inputs e exibição com JSMASK
 	$(document).ready(function(){
-  		$('#phone').mask('(00) 0 0000-0000');
-		$('#frm_phone_edit').mask('(00) 0 0000-0000');
-		$('#cpf').mask('000.000.000-00');
-		$('#frm_cpf_edit').mask('000.000.000-00');
+  		$('#valor').maskMoney({prefix:'R$', thousands:'.', decimal:','});
+		$('#frm_valor_edit').maskMoney({prefix:'R$', thousands:'.', decimal:','});
+		//$('#cpf').mask('000.000.000-00');
+		//$('#frm_cpf_edit').mask('000.000.000-00');
 	});
 
 </script>
@@ -335,7 +324,7 @@ include('navbar.php');
 							<h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
 						</div>
 						<div>
-							<h5 id="tit_frm_formul" class="modal-title">Incluir Clientes</h5>
+							<h5 id="tit_frm_formul" class="modal-title">Incluir Produtos</h5>
 						</div>
 					</div>
 					<button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul').modal('hide');">X</button>
@@ -344,39 +333,32 @@ include('navbar.php');
 					<form id="frm_general" name="frm_general" class= "col">
 						<div class="row">
 							<div class="col">
-								<label for="Nome" class="form-label">Nome:</label>
-								<input type="text" style="text-align: left" aria-describedby="Nome" class="form-control form-control-lg" name="Nome" id="Nome" placeholder="" style="max-width: 300 px">
+								<label for="descricao" class="form-label">Descrição:</label>
+								<input type="text" style="text-align: left" aria-describedby="descricao" class="form-control form-control-lg" name="descricao" id="descricao" placeholder="" style="max-width: 300 px">
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="col">
-								<label for="cpf" class="form-label">CPF:</label>
-								<input type="text" style="text-align: left" aria-describedby="cpf" maxlength="11" class="form-control form-control-lg" name="cpf" id="cpf" placeholder="XXX.XXX.XXX-XX">
+								<label for="valor" class="form-label">Valor:</label>
+								<input type="text" style="text-align: left" aria-describedby="valor" class="form-control form-control-lg" name="valor" id="valor" placeholder="">
 							</div>
 						</div>
 
-						<div class="row">
-							<div class="col">
-								<label for="phone" class="form-label">Número de Telefone:</label>
-								<input type="tel" style="text-align: left" aria-describedby="phone" maxlength="11" class="form-control form-control-lg" name="phone" id="phone" placeholder="(XX) X XXXX-XXXX">
-							</div>
-						</div>
-
-						<div class="row">
-							<div class="col">
-								<label for="email" class="form-label">E-mail:</label>
-								<input type="email" style="text-align: left" aria-describedby="email" class="form-control form-control-lg" name="email" id="email" placeholder="">
-								<small>Exemplo: joao12@endereco.com</small><br><br>	
-							</div>
-						</div>
-
-						<div class="row">
+                        <div class="row">
 							<div class="col">
 								<label for="obs" class="form-label">Observação:</label>
 								<input type="text" style="text-align: left" aria-describedby="obs" class="form-control form-control-lg" name="obs" id="obs" placeholder="">
 							</div>
 						</div>
+
+						<div class="row">
+							<div class="col">
+								<label for="codbar" class="form-label">Código de Barras:</label>
+								<input type="text" style="text-align: left" aria-describedby="codbar" maxlength="30" class="form-control form-control-lg" name="codbar" id="codbar" placeholder="">
+							</div>
+						</div>
+	
 					</form>
 				</div>
 				<div class="modal-footer">
@@ -397,7 +379,7 @@ include('navbar.php');
 							<h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
 						</div>
 						<div>
-							<h5 id="tit_frm_formul_edit" class="modal-title">Editar Clientes</h5>
+							<h5 id="tit_frm_formul_edit" class="modal-title">Editar Produtos</h5>
 						</div>
 					</div>
 					<button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul_edit').modal('hide');">X</button>
@@ -407,29 +389,15 @@ include('navbar.php');
 						<div class="row mb-3">
 							<div class="col">
 								<input type="text" style="text-align: left" aria-describedby="frm_id" class="form-control form-control-lg" name="frm_id" id="frm_id" hidden>
-								<label for="frm_nome_edit" class="form-label">Nome:</label>
-								<input type="text" style="text-align: left" aria-describedby="frm_nome_edit" class="form-control form-control-lg" name="frm_nome_edit" id="frm_nome_edit" placeholder="">
+								<label for="frm_descricao_edit" class="form-label">Descrição:</label>
+								<input type="text" style="text-align: left" aria-describedby="frm_descricao_edit" class="form-control form-control-lg" name="frm_descricao_edit" id="frm_descricao_edit" placeholder="">
 							</div>
 						</div>
 
 						<div class="row">
 							<div class="col">
-								<label for="frm_cpf_edit" class="form-label">CPF:</label>
-								<input type="text" style="text-align: left" aria-describedby="frm_cpf_edit" maxlength="11" class="form-control form-control-lg" name="frm_cpf_edit" id="frm_cpf_edit" placeholder="">
-							</div>
-						</div>
-
-						<div class="row mb-3">
-							<div class="col">
-								<label for="frm_phone_edit" class="form-label">Número de Telefone:</label>
-								<input type="text" style="text-align: left" aria-describedby="frm_phone_edit" class="form-control form-control-lg" name="frm_phone_edit" id="frm_phone_edit" placeholder="">
-							</div>
-						</div>
-
-						<div class="row mb-3">
-							<div class="col">
-								<label for="frm_email_edit" class="form-label">E-mail:</label>
-								<input type="text" style="text-align: left" aria-describedby="frm_email_edit" class="form-control form-control-lg" name="frm_email_edit" id="frm_email_edit" placeholder="">
+								<label for="frm_valor_edit" class="form-label">Valor:</label>
+								<input type="text" style="text-align: left" aria-describedby="frm_valor_edit" class="form-control form-control-lg" name="frm_valor_edit" id="frm_valor_edit" placeholder="">
 							</div>
 						</div>
 
@@ -439,6 +407,14 @@ include('navbar.php');
 								<input type="text" style="text-align: left" aria-describedby="frm_obs_edit" class="form-control form-control-lg" name="frm_obs_edit" id="frm_obs_edit" placeholder="">
 							</div>
 						</div>
+
+						<div class="row mb-3">
+							<div class="col">
+								<label for="frm_codbar_edit" class="form-label">Número de codbar:</label>
+								<input type="text" style="text-align: left" aria-describedby="frm_codbar_edit" maxlength="30" class="form-control form-control-lg" name="frm_codbar_edit" id="frm_codbar_edit" placeholder="">
+							</div>
+						</div>
+
 					</form>
 				</div>
 				<div class="modal-footer">
@@ -455,20 +431,15 @@ include('navbar.php');
 	</button>
 	<div class="content-wrapper"   style="background-image: url('assets/coronafree/template/assets/images/galaxy3.png'); background-repeat: no-repeat; background-size: cover;">
 		<div class="page-header">
-			<h3 class="page-title"> Clientes </h3>
-			<nav aria-label="breadcrumb">
-				<ol class="breadcrumb">
-					<li class="breadcrumb-item"><a href="vendedor.php">Funcionários</a></li>
-					<li class="breadcrumb-item active" aria-current="page">Clientes</li>
-				</ol>
-			</nav>
+			<h3 class="page-title"> Produtos </h3>
+
 		</div>
 		<div class="row">
 			<div class="col-12 grid-margin stretch-card">
 				<div class="card">
 					<div class="card-body">
-						<h4 class="card-title ">Clientes</h4>
-						<p class="card-description">Visualize a lista de registros de Clientes</p>
+						<h4 class="card-title ">Produtos</h4>
+						<p class="card-description">Visualize a lista de registros de Produtos </p>
 
 						<div class="form-group row">
 							<div class="col-10" class="size-md">

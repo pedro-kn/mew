@@ -86,7 +86,7 @@
       </div>
     </li>
     <li class="nav-item menu-items">
-      <a class="nav-link" href="assets/coronafree/template/pages/forms/basic_elements.html">
+      <a class="nav-link" href="produtos.php">
         <span class="menu-icon">
           <i class="mdi mdi-pill"></i>
         </span>
