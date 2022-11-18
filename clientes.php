@@ -473,7 +473,7 @@ include('navbar.php');
 						<div class="form-group row">
 							<div class="col-10" class="size-md">
 								<div class="input-group">
-								<input type="text" class="form-control" onkeyup="lista_itens()" id="input_pesquisa" placeholder="Pesquise">
+									<input type="text" class="form-control" onkeyup="lista_itens()" id="input_pesquisa" placeholder="Pesquise">
 								</div>
 							</div>
 							<div class="col-2">

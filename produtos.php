@@ -32,6 +32,7 @@ if (isset($_GET["a"])) {
 			echo '<tr>';
 			echo '<th style="text-align: left">Descrição</th>';
 			echo '<th style="text-align: center">Valor</th>';
+			echo '<th style="text-align: center">Quantidade</th>';
 			echo '<th style="text-align: center">Observação</th>';
 			echo '<th style="text-align: center">Codigo de Barras</th>';
 			echo '<th style="text-align: center">Editar</th>';
@@ -44,6 +45,7 @@ if (isset($_GET["a"])) {
 				echo '<tr>';
 				echo '<td style="text-align: left">' . $r["descricao"] . '</td>';
 				echo '<td style="text-align: center">' . $r["valor"] . '</td>';
+				echo '<td style="text-align: center">' . $r["quantidade"] . '</td>';
 				echo '<td style="text-align: center">' . $r["obs"] . '</td>';
 				echo '<td style="text-align: center">' . $r["codbar"] . '</td>';
 				echo '<td style="text-align: center">';
@@ -71,10 +73,11 @@ if (isset($_GET["a"])) {
 	
 		$descricao = $_POST["descricao"];
 		$valor = $_POST["valor"];
+		$quantidade = $_POST["quantidade"];
 		$codbar = $_POST["codbar"];
 		$obs = $_POST["obs"];
 		
-		$res = $db->_exec("INSERT INTO produtos (idProduto,descricao,valor,obs,codbar) VALUES ('','$descricao','$valor','$obs', '$codbar')");
+		$res = $db->_exec("INSERT INTO produtos (idProduto,descricao,valor,obs,codbar,quantidade) VALUES ('','$descricao','$valor','$obs', '$codbar', '$quantidade')");
 
 		echo $res;
 	}
@@ -88,11 +91,12 @@ if (isset($_GET["a"])) {
 		$id = $_POST["id"];
 		$descricao = $_POST["descricao"];
 		$valor = $_POST["valor"];
+		$quantidade = $_POST["quantidade"];
 		$codbar = $_POST["codbar"];
 		$obs = $_POST["obs"];
 
 		$res = $db->_exec("UPDATE produtos 
-			SET idProduto = '{$id}', descricao = '{$descricao}', valor = '{$valor}', codbar = '{$codbar}', obs = '{$obs}'
+			SET idProduto = '{$id}', descricao = '{$descricao}', valor = '{$valor}', codbar = '{$codbar}', obs = '{$obs}', quantidade = '{$quantidade}'
 			WHERE idProduto = '{$id}'");
 
 		echo $res;
@@ -119,13 +123,14 @@ if (isset($_GET["a"])) {
 
 		$id = $_POST["id"];
 
-		$res = $db->select("SELECT descricao, valor, obs, codbar FROM produtos WHERE idProduto = '{$id}'");
+		$res = $db->select("SELECT descricao, valor, obs, codbar, quantidade FROM produtos WHERE idProduto = '{$id}'");
 
 		if (count($res) > 0) {
 			$res[0]['descricao'] = utf8_encode($res[0]['descricao']);
 			$res[0]['valor'] = utf8_encode($res[0]['valor']);
 			$res[0]['obs'] = utf8_encode($res[0]['obs']);
 			$res[0]['codbar'] = utf8_encode($res[0]['codbar']);
+			$res[0]['quantidade'] = utf8_encode($res[0]['quantidade']);
 
 			$a_retorno["res"] = $res;
 			$c_retorno = json_encode($a_retorno["res"]);
@@ -179,6 +184,7 @@ include('navbar.php');
 				valor: $('#valor').val(),
                 codbar: $('#codbar').val(),
 				obs: $('#obs').val(),
+				quantidade: $('#quantidade').val(),
             },
 			beforeSend: function(){
 
@@ -229,6 +235,7 @@ include('navbar.php');
 					$("#frm_valor_edit").val(obj_ret[0].valor);
 					$("#frm_codbar_edit").val(obj_ret[0].codbar);
 					$("#frm_obs_edit").val(obj_ret[0].obs);
+					$("#frm_quantidade_edit").val(obj_ret[0].quantidade);
 				}
 			}
 		});
@@ -251,6 +258,7 @@ include('navbar.php');
 				valor: $("#frm_valor_edit").val(),
                 codbar: $("#frm_codbar_edit").val(),
 				obs: $("#frm_obs_edit").val(),
+				quantidade: $("#frm_quantidade_edit").val(),
             },
 			beforeSend: function(){
                 $('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
@@ -345,6 +353,13 @@ include('navbar.php');
 							</div>
 						</div>
 
+						<div class="row">
+							<div class="col">
+								<label for="quantidade" class="form-label">Quantidade:</label>
+								<input type="number" style="text-align: left" aria-describedby="quantidade" class="form-control form-control-lg" name="quantidade" id="quantidade" placeholder="">
+							</div>
+						</div>
+
                         <div class="row">
 							<div class="col">
 								<label for="obs" class="form-label">Observação:</label>
@@ -398,6 +413,13 @@ include('navbar.php');
 							<div class="col">
 								<label for="frm_valor_edit" class="form-label">Valor:</label>
 								<input type="text" style="text-align: left" aria-describedby="frm_valor_edit" class="form-control form-control-lg" name="frm_valor_edit" id="frm_valor_edit" placeholder="">
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col">
+								<label for="frm_quantidade_edit" class="form-label">Quantidade:</label>
+								<input type="number" style="text-align: left" aria-describedby="frm_quantidade_edit" class="form-control form-control-lg" name="frm_quantidade_edit" id="frm_quantidade_edit" placeholder="">
 							</div>
 						</div>
 
@@ -458,7 +480,7 @@ include('navbar.php');
 					</div>
 				</div>
 			</div>
-
+		</div>
 			<?php
 			include('bottom.php');
 			?>
