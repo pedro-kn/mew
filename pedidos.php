@@ -93,18 +93,18 @@
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         if($_GET["a"] == "lista_mod_insert"){    
         
-            $vendedor = $_POST["vendedor"];
+            $usuario = $_POST["usuario"];
             $cliente = $_POST["cliente"];
 
-            $ped = $db->_exec("INSERT INTO pedidos (idCliente,idVendedor,statusped) VALUES ($cliente,'$vendedor','1')");
+            $ped = $db->_exec("INSERT INTO pedidos (idCliente,idUsuario,statusped) VALUES ($cliente,'$vendedor','1')");
             
-            $s = $db->select("SELECT idPedido FROM pedidos WHERE idCliente = $cliente AND idVendedor = '$vendedor' ORDER BY idPedido DESC LIMIT 1");
+            $s = $db->select("SELECT idPedido FROM pedidos WHERE idCliente = $cliente AND idUsuario = '$vendedor' ORDER BY idPedido DESC LIMIT 1");
 
             foreach($s as $s1){
                 $numped = $s1["idPedido"];
             }
 
-            $res = $db->select("SELECT idProdutos, descricao, Preço FROM produtos ORDER BY descricao");
+            $res = $db->select("SELECT idProduto, descricao, valor FROM produtos ORDER BY descricao");
             
             if(count($res) > 0){
                 echo '<div class="table-responsive">';
@@ -147,13 +147,13 @@
             $produto = $_POST["produto"];
             $pedido = $_POST["pedido"];
         
-            $sel = $db->select("SELECT Preço FROM produtos WHERE idProdutos = $produto");
+            $sel = $db->select("SELECT valor FROM produtos WHERE idProdutos = $produto");
             
                 if(count($sel)>0){
-                    $preco = floatval($sel[0]["Preço"])*$quantidade;
+                    $preco = floatval($sel[0]["valor"])*$quantidade;
                 }
 
-            $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProdutos,quantidade,valor_final) VALUES ($pedido,'$produto',$quantidade,$preco)");
+            $res = $db->_exec("INSERT INTO itens_pedidos (idPedido,idProdutos,quantidade,preco) VALUES ($pedido,'$produto',$quantidade,$preco)");
             
             
             echo $res;
@@ -172,13 +172,13 @@
             $somaquantidade = 0;
             $somavalor = 0;
             
-            $sel = $db->select("SELECT idPedido, idProdutos, quantidade, valor_final FROM itens_pedido WHERE idPedido = $numpedido");
+            $sel = $db->select("SELECT idPedido, idProdutos, quantidade, preco FROM itens_pedidos WHERE idPedido = $numpedido");
 
             //logica para a soma dos valores quantidade e valor para fazer o update na tabela de pedidos
             if(count($sel)>0){
                 foreach($sel as $s){
                     $somaquantidade = $somaquantidade + $s["quantidade"];
-                    $somavalor = $somavalor + $s["valor_final"];
+                    $somavalor = $somavalor + $s["preco"];
                 }	
             }
 
@@ -242,7 +242,7 @@
 
             $id = $_POST["id"];
 
-            $del = $db->_exec("DELETE FROM itens_pedido WHERE idPedido = '{$id}'");	
+            $del = $db->_exec("DELETE FROM itens_pedidos WHERE idPedido = '{$id}'");	
             $res = $db->_exec("DELETE FROM pedidos WHERE idPedido = '{$id}'");
             
             echo $res;
@@ -396,7 +396,7 @@
                 url: '?a=lista_mod_insert',
                 type: 'post',
                 data: {pesq: $('#input_pesquisa').val(),
-                    vendedor: $('#frm_val1_insert').val(),
+                    usuario: $('#frm_val1_insert').val(),
                     cliente: $('#frm_val2_insert').val()},
                 beforeSend: function(){
                     $('#mod_insert').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
@@ -581,6 +581,41 @@
             }
         }
     </script>
+
+<!-- Pagina principal -->
+    
+    <button class="btn btn-inverse-light btn-lg align-items-center grid-margin">
+		<h3 style="font-size: 28px; text-align: center; vertical-align: baseline;"> Anuncie aqui! </h3>
+	</button>
+	<div class="content-wrapper"   style="background-image: url('assets/coronafree/template/assets/images/galaxy3.png'); background-repeat: no-repeat; background-size: cover;">
+		<div class="page-header">
+			<h3 class="page-title"> Pedidos </h3>
+
+		</div>
+		<div class="row">
+			<div class="col-12 grid-margin stretch-card">
+				<div class="card">
+					<div class="card-body">
+						<h4 class="card-title ">Pedidos</h4>
+						<p class="card-description">Visualize a lista de registros de Pedidos </p>
+
+                    <div class="form-group row">
+                        <div class="col-10">
+                            <div class="input-group">
+                            <input type="text" class="form-control" onkeyup="lista_itens()" id="input_pesquisa" placeholder="Pesquisar">
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="input-group">
+                                <button type="button" onclick="$('#mod_formul').modal('show');" class="btn btn-primary"><i class="fa fa-plus-circle" style="margin-right: 5px"></i>Incluir</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="div_conteudo" class="template-demo"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     <!-- Modal formulário Inclusao -->
     <div class="modal" id="mod_formul">
@@ -774,40 +809,7 @@
             </div>
         </div>
     </div>
-<!-- Pagina principal -->
-    <div>
-    <button class="btn btn-inverse-light btn-lg align-items-center grid-margin">
-		<h3 style="font-size: 28px; text-align: center; vertical-align: baseline;"> Anuncie aqui! </h3>
-	</button>
-	<div class="content-wrapper"   style="background-image: url('assets/coronafree/template/assets/images/galaxy3.png'); background-repeat: no-repeat; background-size: cover;">
-		<div class="page-header">
-			<h3 class="page-title"> Produtos </h3>
 
-		</div>
-		<div class="row">
-			<div class="col-12 grid-margin stretch-card">
-				<div class="card">
-					<div class="card-body">
-						<h4 class="card-title ">Produtos</h4>
-						<p class="card-description">Visualize a lista de registros de Produtos </p>
-
-                    <div class="form-group row">
-                        <div class="col-10">
-                            <div class="input-group">
-                            <input type="text" class="form-control" onkeyup="lista_itens()" id="input_pesquisa" placeholder="Pesquisar">
-                            </div>
-                        </div>
-                        <div class="col-2">
-                            <div class="input-group">
-                                <button type="button" onclick="$('#mod_formul').modal('show');" class="btn btn-primary"><i class="fa fa-plus-circle" style="margin-right: 5px"></i>Incluir</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="div_conteudo" class="template-demo"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
        
         <?php
         include('bottom.php');
