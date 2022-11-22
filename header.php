@@ -28,9 +28,12 @@
     <link href='assets/fullcalendarmaster/css/fullcalendar.print.css' rel='stylesheet' media='print' />
     <script src="assets/coronafree/template/assets/vendors/js/vendor.bundle.base.js"></script>
     <script src='assets/fullcalendarmaster/js/jquery-3.6.1.min.js' type="text/javascript"></script>
+    <script type="text/javascript" src="assets/bootstrap/js/bootstrap.js"></script>
     <script src='assets/fullcalendarmaster/js/jquery-ui.custom.min.js' type="text/javascript"></script>
+    
     <script src='assets/fullcalendarmaster/js/fullcalendar.js' type="text/javascript"></script>
     <script src='assets/js/jQuery-Mask-Plugin-master/src/jquery.mask.js' type="text/javascript"></script>
+  
 
     <!-- Bootstrap core CSS -->
 		

@@ -120,9 +120,9 @@
                     foreach($res as $r){
                         echo '<tr >';
                             echo '<td  style="text-align: left">'.$r["descricao"].'</td>';
-                            echo '<td style="text-align: center">'.$r["Preço"].'</td>';
+                            echo '<td style="text-align: center">'.$r["valor"].'</td>';
                             echo '<td style="text-align: center">';
-                                echo '<input type="number" onchange="incluiPed(this.value,\''.$r["idProdutos"].'\',\''.$numped.'\')" min="0" max="100"></input>';
+                                echo '<input type="number" onchange="incluiPed(this.value,\''.$r["idProduto"].'\',\''.$numped.'\')" min="0" max="100"></input>';
                             echo '</td>';
                         echo '</tr>';
                     }
@@ -194,7 +194,7 @@
                 $sum++;
                 }
             
-            $nfe = $db->_exec("INSERT INTO nf (idPedido,numero,serie,chave,data_hora) VALUES ($numpedido,$numero,1,'$chave',LOCALTIME())");		
+            $nfe = $db->_exec("INSERT INTO nf (idPedido,numero,serie,chave,data_hora) VALUES ($numpedido,'$numero',1,'$chave',DATETIME())");		
             
             //update nos valores da tabela pedidos
             $res = $db->_exec("UPDATE pedidos SET quantidade = $somaquantidade, preco = $somavalor, nf = '$numero', statusped = 2 WHERE idPedido = $numpedido");
@@ -281,10 +281,10 @@
 
             $id = $_POST["id"];
 
-            $res = $db->select("SELECT p.idPedido, p.idCliente, p.idVendedor, c.Nome as nomec, v.Nome as nomev, p.quantidade, p.preco, p.nf, p.statusped
+            $res = $db->select("SELECT p.idPedido, p.idCliente, p.idUsuario, c.nome as nomec, v.nome as nomev, p.quantidade, p.preco, p.nf, p.statusped
                                 FROM pedidos p
-                                INNER JOIN cliente c ON c.idCliente = p.idCliente
-                                INNER JOIN vendedor v ON v.idVendedor = p.idVendedor
+                                INNER JOIN clientes c ON c.idCliente = p.idCliente
+                                INNER JOIN usuarios v ON v.idUsuario = p.idUsuario
                                 WHERE p.idPedido = {$id}");
             
             if(count($res) > 0){
@@ -298,15 +298,16 @@
                 $c_retorno = array();
                 $body = "";
 
-                $lista = $db->select("SELECT p.descricao, i.idProdutos, p.idProdutos, p.Preço as preco, i.quantidade, i.valor_final FROM itens_pedido i
+                $lista = $db->select("SELECT p.descricao, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
+                                    FROM itens_pedidos i
                                     INNER JOIN produtos p ON p.idProdutos = i.idProdutos 
                                     WHERE i.idPedido = {$id}");
                     foreach($lista as $s){
                         $body .= '<tr>';
                             $body .= '<td style="text-align: left">'.$s["descricao"].'</td>';
                             $body .= '<td style="text-align: center">'.$s["quantidade"].'</td>';
-                            $body .= '<td style="text-align: center">'.$s["preco"].'</td>';
-                            $body .= '<td style="text-align: center">'.$s["valor_final"].'</td>';
+                            $body .= '<td style="text-align: center">'.$s["valor"].'</td>';
+                            $body .= '<td style="text-align: center">'.$s["preco_final"].'</td>';
                     }						
                 
                 $title = '<h5 id="div_exibe_title" class="modal-title">Informações do Pedido '.$id.'</h5>';
@@ -335,7 +336,10 @@
 
 
     <script type="text/javascript" src="assets/js/plentz-jquery-maskmoney-cdbeeac/src/jquery.maskMoney.js"></script>
+    
+   
     <script type="text/javascript">
+    
 
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -607,7 +611,7 @@
                         </div>
                         <div class="col-2">
                             <div class="input-group">
-                                <button type="button" onclick="$('#mod_formul').modal('show');" class="btn btn-primary"><i class="fa fa-plus-circle" style="margin-right: 5px"></i>Incluir</button>
+                                <button type="button" onclick="$('#mod_formul').modal('show');" class="btn btn-inverse-light btn-fw btn-md" style="height: 38px"><i class="mdi mdi-library-plus" style="margin-right: 5px"></i>Incluir</button>
                             </div>
                         </div>
                     </div>
@@ -633,11 +637,11 @@
                     <button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul').modal('hide');">X</button>
                 </div>
                 <div class="modal-body modal-dialog-scrollable">
-                    <form id="frm_general" name="frm_general">
+                    <form id="frm_general" name="frm_general" class="col">
 
                     <div class="row mb-3">
                             <div class="col">
-                                <label for="frm_val1_insert" class="form-label">Usuario:</label>
+                                <label for="frm_val1_insert" class="form-label">Usuário:</label>
                                     <div class="scrollable">
                                     <select id="frm_val1_insert"  class="select form-control form-control-lg" name="frm_val1_insert" type="text" >
                                         <option value="" selected></option>
@@ -658,9 +662,9 @@
                                     <select id="frm_val2_insert"  onchange="listaModinsert()" class="select form-control form-control-lg" name="frm_val2_insert" type="text" >
                                         <option value="" selected></option>
                                         <?php
-                                            $desc = $db->select('SELECT idCliente, Nome FROM cliente');
+                                            $desc = $db->select('SELECT idCliente, nome FROM clientes');
                                             foreach($desc as $s){
-                                                echo  '<option value="'.$s["idCliente"].'">'.$s["Nome"].'</option>';
+                                                echo  '<option value="'.$s["idCliente"].'">'.$s["nome"].'</option>';
                                             }
                                         ?>
                                     </select>
