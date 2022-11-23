@@ -71,10 +71,10 @@
                             echo '<td style="text-align: center">'.$r["statusped"].'</td>';
 
                             echo '<td style="text-align: center">';
-                                echo '<i title="Editar" onclick="get_item(\''.$r["idPedido"].'\')" class="fas fa-edit" style="cursor: pointer"></i>';
+                                echo '<i title="Editar" onclick="get_item(\''.$r["idPedido"].'\')" class="mdi mdi-table-edit" style="cursor: pointer"></i>';
                             echo '</td>';
                             echo '<td style="text-align: center">';
-                                echo '<i title="Deletar" onclick="del_item(\''.$r["idPedido"].'\')" class="fas fa-trash" style="cursor: pointer"></i>';
+                                echo '<i title="Deletar" onclick="del_item(\''.$r["idPedido"].'\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
                             echo '</td>';
                         echo '</tr>';
                     }
@@ -96,9 +96,9 @@
             $usuario = $_POST["usuario"];
             $cliente = $_POST["cliente"];
 
-            $ped = $db->_exec("INSERT INTO pedidos (idCliente,idUsuario,statusped) VALUES ($cliente,'$vendedor','1')");
+            $ped = $db->_exec("INSERT INTO pedidos (idPedido,idCliente,idUsuario,statusped) VALUES ('',$cliente,$usuario,'1')");
             
-            $s = $db->select("SELECT idPedido FROM pedidos WHERE idCliente = $cliente AND idUsuario = '$vendedor' ORDER BY idPedido DESC LIMIT 1");
+            $s = $db->select("SELECT idPedido FROM pedidos WHERE idCliente = $cliente AND idUsuario = '$usuario' ORDER BY idPedido DESC LIMIT 1");
 
             foreach($s as $s1){
                 $numped = $s1["idPedido"];
@@ -153,7 +153,7 @@
                     $preco = floatval($sel[0]["valor"])*$quantidade;
                 }
 
-            $res = $db->_exec("INSERT INTO itens_pedidos (idPedido,idProdutos,quantidade,preco) VALUES ($pedido,'$produto',$quantidade,$preco)");
+            $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProdutos,quantidade,preco) VALUES ($pedido,'$produto',$quantidade,$preco)");
             
             
             echo $res;
@@ -172,7 +172,7 @@
             $somaquantidade = 0;
             $somavalor = 0;
             
-            $sel = $db->select("SELECT idPedido, idProdutos, quantidade, preco FROM itens_pedidos WHERE idPedido = $numpedido");
+            $sel = $db->select("SELECT idPedido, idProdutos, quantidade, preco FROM itens_pedido WHERE idPedido = $numpedido");
 
             //logica para a soma dos valores quantidade e valor para fazer o update na tabela de pedidos
             if(count($sel)>0){
@@ -194,14 +194,16 @@
                 $sum++;
                 }
             
-            $nfe = $db->_exec("INSERT INTO nf (idPedido,numero,serie,chave,data_hora) VALUES ($numpedido,'$numero',1,'$chave',DATETIME())");		
+            
+            $nfe = $db->_exec("INSERT INTO nf (idPedido,numero,serie,chave,data_hora) VALUES ($numpedido,'$numero',1,'$chave',LOCALTIME())");		
             
             //update nos valores da tabela pedidos
             $res = $db->_exec("UPDATE pedidos SET quantidade = $somaquantidade, preco = $somavalor, nf = '$numero', statusped = 2 WHERE idPedido = $numpedido");
             
             //baixa nos estoques pós emissao da nf
-            $sel1 = $db->select("SELECT p.idProdutos, e.idProdutos as eidprod, e.quantidade as equant, p.quantidade as pquant FROM itens_pedido p 
-                                INNER JOIN itens_estoque e ON e.idProdutos = p.idProdutos
+            $sel1 = $db->select("SELECT p.idProdutos, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
+                                FROM itens_pedido p 
+                                INNER JOIN itens_estoque e ON e.idProduto = p.idProdutos
                                 WHERE p.idPedido = $numpedido");
 
                 foreach($sel1 as $s){
@@ -242,7 +244,7 @@
 
             $id = $_POST["id"];
 
-            $del = $db->_exec("DELETE FROM itens_pedidos WHERE idPedido = '{$id}'");	
+            $del = $db->_exec("DELETE FROM itens_pedido WHERE idPedido = '{$id}'");	
             $res = $db->_exec("DELETE FROM pedidos WHERE idPedido = '{$id}'");
             
             echo $res;
@@ -299,7 +301,7 @@
                 $body = "";
 
                 $lista = $db->select("SELECT p.descricao, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
-                                    FROM itens_pedidos i
+                                    FROM itens_pedido i
                                     INNER JOIN produtos p ON p.idProdutos = i.idProdutos 
                                     WHERE i.idPedido = {$id}");
                     foreach($lista as $s){
