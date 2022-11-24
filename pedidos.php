@@ -45,7 +45,7 @@
             
             if(count($res) > 0){
                 echo '<div class="table-responsive">';
-                echo '<table id="tb_lista" class="table table-striped table-hover table-sm" style="font-size: 10pt">';
+                echo '<table id="tb_lista" class="table table-hover table-md" style="font-size: 10pt">';
                     echo '<thead>';
                         echo '<tr>';
                             echo '<th style="text-align: left">idPedido</th>';
@@ -54,14 +54,14 @@
                             echo '<th style="text-align: center">Quantidade</th>';
                             echo '<th style="text-align: center">Preço</th>';
                             echo '<th style="text-align: center">Nota Fiscal</th>';
-                            echo '<th style="text-align: center">Status</th>';                                  
-                            echo '<th style="text-align: center">Editar</th>';
-                            echo '<th style="text-align: center">Deletar</th>';
+                            echo '<th style="text-align: center">Status</th>'; 
+                            echo '<th style="text-align: center">Mais</th>';                                  
+
                         echo '</tr>';
                     echo '</thead>';
                     echo '<tbody>';
                     foreach($res as $r){
-                        echo '<tr  onclick="get_item_ped('.$r["idPedido"].')" >';
+                        echo '<tr>';
                             echo '<td style="text-align: left">'.$r["idPedido"].'</td>';
                             echo '<td style="text-align: center">'.$r["nomec"].'</td>';
                             echo '<td style="text-align: center">'.$r["nomev"].'</td>';
@@ -70,13 +70,57 @@
                             echo '<td style="text-align: center">'.$r["nf"].'</td>';
                             echo '<td style="text-align: center">'.$r["statusped"].'</td>';
 
+							echo '<td style="text-align: center">';
+                            	echo '<a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-playlist-plus"></i></a>';
+                            	echo '<div class="dropdown-menu dropdown-menu-left sidebar-dropdown col-sm-1" aria-labelledby="profile-dropdown">';
+                            		echo '<a href="#" class="dropdown-item preview-item container-fluid">';
+                            				//echo '<div class="col" style="left: auto">';
+                            					echo '<i class="mdi mdi-information-outline text-primary"></i>';
+                            				//echo '</div>';
+                            				//echo '<div class="preview-item-content col" style="right: auto">';
+												echo '<p class="text-small" style="text-align: right">Informações</p>';
+											//echo '</div>';
+                            		echo '</a>';
+                            		//echo '<div class="dropdown-divider"></div>';
+                            			echo '<a href="#" class="dropdown-item preview-item">';
+                            				//echo '<div class="preview-thumbnail">';
+                            					//echo '<div class="preview-icon bg-dark rounded-circle">';
+                            					echo '<i class="mdi mdi-table-edit  text-success"></i>';
+                            					//echo '</div>';
+                            				//echo '</div>';
+                            				//echo '<div class="preview-item-content">';
+                            					echo '<p class="preview-subject ellipsis mb-1 text-small" style="text-align: right">Editar</p>';
+                            				//echo '</div>';
+                            			echo '</a>';
+                            		//echo '<div class="dropdown-divider"></div>';
+                            			echo '<a href="#" class="dropdown-item preview-item">';
+                            				//echo '<div class="preview-thumbnail">';
+                            					//echo '<div class="preview-icon bg-dark rounded-circle">';
+                            					echo '<i class="mdi mdi-delete text-danger"></i>';
+                            					//echo '</div>';
+											//echo '</div>';
+											//echo '<div class="preview-item-content">';
+												echo '<p class="preview-subject ellipsis mb-1 text-small" style="text-align: right">Excluir</p>';
+											//echo '</div>';
+                            			echo '</a>';
+                            		echo '</div>';  
+                            echo '</td>';
+
+
+
+                            /*
+                            echo '<td style="text-align: center">';
+                                echo '<i title="Info" onclick="get_item_ped(\''.$r["idPedido"].'\')" class="mdi mdi-information-outline" style="cursor: pointer"></i>';
+                            echo '</td>';    
                             echo '<td style="text-align: center">';
                                 echo '<i title="Editar" onclick="get_item(\''.$r["idPedido"].'\')" class="mdi mdi-table-edit" style="cursor: pointer"></i>';
                             echo '</td>';
                             echo '<td style="text-align: center">';
                                 echo '<i title="Deletar" onclick="del_item(\''.$r["idPedido"].'\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
                             echo '</td>';
+                            */
                         echo '</tr>';
+                        
                     }
                     echo '</tbody>';
                 echo '</table>';
