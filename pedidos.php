@@ -71,54 +71,22 @@
                             echo '<td style="text-align: center">'.$r["statusped"].'</td>';
 
 							echo '<td style="text-align: center">';
-                            	echo '<a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-playlist-plus"></i></a>';
-                            	echo '<div class="dropdown-menu dropdown-menu-left sidebar-dropdown col-sm-1" aria-labelledby="profile-dropdown">';
-                            		echo '<a href="#" class="dropdown-item preview-item container-fluid">';
-                            				//echo '<div class="col" style="left: auto">';
-                            					echo '<i class="mdi mdi-information-outline text-primary"></i>';
-                            				//echo '</div>';
-                            				//echo '<div class="preview-item-content col" style="right: auto">';
-												echo '<p class="text-small" style="text-align: right">Informações</p>';
-											//echo '</div>';
-                            		echo '</a>';
-                            		//echo '<div class="dropdown-divider"></div>';
-                            			echo '<a href="#" class="dropdown-item preview-item">';
-                            				//echo '<div class="preview-thumbnail">';
-                            					//echo '<div class="preview-icon bg-dark rounded-circle">';
-                            					echo '<i class="mdi mdi-table-edit  text-success"></i>';
-                            					//echo '</div>';
-                            				//echo '</div>';
-                            				//echo '<div class="preview-item-content">';
-                            					echo '<p class="preview-subject ellipsis mb-1 text-small" style="text-align: right">Editar</p>';
-                            				//echo '</div>';
+                            	echo '<a href="#" id="profile-dropdown" data-toggle="dropdown" class="dropleft"><i class="mdi mdi-playlist-plus"></i></a>';
+                            	echo '<div class="dropdown-menu dropleft sidebar-dropdown col-1" style="max-width: 30px" aria-labelledby="profile-dropdown">';
+                            		echo '<a href="#" onclick="get_item_ped(\''.$r["idPedido"].'\')" class="dropdown-item preview-item">';
+                            			echo '<p class="preview-subject ellipsis mb-1 text-medium" style="text-align: left"><i class="mdi mdi-information-outline text-primary"></i> Informações</p>';
+									echo '</a>';
+                            		echo '<div class="dropdown-divider"></div>';
+                            			echo '<a href="#" onclick="get_item(\''.$r["idPedido"].'\')" class="dropdown-item preview-item">';
+                            				echo '<p class="preview-subject ellipsis mb-1 text-medium" style="text-align: left"><i class="mdi mdi-table-edit  text-success"></i> Editar</p>';
                             			echo '</a>';
-                            		//echo '<div class="dropdown-divider"></div>';
-                            			echo '<a href="#" class="dropdown-item preview-item">';
-                            				//echo '<div class="preview-thumbnail">';
-                            					//echo '<div class="preview-icon bg-dark rounded-circle">';
-                            					echo '<i class="mdi mdi-delete text-danger"></i>';
-                            					//echo '</div>';
-											//echo '</div>';
-											//echo '<div class="preview-item-content">';
-												echo '<p class="preview-subject ellipsis mb-1 text-small" style="text-align: right">Excluir</p>';
-											//echo '</div>';
-                            			echo '</a>';
-                            		echo '</div>';  
+                            		echo '<div class="dropdown-divider"></div>';
+                            			echo '<a href="#" onclick="del_item(\''.$r["idPedido"].'\')" class="dropdown-item preview-item">';
+                            				echo '<p class="preview-subject ellipsis mb-1 text-medium" style="text-align: left"><i class="mdi mdi-delete text-danger"></i> Excluir</p>';
+										echo '</a>';
+                                echo '</div>';  
                             echo '</td>';
 
-
-
-                            /*
-                            echo '<td style="text-align: center">';
-                                echo '<i title="Info" onclick="get_item_ped(\''.$r["idPedido"].'\')" class="mdi mdi-information-outline" style="cursor: pointer"></i>';
-                            echo '</td>';    
-                            echo '<td style="text-align: center">';
-                                echo '<i title="Editar" onclick="get_item(\''.$r["idPedido"].'\')" class="mdi mdi-table-edit" style="cursor: pointer"></i>';
-                            echo '</td>';
-                            echo '<td style="text-align: center">';
-                                echo '<i title="Deletar" onclick="del_item(\''.$r["idPedido"].'\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
-                            echo '</td>';
-                            */
                         echo '</tr>';
                         
                     }
@@ -191,13 +159,13 @@
             $produto = $_POST["produto"];
             $pedido = $_POST["pedido"];
         
-            $sel = $db->select("SELECT valor FROM produtos WHERE idProdutos = $produto");
+            $sel = $db->select("SELECT valor FROM produtos WHERE idProduto = $produto");
             
                 if(count($sel)>0){
                     $preco = floatval($sel[0]["valor"])*$quantidade;
                 }
 
-            $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProdutos,quantidade,preco) VALUES ($pedido,'$produto',$quantidade,$preco)");
+            $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($pedido,$produto,$quantidade,$preco)");
             
             
             echo $res;
@@ -216,7 +184,7 @@
             $somaquantidade = 0;
             $somavalor = 0;
             
-            $sel = $db->select("SELECT idPedido, idProdutos, quantidade, preco FROM itens_pedido WHERE idPedido = $numpedido");
+            $sel = $db->select("SELECT idPedido, idProduto, quantidade, preco FROM itens_pedido WHERE idPedido = $numpedido");
 
             //logica para a soma dos valores quantidade e valor para fazer o update na tabela de pedidos
             if(count($sel)>0){
@@ -245,16 +213,16 @@
             $res = $db->_exec("UPDATE pedidos SET quantidade = $somaquantidade, preco = $somavalor, nf = '$numero', statusped = 2 WHERE idPedido = $numpedido");
             
             //baixa nos estoques pós emissao da nf
-            $sel1 = $db->select("SELECT p.idProdutos, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
+            $sel1 = $db->select("SELECT p.idProduto, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
                                 FROM itens_pedido p 
-                                INNER JOIN itens_estoque e ON e.idProduto = p.idProdutos
+                                INNER JOIN itens_estoque e ON e.idProduto = p.idProduto
                                 WHERE p.idPedido = $numpedido");
 
                 foreach($sel1 as $s){
 
                         $idp = $s["eidprod"];
                         $subtracao = floatval($s["equant"]) - floatval($s["pquant"]);
-                        $baixa = $db->_exec("UPDATE itens_estoque SET quantidade = $subtracao WHERE idProdutos = $idp");
+                        $baixa = $db->_exec("UPDATE itens_estoque SET quantidade = $subtracao WHERE idProduto = $idp");
                 }
             echo $res;
         }
@@ -305,7 +273,7 @@
             $res = $db->select("SELECT iditens_estoque, p.descricao, e.endereco, quantidade
                 FROM itens_estoque i 
                 inner join end_estoque e on e.idend_estoque = i.idend_estoque
-                inner join produtos p on p.idProdutos = i.idProdutos
+                inner join produtos p on p.idProduto = i.idProduto
                 WHERE iditens_estoque = {$id}");
             
             if(count($res) > 0){
@@ -344,9 +312,9 @@
                 $c_retorno = array();
                 $body = "";
 
-                $lista = $db->select("SELECT p.descricao, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
+                $lista = $db->select("SELECT i.idPedido, p.descricao, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
                                     FROM itens_pedido i
-                                    INNER JOIN produtos p ON p.idProdutos = i.idProdutos 
+                                    INNER JOIN produtos p ON p.idProduto = i.idProduto 
                                     WHERE i.idPedido = {$id}");
                     foreach($lista as $s){
                         $body .= '<tr>';
@@ -426,6 +394,7 @@
                     pedido: pedido},
                 
                 success: function retorno_ajax(retorno) {
+                    alert(retorno);
                     //$('#numpedido').val(pedido);
                     if(!retorno){
                         alert("ERRO AO INLUIR ITEM NO PEDIDO!");
@@ -632,6 +601,7 @@
         }
     </script>
 
+    
 <!-- Pagina principal -->
     
     <button class="btn btn-inverse-light btn-lg align-items-center grid-margin">
@@ -781,6 +751,11 @@
     </div>
 
     <!-- Modal formulário Exibição-->
+    <style>
+        .form-control {
+            background-color: #2A3038;
+        }
+    </style>
     <div class="modal" id="mod_formul_exibe">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 70%;">
             <div class="modal-content">
@@ -802,22 +777,22 @@
                             <div class="col">
                                 <input type="text" style="text-align: left" aria-describedby="frm_id_exibe" class="form-control form-control-lg" name="frm_id_exibe" id="frm_id_exibe" hidden>
                                 <label for="frm_val1_exibe" class="form-label">Vendedor:</label>
-                                <input type="text" style="text-align: left" aria-describedby="frm_val1_exibe" class="form-control form-control-lg" name="frm_val1_exibe" id="frm_val1_exibe" placeholder="" disabled>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val1_exibe" class="form-control form-control-lg" name="frm_val1_exibe" id="frm_val1_exibe" placeholder="" disabled>
                             </div>
                         
                             <div class="col">
                                 <label for="frm_val2_exibe" class="form-label">Cliente:</label>
-                                <input type="text" style="text-align: left" aria-describedby="frm_val2_exibe" class="form-control form-control-lg" name="frm_val2_exibe" id="frm_val2_exibe" placeholder="" disabled>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val2_exibe" class="form-control form-control-lg" name="frm_val2_exibe" id="frm_val2_exibe" placeholder="" disabled>
                             </div>
                         
                             <div class="col">
                                 <label for="frm_val3_exibe" class="form-label">Nota Fiscal:</label>
-                                <input type="text" style="text-align: left" aria-describedby="frm_val3_exibe" class="form-control form-control-lg" name="frm_val3_exibe" id="frm_val3_exibe" placeholder="" disabled>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val3_exibe" class="form-control form-control-lg" name="frm_val3_exibe" id="frm_val3_exibe" placeholder="" disabled>
                             </div>
 
                             <div class="col">
                                 <label for="frm_val4_exibe" class="form-label">Status:</label>
-                                <input type="text" style="text-align: left" aria-describedby="frm_val4_exibe" class="form-control form-control-lg" name="frm_val4_exibe" id="frm_val4_exibe" placeholder="" disabled>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val4_exibe" class="form-control form-control-lg" name="frm_val4_exibe" id="frm_val4_exibe" placeholder="" disabled>
                             </div>
                         </div>	
                         
@@ -842,12 +817,12 @@
                         <div class="row mb-3">					
                             <div class="col">
                                 <label for="frm_val5_exibe" class="form-label">Quantidade Total:</label>
-                                <input type="text" style="text-align: left" aria-describedby="frm_val5_exibe" class="form-control form-control-lg" name="frm_val5_exibe" id="frm_val5_exibe" placeholder="" disabled>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val5_exibe" class="form-control form-control-lg" name="frm_val5_exibe" id="frm_val5_exibe" placeholder="" disabled>
                             </div>
 
                             <div class="col">
                                 <label for="frm_val6_exibe" class="form-label">Valor Final:</label>
-                                <input type="text" style="text-align: left" aria-describedby="frm_val6_exibe" class="form-control form-control-lg" name="frm_val6_exibe" id="frm_val6_exibe" placeholder="" disabled>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val6_exibe" class="form-control form-control-lg" name="frm_val6_exibe" id="frm_val6_exibe" placeholder="" disabled>
                             </div>
                         </div>
                     </form>
