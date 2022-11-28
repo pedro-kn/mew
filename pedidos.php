@@ -162,7 +162,9 @@
             $sel = $db->select("SELECT valor FROM produtos WHERE idProduto = $produto");
             
                 if(count($sel)>0){
-                    $preco = floatval($sel[0]["valor"])*$quantidade;
+                    
+                    $float_var = preg_replace('/[^0-9]/', '', $sel[0]["valor"]);
+                    $preco = (floatval($float_var)*$quantidade)/100;
                 }
 
             $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($pedido,$produto,$quantidade,$preco)");
@@ -222,7 +224,7 @@
 
                         $idp = $s["eidprod"];
                         $subtracao = floatval($s["equant"]) - floatval($s["pquant"]);
-                        $baixa = $db->_exec("UPDATE itens_estoque SET quantidade = $subtracao WHERE idProduto = $idp");
+                        $baixa = $db->_exec("UPDATE produtos SET quantidade = $subtracao WHERE idProduto = $idp");
                 }
             echo $res;
         }
