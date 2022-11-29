@@ -165,9 +165,11 @@
                     
                     $float_var = preg_replace('/[^0-9]/', '', $sel[0]["valor"]);
                     $preco = (floatval($float_var)*$quantidade)/100;
+                    
+                    $reais = "R$ " . number_format($preco, 2, ",", ".");
                 }
 
-            $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($pedido,$produto,$quantidade,$preco)");
+            $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($pedido,$produto,$quantidade,'$reais')");
             
             
             echo $res;
@@ -192,7 +194,13 @@
             if(count($sel)>0){
                 foreach($sel as $s){
                     $somaquantidade = $somaquantidade + $s["quantidade"];
-                    $somavalor = $somavalor + $s["preco"];
+
+                    $float_var = preg_replace('/[^0-9]/', '', $s["preco"]);
+                    $preco = (floatval($float_var))/100;
+
+                    $somavalor = $somavalor + $preco;
+
+                    $reais = "R$ " . number_format($somavalor, 2, ",", ".");
                 }	
             }
 
@@ -212,12 +220,12 @@
             $nfe = $db->_exec("INSERT INTO nf (idPedido,numero,serie,chave,data_hora) VALUES ($numpedido,'$numero',1,'$chave',LOCALTIME())");		
             
             //update nos valores da tabela pedidos
-            $res = $db->_exec("UPDATE pedidos SET quantidade = $somaquantidade, preco = $somavalor, nf = '$numero', statusped = 2 WHERE idPedido = $numpedido");
+            $res = $db->_exec("UPDATE pedidos SET quantidade = $somaquantidade, preco = '$reais', nf = '$numero', statusped = 2 WHERE idPedido = $numpedido");
             
             //baixa nos estoques pós emissao da nf
             $sel1 = $db->select("SELECT p.idProduto, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
                                 FROM itens_pedido p 
-                                INNER JOIN itens_estoque e ON e.idProduto = p.idProduto
+                                INNER JOIN produtos e ON e.idProduto = p.idProduto
                                 WHERE p.idPedido = $numpedido");
 
                 foreach($sel1 as $s){
