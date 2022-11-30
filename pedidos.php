@@ -74,8 +74,12 @@
                             	echo '<a href="#" id="profile-dropdown" data-toggle="dropdown" class="dropleft"><i class="mdi mdi-playlist-plus"></i></a>';
                             	echo '<div class="dropdown-menu dropleft sidebar-dropdown col-1" style="max-width: 30px" aria-labelledby="profile-dropdown">';
                             		echo '<a href="#" onclick="get_item_ped(\''.$r["idPedido"].'\')" class="dropdown-item preview-item">';
-                            			echo '<p class="preview-subject ellipsis mb-1 text-medium" style="text-align: left"><i class="mdi mdi-information-outline text-primary"></i> Informações</p>';
+                            			echo '<p class="preview-subject ellipsis mb-1 text-medium" style="text-align: left"><i class="mdi mdi-information-outline text-info"></i> Informações</p>';
 									echo '</a>';
+                                    echo '<div class="dropdown-divider"></div>';
+                            			echo '<a href="#" onclick="faturar_item(\''.$r["idPedido"].'\')" class="dropdown-item preview-item">';
+                            				echo '<p class="preview-subject ellipsis mb-1 text-medium" style="text-align: left"><i class="mdi mdi-briefcase-check  text-primary"></i> Faturar Pedido</p>';
+                            			echo '</a>';
                             		echo '<div class="dropdown-divider"></div>';
                             			echo '<a href="#" onclick="get_item(\''.$r["idPedido"].'\')" class="dropdown-item preview-item">';
                             				echo '<p class="preview-subject ellipsis mb-1 text-medium" style="text-align: left"><i class="mdi mdi-table-edit  text-success"></i> Editar</p>';
@@ -202,7 +206,33 @@
 
                     $reais = "R$ " . number_format($somavalor, 2, ",", ".");
                 }	
-            }
+            }		
+            
+            //update nos valores da tabela pedidos
+            $res = $db->_exec("UPDATE pedidos SET quantidade = $somaquantidade, preco = '$reais', nf = '', statusped = 2 WHERE idPedido = $numpedido");
+            
+            //baixa nos estoques pós emissao da nf
+            $sel1 = $db->select("SELECT p.idProduto, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
+                                FROM itens_pedido p 
+                                INNER JOIN produtos e ON e.idProduto = p.idProduto
+                                WHERE p.idPedido = $numpedido");
+
+                foreach($sel1 as $s){
+
+                        $idp = $s["eidprod"];
+                        $subtracao = floatval($s["equant"]) - floatval($s["pquant"]);
+                        $baixa = $db->_exec("UPDATE produtos SET quantidade = $subtracao WHERE idProduto = $idp");
+                }
+            echo $res;
+        }
+
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        * Gera a nota fiscal:
+        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+        if($_GET["a"] == "inclui_nf"){
+            
+            //obtem o numerdo do pedido da tabela itens pedido a ser incluso
+            $numpedido = $_POST["id"];
 
             //logicas para gerar os valores de nota fiscal
             $numero = intval(rand(1,pow(10,6)));
@@ -218,22 +248,8 @@
             
             
             $nfe = $db->_exec("INSERT INTO nf (idPedido,numero,serie,chave,data_hora) VALUES ($numpedido,'$numero',1,'$chave',LOCALTIME())");		
+            $res = $db->_exec("UPDATE pedidos SET nf = '$numero', statusped = 3 WHERE idPedido = $numpedido");
             
-            //update nos valores da tabela pedidos
-            $res = $db->_exec("UPDATE pedidos SET quantidade = $somaquantidade, preco = '$reais', nf = '$numero', statusped = 2 WHERE idPedido = $numpedido");
-            
-            //baixa nos estoques pós emissao da nf
-            $sel1 = $db->select("SELECT p.idProduto, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
-                                FROM itens_pedido p 
-                                INNER JOIN produtos e ON e.idProduto = p.idProduto
-                                WHERE p.idPedido = $numpedido");
-
-                foreach($sel1 as $s){
-
-                        $idp = $s["eidprod"];
-                        $subtracao = floatval($s["equant"]) - floatval($s["pquant"]);
-                        $baixa = $db->_exec("UPDATE produtos SET quantidade = $subtracao WHERE idProduto = $idp");
-                }
             echo $res;
         }
 
@@ -266,6 +282,18 @@
 
             $id = $_POST["id"];
 
+            $sel1 = $db->select("SELECT p.idProduto, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
+                                FROM itens_pedido p 
+                                INNER JOIN produtos e ON e.idProduto = p.idProduto
+                                WHERE p.idPedido = $id");
+
+                foreach($sel1 as $s){
+
+                        $idp = $s["eidprod"];
+                        $soma = floatval($s["equant"]) + floatval($s["pquant"]);
+                        $baixa = $db->_exec("UPDATE produtos SET quantidade = $soma WHERE idProduto = $idp");
+                }
+
             $del = $db->_exec("DELETE FROM itens_pedido WHERE idPedido = '{$id}'");	
             $res = $db->_exec("DELETE FROM pedidos WHERE idPedido = '{$id}'");
             
@@ -273,27 +301,53 @@
         }
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        * Busca conteúdo:
+        * Busca conteúdo para exibir na div de edição do pedido:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         if($_GET["a"] == "get_client"){
         
 
             $id = $_POST["id"];
 
-            $res = $db->select("SELECT iditens_estoque, p.descricao, e.endereco, quantidade
-                FROM itens_estoque i 
-                inner join end_estoque e on e.idend_estoque = i.idend_estoque
-                inner join produtos p on p.idProduto = i.idProduto
-                WHERE iditens_estoque = {$id}");
+            $res = $db->select("SELECT p.idPedido, p.idCliente, p.idUsuario, c.nome as nomec, v.nome as nomev, p.quantidade, p.preco, p.nf, p.statusped
+                                FROM pedidos p
+                                INNER JOIN clientes c ON c.idCliente = p.idCliente
+                                INNER JOIN usuarios v ON v.idUsuario = p.idUsuario
+                                WHERE p.idPedido = {$id}");
             
             if(count($res) > 0){
-                $res[0]['descricao'] = utf8_encode($res[0]['descricao']);
-                $res[0]['endereco'] = utf8_encode($res[0]['endereco']);
-                $res[0]['quantidade'] = utf8_encode($res[0]['quantidade']);
+                $res[0]['nomev'] = remove_acento($res[0]['nomev']);
+                $res[0]['nomec'] = remove_acento($res[0]['nomec']);
+                $res[0]['nf'] = remove_acento($res[0]['nf']);
+                $res[0]['statusped'] = remove_acento($res[0]['statusped']);
+                $res[0]['quantidade'] = remove_acento($res[0]['quantidade']);
+                $res[0]['preco'] = remove_acento($res[0]['preco']);
                 
-                $a_retorno["res"] = $res;
-                $c_retorno = json_encode($a_retorno["res"]);
-                print_r($c_retorno);
+                $c_retorno = array();
+                $body = "";
+
+                $lista = $db->select("SELECT i.idPedido, p.descricao, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
+                                    FROM itens_pedido i
+                                    INNER JOIN produtos p ON p.idProduto = i.idProduto 
+                                    WHERE i.idPedido = {$id}");
+                    foreach($lista as $s){
+                        $body .= '<tr>';
+                            $body .= '<td style="text-align: left">'.$s["descricao"].'</td>';
+                            $body .= '<td style="text-align: center">'.$s["quantidade"].'</td>';
+                            $body .= '<td style="text-align: center">'.$s["valor"].'</td>';
+                            $body .= '<td style="text-align: center">'.$s["preco_final"].'</td>';
+                    }						
+                
+                $title = '<h5 id="div_edit_title" class="modal-title">Informações do Pedido '.$id.'</h5>';
+                
+                $c_retorno["title"] = $title;	
+                $c_retorno["header"] = $res;	
+                //$a_retorno["res"] = $res;
+                //$c_retorno["header"] = json_encode($a_retorno["res"]);
+                $c_retorno["body"] = $body;
+                echo json_encode($c_retorno);
+                //print_r(json_encode($c_retorno));
+                //print_r($a_retorno["res"]);
+
             }
         }
 
@@ -347,6 +401,8 @@
 
             }
         }
+
+       
 
         die();
     }
@@ -476,7 +532,7 @@
 
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        * Pesquisar itens:
+        * Pesquisar itens do campo de edição:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         var ajax_div = $.ajax(null);
         const get_item = (id) => {
@@ -493,16 +549,32 @@
                     $('#mod_formul_edit').modal("show");
                 },
                 success: function retorno_ajax(retorno) {
+                    alert(retorno);
+                    var obj = JSON.parse(retorno);
                     
-                    if(retorno){
-                        $("#frm_id").val(id);
+                    //alert(teste.header);
+                    //if(retorno){
+                        $("#frm_id_edit").val(id);
                         
-                        var obj_ret = JSON.parse(retorno);
+                        var obj_ret = obj.header;
 
-                        $("#frm_val1_edit").val(obj_ret[0].descricao);
-                        $("#frm_val2_edit").val(obj_ret[0].endereco);
-                        $("#frm_val3_edit").val(obj_ret[0].quantidade);	
-                    }
+                        if(obj_ret[0].nf==""){
+                            var nf = "NF não emitida";
+                        }else{
+                            var nf = obj_ret[0].nf;
+                        };
+                        
+                        $("#frm_val1_edit").val(obj_ret[0].nomev);
+                        $("#frm_val2_edit").val(obj_ret[0].nomec);
+                        $("#frm_val3_edit").val(nf);
+                        $("#frm_val4_edit").val(obj_ret[0].statusped);	
+                        $("#frm_val5_edit").val(obj_ret[0].quantidade);	
+                        $("#frm_val6_edit").val(obj_ret[0].preco);	
+
+                        $('#div_edit_title').html(obj.title); 
+
+                        $('#div_edit_ped').html(obj.body); 
+                    //}
                 }
             });
         }
@@ -533,10 +605,16 @@
                         $("#frm_id_exibe").val(id);
                         
                         var obj_ret = obj.header;
+                        
+                        if(obj_ret[0].nf==""){
+                            var nf = "NF não emitida";
+                        }else{
+                            var nf = obj_ret[0].nf;
+                        };
 
                         $("#frm_val1_exibe").val(obj_ret[0].nomev);
                         $("#frm_val2_exibe").val(obj_ret[0].nomec);
-                        $("#frm_val3_exibe").val(obj_ret[0].nf);
+                        $("#frm_val3_exibe").val(nf);
                         $("#frm_val4_exibe").val(obj_ret[0].statusped);	
                         $("#frm_val5_exibe").val(obj_ret[0].quantidade);	
                         $("#frm_val6_exibe").val(obj_ret[0].preco);	
@@ -581,6 +659,35 @@
             });
         }
 
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        * Gerar a Nota fiscal:
+        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+        var ajax_div = $.ajax(null);
+        function faturar_item(id){
+            if( confirm( "Deseja gerar a NF?")){
+                if(ajax_div){ ajax_div.abort(); }
+                    ajax_div = $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '?a=inclui_nf',
+                    type: 'post',
+                    data: { 
+                        id: id,
+                    },
+                    success: function retorno_ajax(retorno) {
+                        alert(retorno);
+                        if(retorno){
+                            location.reload();
+                            lista_itens();  
+                        }else{
+                            alert("ERRO AO GERAR NF! " + retorno);
+                        }
+                    }
+                });
+            }else{
+                lista_itens();
+            }
+        }    
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Excluir usuário:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -713,6 +820,7 @@
 
 
     <!-- Modal formulário Edição-->
+    
     <div class="modal" id="mod_formul_edit">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 70%;">
             <div class="modal-content">
@@ -722,50 +830,78 @@
                             <h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
                         </div>
                         <div>
-                            <h5 id="tit_frm_formul_edit" class="modal-title">Editar Itens do Estoque</h5>
+                            <h5 id="div_edit_title"></h5>
                         </div>
                     </div>
                     <button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul_edit').modal('hide');">X</button>
                 </div>
                 <div class="modal-body modal-dialog-scrollable">
-                    <form id="frm_general_edit" name="frm_general">
+                    <form id="frm_general_exib" name="frm_general">
                         <div class="row mb-3">
+
                             <div class="col">
-                                <input type="text" style="text-align: left" aria-describedby="frm_id" class="form-control form-control-lg" name="frm_id" id="frm_id" hidden>
-                                <label for="frm_val1_edit" class="form-label">Descrição:</label>
-                                <input type="text" style="text-align: left" aria-describedby="frm_val1_edit" class="form-control form-control-lg" name="frm_val1_edit" id="frm_val1_edit" placeholder="" disabled>
+                                <input type="text" style="text-align: left" aria-describedby="frm_id_edit" class="form-control form-control-lg" name="frm_id_edit" id="frm_id_edit" hidden>
+                                <label for="frm_val1_edit" class="form-label">Vendedor:</label>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val1_edit" class="form-control form-control-lg" name="frm_val1_edit" id="frm_val1_edit" placeholder="" disabled>
                             </div>
+                        
+                            <div class="col">
+                                <label for="frm_val2_edit" class="form-label">Cliente:</label>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val2_edit" class="form-control form-control-lg" name="frm_val2_edit" id="frm_val2_edit" placeholder="" disabled>
+                            </div>
+                        
+                            <div class="col">
+                                <label for="frm_val3_edit" class="form-label">Nota Fiscal:</label>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val3_edit" class="form-control form-control-lg" name="frm_val3_edit" id="frm_val3_edit" placeholder="" disabled>
+                            </div>
+
+                            <div class="col">
+                                <label for="frm_val4_edit" class="form-label">Status:</label>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val4_edit" class="form-control form-control-lg" name="frm_val4_edit" id="frm_val4_edit" placeholder="" disabled>
+                            </div>
+                        </div>	
+                        
+                        <div class="row mb-3">
+                            <div class="col">			
+                                <label for="frm_vallista_edit" class="form-label"><b>Produtos:</b></label>
+                                    <div class="table-responsive">
+                                        <table id="tb_lista" class="table table-striped table-hover table-sm" style="font-size: 10pt">
+                                            <thead>
+                                                <tr>
+                                                    <th style="text-align: left">Descrição do Produto</th>
+                                                    <th style="text-align: center">Quantidade</th>
+                                                    <th style="text-align: center">Valor Unitário</th>
+                                                    <th style="text-align: center">Valor</th>
+                                            </thead>
+                                            <tbody id="div_edit_ped"> </tbody>
+                                        </table>
+                                    </div>				
+                            </div>			
                         </div>
 
-                        <div class="row mb-3">
+                        <div class="row mb-3">					
                             <div class="col">
-                                <label for="frm_val2_edit" class="form-label">Endereço:</label>
-                                <input type="text" style="text-align: left" aria-describedby="frm_val2_edit" class="form-control form-control-lg" name="frm_val2_edit" id="frm_val2_edit" placeholder="" disabled>
+                                <label for="frm_val5_edit" class="form-label">Quantidade Total:</label>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val5_edit" class="form-control form-control-lg" name="frm_val5_edit" id="frm_val5_edit" placeholder="" disabled>
                             </div>
-                        </div>
 
-                        <div class="row mb-3">
                             <div class="col">
-                                <label for="frm_val3_edit" class="form-label">Quantidade:</label>
-                                <input type="text" style="text-align: left" aria-describedby="frm_val3_edit" class="form-control form-control-lg" name="frm_val3_edit" id="frm_val3_edit" placeholder="">
+                                <label for="frm_val6_edit" class="form-label">Valor Final:</label>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val6_edit" class="form-control form-control-lg" name="frm_val6_edit" id="frm_val6_edit" placeholder="" disabled>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="$('#mod_formul_edit').modal('hide');">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="frm_OK" onclick="editClient();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
-                </div>
+					<button type="button" class="btn btn-primary" id="frm_OK" onclick="editClient();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
+				</div>
             </div>
         </div>
     </div>
 
     <!-- Modal formulário Exibição-->
-    <style>
-        .form-control {
-            background-color: #2A3038;
-        }
-    </style>
+    
     <div class="modal" id="mod_formul_exibe">
         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 70%;">
             <div class="modal-content">
@@ -840,6 +976,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="$('#mod_formul_exibe').modal('hide');">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="frm_OK" onclick="$('#mod_formul_exibe').modal('hide');"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
+                    <button type="button" class="btn btn-primary" id="frm_faturar" onclick="$('#mod_formul_exibe').modal('hide');"><img id="img_btn_faturar" style="width: 15px; display: none; margin-right: 10px">Faturar Pedido</button>
                 </div>
             </div>
         </div>
