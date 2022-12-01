@@ -211,18 +211,7 @@
             //update nos valores da tabela pedidos
             $res = $db->_exec("UPDATE pedidos SET quantidade = $somaquantidade, preco = '$reais', nf = '', statusped = 2 WHERE idPedido = $numpedido");
             
-            //baixa nos estoques pós emissao da nf
-            $sel1 = $db->select("SELECT p.idProduto, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
-                                FROM itens_pedido p 
-                                INNER JOIN produtos e ON e.idProduto = p.idProduto
-                                WHERE p.idPedido = $numpedido");
-
-                foreach($sel1 as $s){
-
-                        $idp = $s["eidprod"];
-                        $subtracao = floatval($s["equant"]) - floatval($s["pquant"]);
-                        $baixa = $db->_exec("UPDATE produtos SET quantidade = $subtracao WHERE idProduto = $idp");
-                }
+           
             echo $res;
         }
 
@@ -246,6 +235,18 @@
                 $sum++;
                 }
             
+            //baixa nos estoques pós emissao da nf
+            $sel1 = $db->select("SELECT p.idProduto, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
+            FROM itens_pedido p 
+            INNER JOIN produtos e ON e.idProduto = p.idProduto
+            WHERE p.idPedido = $numpedido");
+
+            foreach($sel1 as $s){
+
+                $idp = $s["eidprod"];
+                $subtracao = floatval($s["equant"]) - floatval($s["pquant"]);
+                $baixa = $db->_exec("UPDATE produtos SET quantidade = $subtracao WHERE idProduto = $idp");
+            }
             
             $nfe = $db->_exec("INSERT INTO nf (idPedido,numero,serie,chave,data_hora) VALUES ($numpedido,'$numero',1,'$chave',LOCALTIME())");		
             $res = $db->_exec("UPDATE pedidos SET nf = '$numero', statusped = 3 WHERE idPedido = $numpedido");
@@ -256,20 +257,24 @@
         
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        * Edita conteúdo:
+        * Edita o pedido:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         if($_GET["a"] == "edit_client"){
             
 
             $id = $_POST["id"];
-            $descricao = $_POST["descricao"];
-            $endereco = $_POST["endereco"];
-            $quantidade = $_POST["quantidade"];
-            
 
-            $res = $db->_exec("UPDATE itens_estoque 
-                SET iditens_estoque = {$id},  quantidade = '{$quantidade}'
-                WHERE iditens_estoque = {$id}");
+            $usuario = $_POST["usuario"];
+            $cliente = $_POST["cliente"];
+            $nf = $_POST["nf"];
+            $statusped = $_POST["statusped"];
+            $quantidade = $_POST["quantidade"];
+            $valor = $_POST["valor"];		
+            
+            
+            $res = $db->_exec("UPDATE pedidos 
+                SET idCliente = {$cliente},  idUsuario = {$usuario}
+                WHERE idPedido = {$id}");
 
             echo $res;
         }
@@ -282,22 +287,31 @@
 
             $id = $_POST["id"];
 
-            $sel1 = $db->select("SELECT p.idProduto, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
-                                FROM itens_pedido p 
-                                INNER JOIN produtos e ON e.idProduto = p.idProduto
-                                WHERE p.idPedido = $id");
-
-                foreach($sel1 as $s){
-
-                        $idp = $s["eidprod"];
-                        $soma = floatval($s["equant"]) + floatval($s["pquant"]);
-                        $baixa = $db->_exec("UPDATE produtos SET quantidade = $soma WHERE idProduto = $idp");
-                }
-
-            $del = $db->_exec("DELETE FROM itens_pedido WHERE idPedido = '{$id}'");	
-            $res = $db->_exec("DELETE FROM pedidos WHERE idPedido = '{$id}'");
+            $sel = $db->select("SELECT statusped FROM pedidos WHERE idPedido = $id");
             
-            echo $res;
+            if($sel[0]["statusped"] == 3){
+                $res = 2;
+                echo $res;
+            }else{
+                
+                /* Lógica para readicionar itens ao estoque, não está sendo usado no momento
+                $sel1 = $db->select("SELECT p.idProduto, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
+                                    FROM itens_pedido p 
+                                    INNER JOIN produtos e ON e.idProduto = p.idProduto
+                                    WHERE p.idPedido = $id");
+
+                    foreach($sel1 as $s){
+
+                            $idp = $s["eidprod"];
+                            $soma = floatval($s["equant"]) + floatval($s["pquant"]);
+                            $baixa = $db->_exec("UPDATE produtos SET quantidade = $soma WHERE idProduto = $idp");
+                    }*/
+
+                $del = $db->_exec("DELETE FROM itens_pedido WHERE idPedido = '{$id}'");	
+                $res = $db->_exec("DELETE FROM pedidos WHERE idPedido = '{$id}'");
+                
+                echo $res;
+            }
         }
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -307,6 +321,13 @@
         
 
             $id = $_POST["id"];
+
+            $sel = $db->select("SELECT statusped FROM pedidos WHERE idPedido = $id");
+            
+            if($sel[0]["statusped"] == 3){
+                $res = 2;
+                echo $res;
+            }else{    
 
             $res = $db->select("SELECT p.idPedido, p.idCliente, p.idUsuario, c.nome as nomec, v.nome as nomev, p.quantidade, p.preco, p.nf, p.statusped
                                 FROM pedidos p
@@ -347,7 +368,7 @@
                 echo json_encode($c_retorno);
                 //print_r(json_encode($c_retorno));
                 //print_r($a_retorno["res"]);
-
+                }
             }
         }
 
@@ -553,7 +574,11 @@
                     var obj = JSON.parse(retorno);
                     
                     //alert(teste.header);
-                    //if(retorno){
+                    if(retorno==2){
+                        alert("Não é possível editar o pedido pois a nota fiscal já foi emitida!");
+                        location.reload();
+                        lista_itens();  
+                    }else{
                         $("#frm_id_edit").val(id);
                         
                         var obj_ret = obj.header;
@@ -574,7 +599,7 @@
                         $('#div_edit_title').html(obj.title); 
 
                         $('#div_edit_ped').html(obj.body); 
-                    //}
+                    }
                 }
             });
         }
@@ -639,15 +664,19 @@
                 url: '?a=edit_client',
                 type: 'post',
                 data: { 
-                    id: $("#frm_id").val(),
-                    descricao: $("#frm_val1_edit").val(),
-                    endereco: $("#frm_val2_edit").val(),
-                    quantidade: $("#frm_val3_edit").val(),
+                    id: $("#frm_id_edit").val(),
+                    usuario: $("#frm_val1_edit").val(),
+                    cliente: $("#frm_val2_edit").val(),
+                    nf: $("#frm_val3_edit").val(),
+                    statusped: $("#frm_val4_edit").val(),
+                    quantidade: $("#frm_val5_edit").val(),
+                    valor: $("#frm_val6_edit").val(),
                 },
                 beforeSend: function(){
                     $('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
                 },
                 success: function retorno_ajax(retorno) {
+                    alert(retorno);
                     if(retorno){
                         $('#mod_formul_edit').modal('hide');
                         location.reload();
@@ -704,9 +733,12 @@
                         id: id,
                     },
                     success: function retorno_ajax(retorno) {
-                        if(retorno){
+                        
+                        if(retorno==1){
                             location.reload();
-                            lista_itens();  
+                            lista_itens();
+                        }else if(retorno==2){
+                            alert("Não foi possível deletar o pedido pois a nota fiscal já foi emitida!");
                         }else{
                             alert("ERRO AO DELETAR ITENS! " + retorno);
                         }
@@ -776,7 +808,7 @@
                             <div class="col">
                                 <label for="frm_val1_insert" class="form-label">Usuário:</label>
                                     <div class="scrollable">
-                                    <select id="frm_val1_insert"  class="select form-control form-control-lg" name="frm_val1_insert" type="text" >
+                                    <select id="frm_val1_insert"  class="select form-control form-control-lg" name="frm_val1_insert" type="text" style="color: #ffffff" >
                                         <option value="" selected></option>
                                         <?php
                                             $desc = $db->select('SELECT idUsuario, nome FROM usuarios');
@@ -792,7 +824,7 @@
                             <div class="col">
                                 <label for="frm_val2_insert" class="form-label">Cliente:</label>
                                     <div class="scrollable">
-                                    <select id="frm_val2_insert"  onchange="listaModinsert()" class="select form-control form-control-lg" name="frm_val2_insert" type="text" >
+                                    <select id="frm_val2_insert"  onchange="listaModinsert()" class="select form-control form-control-lg" name="frm_val2_insert" type="text" style="color: #ffffff" >
                                         <option value="" selected></option>
                                         <?php
                                             $desc = $db->select('SELECT idCliente, nome FROM clientes');
@@ -841,13 +873,35 @@
 
                             <div class="col">
                                 <input type="text" style="text-align: left" aria-describedby="frm_id_edit" class="form-control form-control-lg" name="frm_id_edit" id="frm_id_edit" hidden>
-                                <label for="frm_val1_edit" class="form-label">Vendedor:</label>
-                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val1_edit" class="form-control form-control-lg" name="frm_val1_edit" id="frm_val1_edit" placeholder="" disabled>
+                                
+                                <label for="frm_val1_edit" class="form-label">Usuário:</label>
+                                    <div class="scrollable">
+                                    <select id="frm_val1_edit"  class="select form-control form-control-lg" aria-describedby="frm_val1_edit" name="frm_val1_edit" type="text" placeholder="" style="color: #ffffff">
+                                        <option value="" selected></option>
+                                        <?php
+                                            $desc = $db->select('SELECT idUsuario, nome FROM usuarios');
+                                            foreach($desc as $s){
+                                                echo  '<option value="'.$s["idUsuario"].'">'.$s["nome"].'</option>';
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
                             </div>
                         
                             <div class="col">
                                 <label for="frm_val2_edit" class="form-label">Cliente:</label>
-                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val2_edit" class="form-control form-control-lg" name="frm_val2_edit" id="frm_val2_edit" placeholder="" disabled>
+                                
+                                    <div class="scrollable">
+                                    <select id="frm_val2_edit"  class="select form-control form-control-lg" aria-describedby="frm_val2_edit" name="frm_val2_edit" type="text" placeholder="" style="color: #ffffff">
+                                        <option value="" selected></option>
+                                        <?php
+                                            $desc = $db->select('SELECT idCliente, nome FROM clientes');
+                                            foreach($desc as $s){
+                                                echo  '<option value="'.$s["idCliente"].'">'.$s["nome"].'</option>';
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
                             </div>
                         
                             <div class="col">
