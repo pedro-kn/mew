@@ -153,6 +153,54 @@
         }
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        * Ocultamente edita o pedido, e após Exibe lista de itens na div modInsert:
+        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+        if($_GET["a"] == "lista_mod_edit"){    
+        
+            $usuario = $_POST["usuario"];
+            $cliente = $_POST["cliente"];
+
+            $ped = $db->_exec("INSERT INTO pedidos (idPedido,idCliente,idUsuario,statusped) VALUES ('',$cliente,$usuario,'1')");
+            
+            $s = $db->select("SELECT idPedido FROM pedidos WHERE idCliente = $cliente AND idUsuario = '$usuario' ORDER BY idPedido DESC LIMIT 1");
+
+            foreach($s as $s1){
+                $numped = $s1["idPedido"];
+            }
+
+            $res = $db->select("SELECT idProduto, descricao, valor FROM produtos ORDER BY descricao");
+            
+            if(count($res) > 0){
+                echo '<div class="table-responsive">';
+                echo '<table id="tb_lista" class="table table-striped table-hover table-sm" style="font-size: 10pt">';
+                    echo '<thead>';
+                        echo '<tr>';
+                            echo '<th style="text-align: left">Descrição</th>';
+                            echo '<th style="text-align: center">Preço</th>';
+                            echo '<th style="text-align: center">Quantidade</th>';
+                        echo '</tr>';
+                    echo '</thead>';
+                    echo '<tbody>';
+                    foreach($res as $r){
+                        echo '<tr >';
+                            echo '<td  style="text-align: left">'.$r["descricao"].'</td>';
+                            echo '<td style="text-align: center">'.$r["valor"].'</td>';
+                            echo '<td style="text-align: center">';
+                                echo '<input type="number" onchange="incluiPed(this.value,\''.$r["idProduto"].'\',\''.$numped.'\')" min="0" max="100"></input>';
+                            echo '</td>';
+                        echo '</tr>';
+                    }
+                    echo '</tbody>';
+                echo '</table>';
+                echo '</div>';
+            }else{
+                echo '<div class="alert alert-warning" role="alert">';
+                    echo 'Nenhum registro localizado!';
+                echo '</div>';
+            }
+        }
+
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Inserir conteúdo dentro da lista de pedidos criada em lista_mod_insert:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         if($_GET["a"] == "inclui_pedido"){
@@ -345,14 +393,31 @@
                 
                 $c_retorno = array();
                 $body = "";
+                $include = "";
+                $desc1 = "";
+                $desc2 = array();
 
                 $lista = $db->select("SELECT i.idPedido, p.descricao, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
                                     FROM itens_pedido i
                                     INNER JOIN produtos p ON p.idProduto = i.idProduto 
                                     WHERE i.idPedido = {$id}");
+
+                    $include .= '<tr>';
+                    $include .= '<td style="text-align: center">Incluir novo Item</td>';  
+                    
+                    $desc = $db->select('SELECT idProduto, descricao FROM produtos');
+                                            
+                                
+                                $desc1 .= '<div class="scrollable">';
+                                $desc1 .= '<select id="frm_val1_edit"  class="select form-control form-control-lg" aria-describedby="frm_val1_edit" name="frm_val1_edit" type="text" placeholder="" style="color: #ffffff">';
+                                $desc1 .= '<option value="" selected></option>';
+                                $desc2 = foreach($desc as $s){echo  '<option value="'.$s["idProduto"].'">'.$s["descricao"].'</option>';};
+                                $desc3 .= '</select>';
+                                $desc3 .= '</div>';
+
                     foreach($lista as $s){
                         $body .= '<tr>';
-                            $body .= '<td style="text-align: left">'.$s["descricao"].'</td>';
+                            $body .= '<td style="text-align: left">'.$desc1.$desc2.$desc3.'</td>';
                             $body .= '<td style="text-align: center">'.$s["quantidade"].'</td>';
                             $body .= '<td style="text-align: center">'.$s["valor"].'</td>';
                             $body .= '<td style="text-align: center">'.$s["preco_final"].'</td>';
@@ -360,6 +425,7 @@
                 
                 $title = '<h5 id="div_edit_title" class="modal-title">Informações do Pedido '.$id.'</h5>';
                 
+                $c_retorno["include"] = $include;
                 $c_retorno["title"] = $title;	
                 $c_retorno["header"] = $res;	
                 //$a_retorno["res"] = $res;
@@ -513,6 +579,29 @@
             });
         }
 
+         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        * Exibir no modal os itens para edição:
+        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+        var ajax_div = $.ajax(null);
+        const listaModEdit = () => {
+            if(ajax_div){ ajax_div.abort(); }
+                ajax_div = $.ajax({
+                cache: false,
+                async: true,
+                url: '?a=lista_mod_edit',
+                type: 'post',
+                data: {pesq: $('#input_pesquisa').val(),
+                    usuario: $('#frm_val1_insert').val(),
+                    cliente: $('#frm_val2_insert').val()},
+                beforeSend: function(){
+                    $('#mod_insert').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
+                },
+                success: function retorno_ajax(retorno) {
+                    $('#mod_insert').html(retorno); 
+                }
+            });
+        }
+
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Incluir itens:
@@ -597,7 +686,7 @@
                         $("#frm_val6_edit").val(obj_ret[0].preco);	
 
                         $('#div_edit_title').html(obj.title); 
-
+                        $('#div_edit_ped_include').html(obj.include); 
                         $('#div_edit_ped').html(obj.body); 
                     }
                 }
@@ -927,6 +1016,7 @@
                                                     <th style="text-align: center">Valor Unitário</th>
                                                     <th style="text-align: center">Valor</th>
                                             </thead>
+                                            <tbody id="div_edit_ped_include"> </tbody>
                                             <tbody id="div_edit_ped"> </tbody>
                                         </table>
                                     </div>				
