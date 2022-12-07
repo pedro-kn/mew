@@ -227,6 +227,35 @@
             echo $res;
         }
 
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        * editar conteúdo dentro da lista de pedidos do modal de edição:
+        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+        if($_GET["a"] == "edita_pedido"){
+            
+
+
+            $id = $_POST["id"];
+            $quantidade = $_POST["quantidade"];
+            $iditens = $_POST["iditens"];
+            
+        
+            $sel = $db->select("SELECT valor FROM produtos WHERE idProduto = $id");
+            
+                if(count($sel)>0){
+                    
+                    $float_var = preg_replace('/[^0-9]/', '', $sel[0]["valor"]);
+                    $preco = (floatval($float_var)*$quantidade)/100;
+                    
+                    $reais = "R$ " . number_format($preco, 2, ",", ".");
+                }
+
+            //$res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($pedido,$produto,$quantidade,'$reais')");
+            $res = $db->_exec("UPDATE itens_pedido SET idProduto = $id, quantidade = $quantidade, preco = '$reais' WHERE idItens_pedido = $iditens");
+            
+            
+            echo $res;
+        }
+
 
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -391,13 +420,17 @@
                 $res[0]['quantidade'] = remove_acento($res[0]['quantidade']);
                 $res[0]['preco'] = remove_acento($res[0]['preco']);
                 
+                // declaração de variaveis para exibição das selects
+
                 $c_retorno = array();
                 $body = "";
                 $include = "";
                 $desc1 = "";
-                $desc2 = array();
+                $placeholderdesc = "";
+                $desc2 = "";
+                $desc3 = "";
 
-                $lista = $db->select("SELECT i.idPedido, p.descricao, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
+                $lista = $db->select("SELECT i.idPedido, p.descricao, i.idItens_pedido as idItens, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
                                     FROM itens_pedido i
                                     INNER JOIN produtos p ON p.idProduto = i.idProduto 
                                     WHERE i.idPedido = {$id}");
@@ -405,22 +438,39 @@
                     $include .= '<tr>';
                     $include .= '<td style="text-align: center">Incluir novo Item</td>';  
                     
+                    //select de descrição
+
                     $desc = $db->select('SELECT idProduto, descricao FROM produtos');
-                                            
-                                
-                                $desc1 .= '<div class="scrollable">';
-                                $desc1 .= '<select id="frm_val1_edit"  class="select form-control form-control-lg" aria-describedby="frm_val1_edit" name="frm_val1_edit" type="text" placeholder="" style="color: #ffffff">';
-                                $desc1 .= '<option value="" selected></option>';
-                                $desc2 = foreach($desc as $s){echo  '<option value="'.$s["idProduto"].'">'.$s["descricao"].'</option>';};
-                                $desc3 .= '</select>';
-                                $desc3 .= '</div>';
+
+                        $desc1 .= '<div class="scrollable">';
+                        $desc1 .= '<select id="frm_val1_edit" onchange="setaproduto(this.value)" class="select form-control form-control-lg" aria-describedby="frm_val1_edit" name="frm_val1_edit" type="text" placeholder="" style="color: #ffffff">';
+                            
+
+                        foreach($lista as $p){
+                            $placeholderdesc .= '<option value="" selected>'.$p["descricao"].'</option>';
+                        }
+
+                        foreach($desc as $d){
+                            $desc2 .= '<option value="'.$d["idProduto"].'">'.$d["descricao"].'</option>';
+                        }
+                        $desc3 .= '</select>';
+                        $desc3 .= '</div>';
+
+                    //select de quantidade   
+
+
+
+                    //montagem do body         
 
                     foreach($lista as $s){
                         $body .= '<tr>';
-                            $body .= '<td style="text-align: left">'.$desc1.$desc2.$desc3.'</td>';
-                            $body .= '<td style="text-align: center">'.$s["quantidade"].'</td>';
+                            $body .= '<td id="edit_desc" style="text-align: left">'.$desc1.$placeholderdesc.$desc2.$desc3.'</td>';
+                            //$body .= '<td style="text-align: center">'.$s["quantidade"].'</td>';
+                            //placeholder="'.$s["quantidade"].'"
+                            $body .= '<td id="edit_quant" style="text-align: center"><input type="number" placeholder="'.$s["quantidade"].'" onchange="editPed(this.value,\''.$s["idItens"].'\')" min="0" max="100"></input></td>';
                             $body .= '<td style="text-align: center">'.$s["valor"].'</td>';
                             $body .= '<td style="text-align: center">'.$s["preco_final"].'</td>';
+                            $body .= '<td style="text-align: center"><a class="dropdown-item preview-item" ><p><i class="mdi mdi-checkbox-marked-outline text-sucess"></i></p></a></td>';
                     }						
                 
                 $title = '<h5 id="div_edit_title" class="modal-title">Informações do Pedido '.$id.'</h5>';
@@ -506,8 +556,13 @@
     
    
     <script type="text/javascript">
-    
-
+        
+        //criação de função para passar o numero do pedido para a parte de edição
+        
+        var idprodutosetado = $('#frm_val1_edit').val();
+        function setaproduto(id){
+            idprodutosetado = id;
+        }
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Listar itens:
@@ -551,6 +606,33 @@
                     //$('#numpedido').val(pedido);
                     if(!retorno){
                         alert("ERRO AO INLUIR ITEM NO PEDIDO!");
+                    } 
+                }
+            });
+        }
+
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        * permite a edição de itens dentro do pedido:
+        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+        var ajax_div = $.ajax(null);
+        const editPed = (quantidade,iditens) => {
+            //$('#frm_val1_edit').val(pedido);
+            alert(id);
+            if(ajax_div){ ajax_div.abort(); }
+                ajax_div = $.ajax({
+                cache: false,
+                async: true,
+                url: '?a=edita_pedido',
+                type: 'post',
+                data: {quantidade: quantidade,
+                       id: idprodutosetado,
+                       iditens: iditens},
+                
+                success: function retorno_ajax(retorno) {
+                    alert(retorno);
+                    //$('#numpedido').val(pedido);
+                    if(!retorno){
+                        alert("ERRO AO EDITAR ITEM NO PEDIDO!");
                     } 
                 }
             });
@@ -742,7 +824,7 @@
         }
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        * Editar itens:
+        * responssavel por dar o update de valores no modal de edição:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         var ajax_div = $.ajax(null);
         const editClient = () => {
@@ -1015,6 +1097,7 @@
                                                     <th style="text-align: center">Quantidade</th>
                                                     <th style="text-align: center">Valor Unitário</th>
                                                     <th style="text-align: center">Valor</th>
+                                                    <th style="text-align: center">Alterar</th>
                                             </thead>
                                             <tbody id="div_edit_ped_include"> </tbody>
                                             <tbody id="div_edit_ped"> </tbody>
