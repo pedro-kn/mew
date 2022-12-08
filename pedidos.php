@@ -237,23 +237,26 @@
             $id = $_POST["id"];
             $quantidade = $_POST["quantidade"];
             $iditens = $_POST["iditens"];
-            
+
+            $float_var = "";
+            echo $quantidade;
         
             $sel = $db->select("SELECT valor FROM produtos WHERE idProduto = $id");
             
                 if(count($sel)>0){
                     
                     $float_var = preg_replace('/[^0-9]/', '', $sel[0]["valor"]);
-                    $preco = (floatval($float_var)*$quantidade)/100;
+                    $float_var1 = floatval($float_var);
+                    $preco = ($float_var1*$quantidade)/100;
                     
                     $reais = "R$ " . number_format($preco, 2, ",", ".");
                 }
 
             //$res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($pedido,$produto,$quantidade,'$reais')");
-            $res = $db->_exec("UPDATE itens_pedido SET idProduto = $id, quantidade = $quantidade, preco = '$reais' WHERE idItens_pedido = $iditens");
+            //$res = $db->_exec("UPDATE itens_pedido SET idProduto = $id, quantidade = $quantidade, preco = '$reais' WHERE idItens_pedido = $iditens");
             
             
-            echo $res;
+            //echo $quantidade;
         }
 
 
@@ -430,7 +433,7 @@
                 $desc2 = "";
                 $desc3 = "";
 
-                $lista = $db->select("SELECT i.idPedido, p.descricao, i.idItens_pedido as idItens, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
+                $lista = $db->select("SELECT i.idPedido, p.descricao as descricao, i.idItens_pedido as idItens, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
                                     FROM itens_pedido i
                                     INNER JOIN produtos p ON p.idProduto = i.idProduto 
                                     WHERE i.idPedido = {$id}");
@@ -443,16 +446,13 @@
                     $desc = $db->select('SELECT idProduto, descricao FROM produtos');
 
                         $desc1 .= '<div class="scrollable">';
-                        $desc1 .= '<select id="frm_val1_edit" onchange="setaproduto(this.value)" class="select form-control form-control-lg" aria-describedby="frm_val1_edit" name="frm_val1_edit" type="text" placeholder="" style="color: #ffffff">';
-                            
-
-                        foreach($lista as $p){
-                            $placeholderdesc .= '<option value="" selected>'.$p["descricao"].'</option>';
-                        }
+                        $desc1 .= '<select value="select_prod_edit" class="select form-control form-control-lg" type="text" style="color: #ffffff">';
+                        $count = 0;
 
                         foreach($desc as $d){
-                            $desc2 .= '<option value="'.$d["idProduto"].'">'.$d["descricao"].'</option>';
-                        }
+                            $count = $count+1;
+                            $desc2 .= '<option id="select_prod_edit'.($count+1).'" value="'.$d["idProduto"].'">'.$d["descricao"].'</option>';
+                        }   //voce parou aqui continuar editando os values da select
                         $desc3 .= '</select>';
                         $desc3 .= '</div>';
 
@@ -461,16 +461,20 @@
 
 
                     //montagem do body         
-
+                    $count = 0;
+                    $countarray = array();
                     foreach($lista as $s){
+                        $count = $count+1;
+                        $countarray[$count] = $count;
                         $body .= '<tr>';
-                            $body .= '<td id="edit_desc" style="text-align: left">'.$desc1.$placeholderdesc.$desc2.$desc3.'</td>';
-                            //$body .= '<td style="text-align: center">'.$s["quantidade"].'</td>';
-                            //placeholder="'.$s["quantidade"].'"
-                            $body .= '<td id="edit_quant" style="text-align: center"><input type="number" placeholder="'.$s["quantidade"].'" onchange="editPed(this.value,\''.$s["idItens"].'\')" min="0" max="100"></input></td>';
+                            $body .= '<td id="edit_desc" style="text-align: left">'.$desc1;
+                                $body .= '<option id="select_prod_edit1" value="'.$lista[$count-1]["idProduto"].'" selected>'.$lista[$count-1]["descricao"].'</option>';
+                            $body .= $desc2.$desc3.'</td>';
+                            
+                            $body .= '<td style="text-align: center"><input id="edit_quant'.$count.'" type="number" placeholder="'.$s["quantidade"].'"  min="0" max="100"></input></td>';
                             $body .= '<td style="text-align: center">'.$s["valor"].'</td>';
                             $body .= '<td style="text-align: center">'.$s["preco_final"].'</td>';
-                            $body .= '<td style="text-align: center"><a class="dropdown-item preview-item" ><p><i class="mdi mdi-checkbox-marked-outline text-sucess"></i></p></a></td>';
+                            $body .= '<td style="text-align: center"><a class="dropdown-item preview-item" onclick="editPed(\''.$countarray[$count].'\',\''.$s["idItens"].'\')"><i class="mdi mdi-checkbox-marked-outline text-sucess" ></i></a></td>';
                     }						
                 
                 $title = '<h5 id="div_edit_title" class="modal-title">Informações do Pedido '.$id.'</h5>';
@@ -559,10 +563,10 @@
         
         //criação de função para passar o numero do pedido para a parte de edição
         
-        var idprodutosetado = $('#frm_val1_edit').val();
+        /*var idprodutosetado = $('#frm_val1_edit').val();
         function setaproduto(id){
             idprodutosetado = id;
-        }
+        }*/
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Listar itens:
@@ -615,21 +619,22 @@
         * permite a edição de itens dentro do pedido:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         var ajax_div = $.ajax(null);
-        const editPed = (quantidade,iditens) => {
-            //$('#frm_val1_edit').val(pedido);
-            alert(id);
+        const editPed = (countarray,iditens) => {
+            
+            //alert(quantidade);
             if(ajax_div){ ajax_div.abort(); }
                 ajax_div = $.ajax({
                 cache: false,
                 async: true,
                 url: '?a=edita_pedido',
                 type: 'post',
-                data: {quantidade: quantidade,
-                       id: idprodutosetado,
+                data: {quantidade: $('#edit_quant' + countarray + '').val(),
+                       id: $('#select_prod_edit' + countarray + '').val(),
                        iditens: iditens},
                 
                 success: function retorno_ajax(retorno) {
-                    alert(retorno);
+                    alert($('#select_prod_edit' + countarray + '').val());
+                    alert($('#edit_quant' + countarray + '').val());
                     //$('#numpedido').val(pedido);
                     if(!retorno){
                         alert("ERRO AO EDITAR ITEM NO PEDIDO!");
