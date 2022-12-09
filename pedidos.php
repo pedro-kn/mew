@@ -446,13 +446,13 @@
                     $desc = $db->select('SELECT idProduto, descricao FROM produtos');
                         $count = 0;
                         $desc1 .= '<div class="scrollable">';
-                        $desc1 .= '<select id="select_prod_edit" onchange="getOption()" class="select form-control form-control-lg" type="text" style="color: #ffffff">';
+                        $desc1 .= '<select id="select_prod_edit'.($count+1).'" onchange="getOption()" class="select form-control form-control-lg" type="text" style="color: #ffffff">';
                         
                         $countarray = array();
 
                         foreach($desc as $d){
                             $count = $count+1;
-                            $desc2 .= '<option id="select_prod_edit'.($count).'" onchange="selected" value="'.$d["idProduto"].'">'.$d["descricao"].'</option>';
+                            $desc2 .= '<option id="select_prod_edit" onchange="selected" value="'.$d["idProduto"].'">'.$d["descricao"].'</option>';
                         }  
                         $desc3 .= '</select>';
                         $desc3 .= '</div>';
