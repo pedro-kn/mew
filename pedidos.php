@@ -444,15 +444,16 @@
                     //select de descrição
 
                     $desc = $db->select('SELECT idProduto, descricao FROM produtos');
-
-                        $desc1 .= '<div class="scrollable">';
-                        $desc1 .= '<select value="select_prod_edit" class="select form-control form-control-lg" type="text" style="color: #ffffff">';
                         $count = 0;
+                        $desc1 .= '<div class="scrollable">';
+                        $desc1 .= '<select id="select_prod_edit" onchange="getOption()" class="select form-control form-control-lg" type="text" style="color: #ffffff">';
+                        
+                        $countarray = array();
 
                         foreach($desc as $d){
                             $count = $count+1;
-                            $desc2 .= '<option id="select_prod_edit'.($count+1).'" value="'.$d["idProduto"].'">'.$d["descricao"].'</option>';
-                        }   //voce parou aqui continuar editando os values da select
+                            $desc2 .= '<option id="select_prod_edit'.($count).'" onchange="selected" value="'.$d["idProduto"].'">'.$d["descricao"].'</option>';
+                        }  
                         $desc3 .= '</select>';
                         $desc3 .= '</div>';
 
@@ -468,7 +469,7 @@
                         $countarray[$count] = $count;
                         $body .= '<tr>';
                             $body .= '<td id="edit_desc" style="text-align: left">'.$desc1;
-                                $body .= '<option id="select_prod_edit1" value="'.$lista[$count-1]["idProduto"].'" selected>'.$lista[$count-1]["descricao"].'</option>';
+                                $body .= '<option id="select_prod_edit_plac" value="'.$lista[$count-1]["idProduto"].'" selected>'.$lista[$count-1]["descricao"].'</option>';
                             $body .= $desc2.$desc3.'</td>';
                             
                             $body .= '<td style="text-align: center"><input id="edit_quant'.$count.'" type="number" placeholder="'.$s["quantidade"].'"  min="0" max="100"></input></td>';
@@ -560,6 +561,16 @@
     
    
     <script type="text/javascript">
+
+    
+        // função para obter o valor da select na parte de edição de pedido
+
+        function getOption() {
+            selectElement = document.querySelector('#select_prod_edit');
+            output = selectElement.value;
+            document.querySelector('.output').textContent = output;
+        }
+    
         
         //criação de função para passar o numero do pedido para a parte de edição
         
