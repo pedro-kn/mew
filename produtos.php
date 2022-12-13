@@ -307,8 +307,8 @@ include('navbar.php');
     
 	//Mascaras para inputs e exibição com JSMASK
 	$(document).ready(function(){
-  		$('#valor').maskMoney({prefix:'R$', thousands:'.', decimal:','});
-		$('#frm_valor_edit').maskMoney({prefix:'R$', thousands:'.', decimal:','});
+  		$('#valor').maskMoney({prefix:'R$ ', thousands:'.', decimal:','});
+		$('#frm_valor_edit').maskMoney({prefix:'R$ ', thousands:'.', decimal:','});
 		//$('#cpf').mask('000.000.000-00');
 		//$('#frm_cpf_edit').mask('000.000.000-00');
 	});

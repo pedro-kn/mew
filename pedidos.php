@@ -235,14 +235,19 @@
 
 
             $id = $_POST["id"];
+            $idPed = $_POST["idPed"];
             $quantidade = $_POST["quantidade"];
             $iditens = $_POST["iditens"];
 
             $float_var = "";
-            echo $quantidade;
+            //echo $quantidade;
         
             $sel = $db->select("SELECT valor FROM produtos WHERE idProduto = $id");
-            
+            $sel1 = $db->select("SELECT quantidade, preco FROM itens_pedido WHERE idItens_pedido = $iditens");
+            $sel2 = $db->select("SELECT preco FROM pedidos WHERE idPedido = $idPed");
+
+                //tratamento de variaveis para update na tabela de ITENS DO PEDIDO
+
                 if(count($sel)>0){
                     
                     $float_var = preg_replace('/[^0-9]/', '', $sel[0]["valor"]);
@@ -252,11 +257,28 @@
                     $reais = "R$ " . number_format($preco, 2, ",", ".");
                 }
 
-            //$res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($pedido,$produto,$quantidade,'$reais')");
-            //$res = $db->_exec("UPDATE itens_pedido SET idProduto = $id, quantidade = $quantidade, preco = '$reais' WHERE idItens_pedido = $iditens");
+                //tratamento de variaveis para update na tabela de PEDIDO
+
+                if(count($sel1)>0){
+                    
+                    $float_valor = preg_replace('/[^0-9]/', '', $sel1[0]["preco"]);
+                    $float_qntd = $sel1[0]["quantidade"];
+                    $float_val_ped = preg_replace('/[^0-9]/', '', $sel2[0]["preco"]);
+
+                    $preco1 = (floatval($float_valor))/100;
+                    $preco2 = (floatval($float_val_ped))/100;
+                    
+                    $diferencaquantidade = $quantidade - $float_qntd;
+                    $diferencavalor = $preco2 + $preco - $preco1;
+
+                    $reais1 = "R$ " . number_format($diferencavalor, 2, ",", ".");
+                }
+
+            $res = $db->_exec("UPDATE itens_pedido SET idProduto = $id, quantidade = $quantidade, preco = '$reais' WHERE idItens_pedido = $iditens");
             
-            
-            //echo $quantidade;
+            $res1 = $db->_exec("UPDATE pedidos SET quantidade = quantidade + $diferencaquantidade, preco = '$reais1' WHERE idPedido = $idPed");
+
+            echo $res;
         }
 
 
@@ -444,10 +466,8 @@
                     //select de descrição
 
                     $desc = $db->select('SELECT idProduto, descricao FROM produtos');
-                        $count = 0;
-                        $desc1 .= '<div class="scrollable">';
-                        $desc1 .= '<select id="select_prod_edit'.($count+1).'" onchange="getOption()" class="select form-control form-control-lg" type="text" style="color: #ffffff">';
                         
+                        $count = 0;
                         $countarray = array();
 
                         foreach($desc as $d){
@@ -458,7 +478,7 @@
                         $desc3 .= '</div>';
 
                     //select de quantidade   
-
+                    $quantidade = 0;
 
 
                     //montagem do body         
@@ -468,14 +488,18 @@
                         $count = $count+1;
                         $countarray[$count] = $count;
                         $body .= '<tr>';
-                            $body .= '<td id="edit_desc" style="text-align: left">'.$desc1;
-                                $body .= '<option id="select_prod_edit_plac" value="'.$lista[$count-1]["idProduto"].'" selected>'.$lista[$count-1]["descricao"].'</option>';
-                            $body .= $desc2.$desc3.'</td>';
+                            $body .= '<td id="edit_desc" style="text-align: left">';
+                            $body .= '<div class="scrollable" >';
+                                $body .= '<select id="select_prod_edit'.($count).'" onchange="exibe_val_edit(\''.$countarray[$count].'\',\''.$s["idItens"].'\')" class="select form-control" type="text" style="color: #ffffff">';
+                                    $body .= '<option id="select_prod_edit_plac" value="'.$lista[$count-1]["idProduto"].'" selected>'.$lista[$count-1]["descricao"].'</option>';
+                                $body .= $desc2.$desc3.'</td>';
                             
-                            $body .= '<td style="text-align: center"><input id="edit_quant'.$count.'" type="number" placeholder="'.$s["quantidade"].'"  min="0" max="100"></input></td>';
-                            $body .= '<td style="text-align: center">'.$s["valor"].'</td>';
-                            $body .= '<td style="text-align: center">'.$s["preco_final"].'</td>';
-                            $body .= '<td style="text-align: center"><a class="dropdown-item preview-item" onclick="editPed(\''.$countarray[$count].'\',\''.$s["idItens"].'\')"><i class="mdi mdi-checkbox-marked-outline text-sucess" ></i></a></td>';
+                            $body .= '<td style="text-align: center"><input id="edit_quant'.$count.'" type="number" placeholder="'.$s["quantidade"].'" onchange="exibe_val_edit(\''.$countarray[$count].'\',\''.$s["idItens"].'\')" min="0" max="100"></input></td>';
+                            //$body .= '<td style="text-align: center">'.$s["valor"].'</td>';
+                            //$body .= '<td id="exibe_valfinal_prod'.$count.'" style="text-align: center">'.$s["preco_final"].'</td>';
+                            $body .= '<td style="text-align: center"><input type="text" style="text-align: center; background-color: #2A3038; color: #light" class="form-control" id="exibe_val_prod'.$count.'" placeholder="'.$s["valor"].'" disabled></input></td>';
+                            $body .= '<td style="text-align: center"><input class="form-control" id="exibe_valfinal_prod'.$count.'" type="text" placeholder="'.$s["preco_final"].'" style="text-align: center; background-color: #2A3038" disabled></input></td>';
+                            $body .= '<td style="text-align: center"><a class="dropdown-item preview-item" onclick="editPed(\''.$countarray[$count].'\',\''.$s["idItens"].'\',\''.$id.'\')"><i class="mdi mdi-checkbox-marked-outline text-sucess" ></i></a></td>';
                     }						
                 
                 $title = '<h5 id="div_edit_title" class="modal-title">Informações do Pedido '.$id.'</h5>';
@@ -490,6 +514,45 @@
                 //print_r(json_encode($c_retorno));
                 //print_r($a_retorno["res"]);
                 }
+            }
+        }
+
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        * Encontra os novos valores dos produtos na tela de edição
+        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+        if($_GET["a"] == "get_val_prod"){
+        
+
+            $id = $_POST["id"];
+            $idProd = $_POST["idProd"];
+            $quantidade = $_POST["quantidade"];
+
+            $res = $db->select("SELECT valor FROM produtos WHERE idProduto = $idProd");
+            /*$res = $db->select("SELECT i.idPedido, p.descricao, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
+                                    FROM itens_pedido i
+                                    INNER JOIN produtos p ON p.idProduto = i.idProduto 
+                                    WHERE i.idItens_pedido = {$id}");*/
+            
+            if(count($res) > 0){
+            
+                $res[0]['valor'] = remove_acento($res[0]['valor']);
+                //$res[0]['preco_final'] = remove_acento($res[0]['preco_final']);
+    
+                $float_var = preg_replace('/[^0-9]/', '', $res[0]["valor"]);
+
+                $preco = (floatval($float_var)*floatval($quantidade))/100;
+                
+                $reais = "R$ " . number_format($preco, 2, ",", ".");
+               
+                
+                $c_retorno = array();
+                $body = "";
+	
+                $c_retorno["valor"] = $res[0]['valor'];	
+                $c_retorno["valorf"] = $reais;
+                echo json_encode($c_retorno);
+                
+            
             }
         }
 
@@ -563,21 +626,7 @@
     <script type="text/javascript">
 
     
-        // função para obter o valor da select na parte de edição de pedido
-
-        function getOption() {
-            selectElement = document.querySelector('#select_prod_edit');
-            output = selectElement.value;
-            document.querySelector('.output').textContent = output;
-        }
-    
         
-        //criação de função para passar o numero do pedido para a parte de edição
-        
-        /*var idprodutosetado = $('#frm_val1_edit').val();
-        function setaproduto(id){
-            idprodutosetado = id;
-        }*/
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Listar itens:
@@ -630,9 +679,9 @@
         * permite a edição de itens dentro do pedido:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         var ajax_div = $.ajax(null);
-        const editPed = (countarray,iditens) => {
+        const editPed = (countarray,iditens,idPed) => {
             
-            //alert(quantidade);
+        if( confirm( "Confirma a edição do item do pedido?")){
             if(ajax_div){ ajax_div.abort(); }
                 ajax_div = $.ajax({
                 cache: false,
@@ -641,17 +690,21 @@
                 type: 'post',
                 data: {quantidade: $('#edit_quant' + countarray + '').val(),
                        id: $('#select_prod_edit' + countarray + '').val(),
-                       iditens: iditens},
-                
+                       iditens: iditens,
+                       idPed: idPed },
+                beforeSend: function(){
+                   
+                    $('#mod_formul_edit').modal("show");
+                },           
                 success: function retorno_ajax(retorno) {
-                    alert($('#select_prod_edit' + countarray + '').val());
-                    alert($('#edit_quant' + countarray + '').val());
-                    //$('#numpedido').val(pedido);
+                   
+                    get_item(idPed);
                     if(!retorno){
                         alert("ERRO AO EDITAR ITEM NO PEDIDO!");
                     } 
                 }
             });
+            }
         }
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -681,21 +734,24 @@
         * Exibir no modal os itens para edição:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         var ajax_div = $.ajax(null);
-        const listaModEdit = () => {
+        const exibe_val_edit = (countarray,id) => {
             if(ajax_div){ ajax_div.abort(); }
                 ajax_div = $.ajax({
                 cache: false,
                 async: true,
-                url: '?a=lista_mod_edit',
+                url: '?a=get_val_prod',
                 type: 'post',
-                data: {pesq: $('#input_pesquisa').val(),
-                    usuario: $('#frm_val1_insert').val(),
-                    cliente: $('#frm_val2_insert').val()},
-                beforeSend: function(){
-                    $('#mod_insert').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
-                },
+                data: {
+                    quantidade: $('#edit_quant' + countarray + '').val(),
+                    idProd: $('#select_prod_edit' + countarray + '').val(),
+                    id: id},
+                beforeSend: function(){},
                 success: function retorno_ajax(retorno) {
-                    $('#mod_insert').html(retorno); 
+                    //alert(retorno);
+                    var obj = JSON.parse(retorno);
+                    
+                    $('#exibe_val_prod' + countarray + '').val(obj.valor);
+                    $('#exibe_valfinal_prod' + countarray + '').val(obj.valorf);
                 }
             });
         }
