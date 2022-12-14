@@ -221,7 +221,22 @@
                     $reais = "R$ " . number_format($preco, 2, ",", ".");
                 }
 
-            $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($pedido,$produto,$quantidade,'$reais')");
+            $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($pedido,$produto,$quantidade,'$reais') ORDER BY idProduto");
+            
+            
+            echo $res;
+        }
+
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        * Inserir novo item dentro do menu de edição
+        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+        if($_GET["a"] == "inclui_item_editget"){
+            
+
+
+            $id = $_POST["id"];
+            
+            $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($id,1,'','') ORDER BY idProduto");
             
             
             echo $res;
@@ -274,7 +289,7 @@
                     $reais1 = "R$ " . number_format($diferencavalor, 2, ",", ".");
                 }
 
-            $res = $db->_exec("UPDATE itens_pedido SET idProduto = $id, quantidade = $quantidade, preco = '$reais' WHERE idItens_pedido = $iditens");
+            $res = $db->_exec("UPDATE itens_pedido SET idProduto = $id, quantidade = $quantidade, preco = '$reais' WHERE idItens_pedido = $iditens ORDER BY idPedido");
             
             $res1 = $db->_exec("UPDATE pedidos SET quantidade = quantidade + $diferencaquantidade, preco = '$reais1' WHERE idPedido = $idPed");
 
@@ -373,6 +388,7 @@
             $quantidade = $_POST["quantidade"];
             $valor = $_POST["valor"];		
             
+
             
             $res = $db->_exec("UPDATE pedidos 
                 SET idCliente = {$cliente},  idUsuario = {$usuario}
@@ -431,7 +447,7 @@
                 echo $res;
             }else{    
 
-            $res = $db->select("SELECT p.idPedido, p.idCliente, p.idUsuario, c.nome as nomec, v.nome as nomev, p.quantidade, p.preco, p.nf, p.statusped
+            $res = $db->select("SELECT p.idPedido, p.idCliente as idCliente, p.idUsuario as idUsuario, c.nome as nomec, v.nome as nomev, p.quantidade, p.preco, p.nf, p.statusped
                                 FROM pedidos p
                                 INNER JOIN clientes c ON c.idCliente = p.idCliente
                                 INNER JOIN usuarios v ON v.idUsuario = p.idUsuario
@@ -439,7 +455,9 @@
             
             if(count($res) > 0){
                 $res[0]['nomev'] = remove_acento($res[0]['nomev']);
+                $res[0]['idCliente'] = remove_acento($res[0]['idCliente']);
                 $res[0]['nomec'] = remove_acento($res[0]['nomec']);
+                $res[0]['idUsuario'] = remove_acento($res[0]['idUsuario']);
                 $res[0]['nf'] = remove_acento($res[0]['nf']);
                 $res[0]['statusped'] = remove_acento($res[0]['statusped']);
                 $res[0]['quantidade'] = remove_acento($res[0]['quantidade']);
@@ -454,65 +472,91 @@
                 $placeholderdesc = "";
                 $desc2 = "";
                 $desc3 = "";
+                
 
                 $lista = $db->select("SELECT i.idPedido, p.descricao as descricao, i.idItens_pedido as idItens, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
                                     FROM itens_pedido i
                                     INNER JOIN produtos p ON p.idProduto = i.idProduto 
                                     WHERE i.idPedido = {$id}");
+                
+                $max = count($lista); //será usado futuramente para adição de novo item na tabela de edição
 
-                    $include .= '<tr>';
-                    $include .= '<td style="text-align: center">Incluir novo Item</td>';  
+                $include .= '<tr>';
+                $include .= '<td style="text-align: center" class="form-control"><button type="button" onclick="inclui_item_edit(\''.$id.'\')" class="btn btn-inverse-light btn-fw btn-md" style="height: 15px"><i class="mdi mdi-library-plus" style="margin-right: 5px"></i>Incluir Novo Item</button></td>';  
+                
+                //select de descrição
+
+                $desc = $db->select('SELECT idProduto, descricao FROM produtos');
                     
-                    //select de descrição
-
-                    $desc = $db->select('SELECT idProduto, descricao FROM produtos');
-                        
-                        $count = 0;
-                        $countarray = array();
-
-                        foreach($desc as $d){
-                            $count = $count+1;
-                            $desc2 .= '<option id="select_prod_edit" onchange="selected" value="'.$d["idProduto"].'">'.$d["descricao"].'</option>';
-                        }  
-                        $desc3 .= '</select>';
-                        $desc3 .= '</div>';
-
-                    //select de quantidade   
-                    $quantidade = 0;
-
-
-                    //montagem do body         
                     $count = 0;
                     $countarray = array();
-                    foreach($lista as $s){
+
+                    foreach($desc as $d){
                         $count = $count+1;
-                        $countarray[$count] = $count;
-                        $body .= '<tr>';
-                            $body .= '<td id="edit_desc" style="text-align: left">';
-                            $body .= '<div class="scrollable" >';
-                                $body .= '<select id="select_prod_edit'.($count).'" onchange="exibe_val_edit(\''.$countarray[$count].'\',\''.$s["idItens"].'\')" class="select form-control" type="text" style="color: #ffffff">';
-                                    $body .= '<option id="select_prod_edit_plac" value="'.$lista[$count-1]["idProduto"].'" selected>'.$lista[$count-1]["descricao"].'</option>';
-                                $body .= $desc2.$desc3.'</td>';
-                            
-                            $body .= '<td style="text-align: center"><input id="edit_quant'.$count.'" type="number" placeholder="'.$s["quantidade"].'" onchange="exibe_val_edit(\''.$countarray[$count].'\',\''.$s["idItens"].'\')" min="0" max="100"></input></td>';
-                            //$body .= '<td style="text-align: center">'.$s["valor"].'</td>';
-                            //$body .= '<td id="exibe_valfinal_prod'.$count.'" style="text-align: center">'.$s["preco_final"].'</td>';
-                            $body .= '<td style="text-align: center"><input type="text" style="text-align: center; background-color: #2A3038; color: #light" class="form-control" id="exibe_val_prod'.$count.'" placeholder="'.$s["valor"].'" disabled></input></td>';
-                            $body .= '<td style="text-align: center"><input class="form-control" id="exibe_valfinal_prod'.$count.'" type="text" placeholder="'.$s["preco_final"].'" style="text-align: center; background-color: #2A3038" disabled></input></td>';
-                            $body .= '<td style="text-align: center"><a class="dropdown-item preview-item" onclick="editPed(\''.$countarray[$count].'\',\''.$s["idItens"].'\',\''.$id.'\')"><i class="mdi mdi-checkbox-marked-outline text-sucess" ></i></a></td>';
-                    }						
+                        $desc2 .= '<option id="select_prod_edit" onchange="selected" value="'.$d["idProduto"].'">'.$d["descricao"].'</option>';
+                    }  
+                    
+
+                //select de quantidade   
+                $quantidade = 0;
+
+
+                //montagem do body         
+                $count = 0;
+                $countarray = array();
+                /*
+                foreach($lista as $s){
+                
+                    $count = $count+1;
+                    $countarray[$count] = $count;
+                    $body .= '<tr>';
+                        $body .= '<td id="edit_desc" style="text-align: left">';
+                        $body .= '<div class="scrollable" >';
+                            $body .= '<select id="select_prod_edit'.($count).'" onchange="exibe_val_edit(\''.$countarray[$count].'\',\''.$s["idItens"].'\')" class="select form-control" type="text" style="color: #ffffff">';
+                                $body .= '<option id="select_prod_edit_plac" value="'.$lista[$count-1]["idProduto"].'" selected>'.$lista[$count-1]["descricao"].'</option>';
+                                $body .= $desc2;
+                            $body .= '</select>';
+                        $body .= '</div>';
+                        $body .= '</td>';
+                        $body .= '<td style="text-align: center"><input id="edit_quant'.$count.'" type="number" value="'.$s["quantidade"].'" onchange="exibe_val_edit(\''.$countarray[$count].'\',\''.$s["idItens"].'\')" min="0" max="100"></input></td>';
+                        $body .= '<td style="text-align: center"><input type="text" style="text-align: center; background-color: #2A3038; color: #light" class="form-control" id="exibe_val_prod'.$count.'" value="'.$s["valor"].'" disabled></input></td>';
+                        $body .= '<td style="text-align: center"><input class="form-control" id="exibe_valfinal_prod'.$count.'" type="text" value="'.$s["preco_final"].'" style="text-align: center; background-color: #2A3038" disabled></input></td>';
+                        $body .= '<td style="text-align: center"><a class="dropdown-item preview-item" onclick="editPed(\''.$countarray[$count].'\',\''.$s["idItens"].'\',\''.$id.'\')"><i class="mdi mdi-checkbox-marked-outline text-sucess" ></i><p style"font-size: 5pt" id="icon_edit'.$count.'"></p></a></td>';
+                }*/
+
+                
+                //echo $max;
+                for ($count=1; $count<=$max; $count++) {
+                    //code
+                    //when push an element just do $max++;
+                    
+                    //$count = $count+1;
+                    $countarray[$count] = $count;
+                    $body .= '<tr>';
+                        $body .= '<td id="edit_desc" style="text-align: left">';
+                        $body .= '<div class="scrollable" >';
+                            $body .= '<select id="select_prod_edit'.($count).'" onchange="exibe_val_edit(\''.$countarray[$count].'\',\''.$lista[$count-1]["idItens"].'\')" class="select form-control" type="text" style="color: #ffffff">';
+                                $body .= '<option id="select_prod_edit_plac" value="'.$lista[$count-1]["idProduto"].'" selected>'.$lista[$count-1]["descricao"].'</option>';
+                                $body .= $desc2;
+                            $body .= '</select>';
+                        $body .= '</div>';
+                        $body .= '</td>';
+                        $body .= '<td style="text-align: center"><input id="edit_quant'.$count.'" type="number" value="'.$lista[$count-1]["quantidade"].'" onchange="exibe_val_edit(\''.$countarray[$count].'\',\''.$lista[$count-1]["idItens"].'\')" min="0" max="100"></input></td>';
+                        $body .= '<td style="text-align: center"><input type="text" style="text-align: center; background-color: #2A3038; color: #light" class="form-control" id="exibe_val_prod'.$count.'" value="'.$lista[$count-1]["valor"].'" disabled></input></td>';
+                        $body .= '<td style="text-align: center"><input class="form-control" id="exibe_valfinal_prod'.$count.'" type="text" value="'.$lista[$count-1]["preco_final"].'" style="text-align: center; background-color: #2A3038" disabled></input></td>';
+                        $body .= '<td style="text-align: center"><a class="dropdown-item preview-item" onclick="editPed(\''.$countarray[$count].'\',\''.$lista[$count-1]["idItens"].'\',\''.$id.'\')"><i class="mdi mdi-checkbox-marked-outline text-sucess" ></i><p style"font-size: 5pt" id="icon_edit'.$count.'"></p></a></td>';
+                    
+                    }
+                    						
                 
                 $title = '<h5 id="div_edit_title" class="modal-title">Informações do Pedido '.$id.'</h5>';
                 
                 $c_retorno["include"] = $include;
                 $c_retorno["title"] = $title;	
                 $c_retorno["header"] = $res;	
-                //$a_retorno["res"] = $res;
-                //$c_retorno["header"] = json_encode($a_retorno["res"]);
                 $c_retorno["body"] = $body;
                 echo json_encode($c_retorno);
-                //print_r(json_encode($c_retorno));
-                //print_r($a_retorno["res"]);
+                
                 }
             }
         }
@@ -626,7 +670,8 @@
     <script type="text/javascript">
 
     
-        
+        //Variavel para monitoramento de edição de itens pendentes dentro do modal de edição de pedidos
+        var editcheck = 0;
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Listar itens:
@@ -676,12 +721,41 @@
         }
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+        * permite a adição de um item novo dentro do menu de edição de pedidos
+        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+        var ajax_div = $.ajax(null);
+        const inclui_item_edit = (id) => {
+            //$('#numpedido').val(pedido);
+            if(ajax_div){ ajax_div.abort(); }
+                ajax_div = $.ajax({
+                cache: false,
+                async: true,
+                url: '?a=inclui_item_editget',
+                type: 'post',
+                data: {id: id},
+                
+                beforeSend: function(){
+                   
+                   $('#mod_formul_edit').modal("show");
+               },           
+               success: function retorno_ajax(retorno) {
+                    editcheck=0;
+                   get_item(id);
+                   if(!retorno){
+                       alert("ERRO AO EDITAR ITEM NO PEDIDO!");
+                   } 
+               }
+            });
+        }
+
+        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * permite a edição de itens dentro do pedido:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         var ajax_div = $.ajax(null);
         const editPed = (countarray,iditens,idPed) => {
             
         if( confirm( "Confirma a edição do item do pedido?")){
+            editcheck = editcheck - 1;
             if(ajax_div){ ajax_div.abort(); }
                 ajax_div = $.ajax({
                 cache: false,
@@ -697,7 +771,7 @@
                     $('#mod_formul_edit').modal("show");
                 },           
                 success: function retorno_ajax(retorno) {
-                   
+                    editcheck=0;
                     get_item(idPed);
                     if(!retorno){
                         alert("ERRO AO EDITAR ITEM NO PEDIDO!");
@@ -752,6 +826,9 @@
                     
                     $('#exibe_val_prod' + countarray + '').val(obj.valor);
                     $('#exibe_valfinal_prod' + countarray + '').val(obj.valorf);
+                    $('#icon_edit' + countarray + '').html("Confirma as Alterações?");
+                    editcheck = editcheck + 1;
+
                 }
             });
         }
@@ -832,8 +909,10 @@
                             var nf = obj_ret[0].nf;
                         };
                         
-                        $("#frm_val1_edit").val(obj_ret[0].nomev);
-                        $("#frm_val2_edit").val(obj_ret[0].nomec);
+                        $("#frm_val1_edit_option").html(obj_ret[0].nomev);
+                        $("#frm_val2_edit_option").html(obj_ret[0].nomec);
+                        $("#frm_val1_edit_option").val(obj_ret[0].idUsuario);
+                        $("#frm_val2_edit_option").val(obj_ret[0].idCliente);
                         $("#frm_val3_edit").val(nf);
                         $("#frm_val4_edit").val(obj_ret[0].statusped);	
                         $("#frm_val5_edit").val(obj_ret[0].quantidade);	
@@ -900,35 +979,39 @@
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         var ajax_div = $.ajax(null);
         const editClient = () => {
-            if(ajax_div){ ajax_div.abort(); }
-            ajax_div = $.ajax({
-                cache: false,
-                async: true,
-                url: '?a=edit_client',
-                type: 'post',
-                data: { 
-                    id: $("#frm_id_edit").val(),
-                    usuario: $("#frm_val1_edit").val(),
-                    cliente: $("#frm_val2_edit").val(),
-                    nf: $("#frm_val3_edit").val(),
-                    statusped: $("#frm_val4_edit").val(),
-                    quantidade: $("#frm_val5_edit").val(),
-                    valor: $("#frm_val6_edit").val(),
-                },
-                beforeSend: function(){
-                    $('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
-                },
-                success: function retorno_ajax(retorno) {
-                    alert(retorno);
-                    if(retorno){
-                        $('#mod_formul_edit').modal('hide');
-                        location.reload();
-                        lista_itens();  
-                    }else{
-                        alert("ERRO AO EDITAR USUÁRIO! " + retorno);
+            if(editcheck==0){
+                if(ajax_div){ ajax_div.abort(); }
+                ajax_div = $.ajax({
+                    cache: false,
+                    async: true,
+                    url: '?a=edit_client',
+                    type: 'post',
+                    data: { 
+                        id: $("#frm_id_edit").val(),
+                        usuario: $("#frm_val1_edit").val(),
+                        cliente: $("#frm_val2_edit").val(),
+                        nf: $("#frm_val3_edit").val(),
+                        statusped: $("#frm_val4_edit").val(),
+                        quantidade: $("#frm_val5_edit").val(),
+                        valor: $("#frm_val6_edit").val(),
+                    },
+                    beforeSend: function(){
+                        $('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
+                    },
+                    success: function retorno_ajax(retorno) {
+                        alert(retorno);
+                        if(retorno){
+                            $('#mod_formul_edit').modal('hide');
+                            location.reload();
+                            lista_itens();  
+                        }else{
+                            alert("ERRO AO EDITAR USUÁRIO! " + retorno);
+                        }
                     }
-                }
-            });
+                });
+            }else{
+                alert("É necessário confirmar as alterações individuais dos itens antes de finalizar a edição!")
+            }
         }
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -1108,7 +1191,7 @@
                             <h5 id="div_edit_title"></h5>
                         </div>
                     </div>
-                    <button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul_edit').modal('hide');">X</button>
+                    <button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="location.reload();">X</button>
                 </div>
                 <div class="modal-body modal-dialog-scrollable">
                     <form id="frm_general_exib" name="frm_general">
@@ -1119,8 +1202,8 @@
                                 
                                 <label for="frm_val1_edit" class="form-label">Usuário:</label>
                                     <div class="scrollable">
-                                    <select id="frm_val1_edit"  class="select form-control form-control-lg" aria-describedby="frm_val1_edit" name="frm_val1_edit" type="text" placeholder="" style="color: #ffffff">
-                                        <option value="" selected></option>
+                                    <select id="frm_val1_edit" value=""  class="select form-control form-control-lg" aria-describedby="frm_val1_edit" name="frm_val1_edit" type="text" style="color: #ffffff">
+                                        <option id="frm_val1_edit_option" value="" selected></option>
                                         <?php
                                             $desc = $db->select('SELECT idUsuario, nome FROM usuarios');
                                             foreach($desc as $s){
@@ -1136,7 +1219,7 @@
                                 
                                     <div class="scrollable">
                                     <select id="frm_val2_edit"  class="select form-control form-control-lg" aria-describedby="frm_val2_edit" name="frm_val2_edit" type="text" placeholder="" style="color: #ffffff">
-                                        <option value="" selected></option>
+                                        <option id="frm_val2_edit_option" value="" selected></option>
                                         <?php
                                             $desc = $db->select('SELECT idCliente, nome FROM clientes');
                                             foreach($desc as $s){
@@ -1192,7 +1275,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="$('#mod_formul_edit').modal('hide');">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" onclick="location.reload();">Cancelar</button>
 					<button type="button" class="btn btn-primary" id="frm_OK" onclick="editClient();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
 				</div>
             </div>
@@ -1275,8 +1358,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="$('#mod_formul_exibe').modal('hide');">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="frm_OK" onclick="$('#mod_formul_exibe').modal('hide');"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
-                    <button type="button" class="btn btn-primary" id="frm_faturar" onclick="$('#mod_formul_exibe').modal('hide');"><img id="img_btn_faturar" style="width: 15px; display: none; margin-right: 10px">Faturar Pedido</button>
-                </div>
+                    <!--<button type="button" class="btn btn-primary" id="frm_faturar" onclick="$('#mod_formul_exibe').modal('hide');"><img id="img_btn_faturar" style="width: 15px; display: none; margin-right: 10px">Faturar Pedido</button>
+                                        --></div>
             </div>
         </div>
     </div>
