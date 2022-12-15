@@ -1,4 +1,69 @@
 <?php
+
+
+include("db.php");
+$db = new Database();
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* Verificação de ações requisitadas via AJAX:
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+if (isset($_GET["a"])) {
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Encontra os novos valores dos produtos na tela de edição
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if($_GET["a"] == "lista_agenda"){
+	
+
+		//$id = $_POST["id"];
+		//$idProd = $_POST["idProd"];
+		//$quantidade = $_POST["quantidade"];
+
+		$res = $db->select("SELECT * FROM agendamentos");
+
+		//$c_retorno["valor"] = $res[0]['valor'];	
+		//$c_retorno["valorf"] = $reais;
+		
+		echo json_encode($res);
+			
+		
+		
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Inclui um evento novo via click no calendario:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+
+	if ($_GET["a"] == "add_event") {
+
+		$title = $_POST['title'];
+		$allDay = $_POST['allDay'];
+
+
+		//tratamento para o formato de data
+		
+			//$mes = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "0300 - (Horário Padrão de Brasília)");
+			//$mesn = array("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "");
+			$mes = array("(Horário Padrão de Brasília)");
+			$mesn = array("");
+			$start2 = str_replace($mes, $mesn, $_POST['start']);
+			$start1 = strtotime($start2);
+			$start = date("d-m-Y H:i:s",$start1);
+
+			$end2 = str_replace($mes, $mesn, $_POST['end']);
+			$end1 = strtotime($end2);
+			$end = date("d-m-Y H:i:s",$end1);
+		
+		$res = $db->_exec("INSERT INTO agendamentos (idUsuario, idCliente, idPedido, hora_ini, hora_fim, data_agend, descricao )
+                    		VALUES (20,1,45,'$start','$end',LOCALTIME(),'$title' );");
+
+		echo $res;
+	}
+	
+	die();
+}	
+
 include('header.php');
 include('sidebar.php');
 include('navbar.php');
@@ -8,6 +73,7 @@ include('navbar.php');
 
 
 <script>
+
 	$(document).ready(function() {
 		var date = new Date();
 		var d = date.getDate();
@@ -84,6 +150,33 @@ include('navbar.php');
 						},
 						true // make the event "stick"
 					);
+
+					/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+					* Salva no banco de dados as informações de agendamentos feitos via calendário
+					* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+					var ajax_div = $.ajax(null);
+					
+						if(ajax_div){ ajax_div.abort(); }
+							ajax_div = $.ajax({
+							cache: false,
+							async: true,
+							url: '?a=add_event',
+							type: 'post',
+							data: { 
+								title: title,
+								start: start,
+								end: end,
+								allDay: allDay
+							},
+							success: function retorno_ajax(retorno) {
+								if(retorno){
+									alert("Agendamento realizado com sucesso!");  
+								}else{
+									alert("ERRO AO CRIAR O EVENTO! " + retorno);
+								}
+							}
+						});
+				
 				}
 				calendar.fullCalendar('unselect');
 			},
@@ -112,13 +205,26 @@ include('navbar.php');
 
 			},
 
-			events: [{
+			events: [
+
+				
+				
+				
+				{
 					title: 'All Day Event',
-					start: new Date(y, m, 1)
+					start: new Date(y, m, 1),
+					className: 'info'
 				},
 				{
 					id: 999,
 					title: 'Repeating Event',
+					start: new Date(y, m, d - 3, 16, 0),
+					allDay: false,
+					className: 'info'
+				},
+				{
+					id: 666,
+					title: 'Teste do pepe',
 					start: new Date(y, m, d - 3, 16, 0),
 					allDay: false,
 					className: 'info'
@@ -159,11 +265,58 @@ include('navbar.php');
 			],
 		});
 
+		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+		* Listar itens:
+		* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+		var ajax_div = $.ajax(null);
+		const lista_itens_agenda = () => {
+			if(ajax_div){ ajax_div.abort(); }
+				ajax_div = $.ajax({
+				cache: false,
+				async: true,
+				url: '?a=lista_agenda',
+				type: 'post',
+				data: {},
+				beforeSend: function(){
+					$('#calendar').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
+				},
+				success: function retorno_ajax(retorno) {
+					
+					var obj = JSON.parse(retorno);
+                    //var obj_ret = obj.header;
+					alert(obj);
+
+					idagendamento = obj[0].idAgendamento;
+					idusuario = obj[0].idUsuario;
+					idcliente = obj[0].idCliente;
+					idpedido = obj[0].idPedido;
+					title = obj[0].descricao;
+					start = obj[0].hora_ini;
+					end = obj[0].hora_fim; 
+                    
+					$('#calendar').html(retorno);
+					
+					events: [{
+						
+
+					},
+					
+					]
+				}
+			});
+		}
+
+		// Evento inicial:
+        $(document).ready(function() {
+            lista_itens_agenda();
+        });
 
 	});
 </script>
 <style>
-	
+	.fc .fc-event{
+		color: black;
+	}
 	.fc-widget-header{
 		color: black;
 	}
