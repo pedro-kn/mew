@@ -19,15 +19,12 @@ if (isset($_GET["a"])) {
 		//$idProd = $_POST["idProd"];
 		//$quantidade = $_POST["quantidade"];
 
-		$res = $db->select("SELECT * FROM agendamentos");
+		$res = $db->select("SELECT idAgendamento, idUsuario, idCliente, idPedido, hora_ini, hora_fim, data_agend, descricao FROM agendamentos");
 
-		//$c_retorno["valor"] = $res[0]['valor'];	
-		//$c_retorno["valorf"] = $reais;
+		$count = count($res);
+		$res["count"]=$count;
 		
 		echo json_encode($res);
-			
-		
-		
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -110,161 +107,6 @@ include('navbar.php');
 
 		});
 
-
-		/* initialize the calendar
-		-----------------------------------------------------------------*/
-
-		var calendar = $('#calendar').fullCalendar({
-			header: {
-				left: 'title',
-				center: 'agendaDay,agendaWeek,month',
-				right: 'prev,next today'
-			},
-			editable: true,
-			firstDay: 0, //  1(Monday) this can be changed to 0(Sunday) for the USA system
-			selectable: true,
-			defaultView: 'month',
-
-			axisFormat: 'h:mm',
-			columnFormat: {
-				month: 'ddd', // Mon
-				week: 'ddd d', // Mon 7
-				day: 'dddd M/d', // Monday 9/7
-				agendaDay: 'dddd d'
-			},
-			titleFormat: {
-				month: 'MMMM yyyy', // September 2009
-				week: "MMMM yyyy", // September 2009
-				day: 'MMMM yyyy' // Tuesday, Sep 8, 2009
-			},
-			allDaySlot: false,
-			selectHelper: true,
-			select: function(start, end, allDay) {
-				var title = prompt('Event Title:');
-				if (title) {
-					calendar.fullCalendar('renderEvent', {
-							title: title,
-							start: start,
-							end: end,
-							allDay: allDay
-						},
-						true // make the event "stick"
-					);
-
-					/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-					* Salva no banco de dados as informações de agendamentos feitos via calendário
-					* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-					var ajax_div = $.ajax(null);
-					
-						if(ajax_div){ ajax_div.abort(); }
-							ajax_div = $.ajax({
-							cache: false,
-							async: true,
-							url: '?a=add_event',
-							type: 'post',
-							data: { 
-								title: title,
-								start: start,
-								end: end,
-								allDay: allDay
-							},
-							success: function retorno_ajax(retorno) {
-								if(retorno){
-									alert("Agendamento realizado com sucesso!");  
-								}else{
-									alert("ERRO AO CRIAR O EVENTO! " + retorno);
-								}
-							}
-						});
-				
-				}
-				calendar.fullCalendar('unselect');
-			},
-			droppable: true, // this allows things to be dropped onto the calendar !!!
-			drop: function(date, allDay) { // this function is called when something is dropped
-
-				// retrieve the dropped element's stored Event Object
-				var originalEventObject = $(this).data('eventObject');
-
-				// we need to copy it, so that multiple events don't have a reference to the same object
-				var copiedEventObject = $.extend({}, originalEventObject);
-
-				// assign it the date that was reported
-				copiedEventObject.start = date;
-				copiedEventObject.allDay = allDay;
-
-				// render the event on the calendar
-				// the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-				$('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
-
-				// is the "remove after drop" checkbox checked?
-				if ($('#drop-remove').is(':checked')) {
-					// if so, remove the element from the "Draggable Events" list
-					$(this).remove();
-				}
-
-			},
-
-			events: [
-
-				
-				
-				
-				{
-					title: 'All Day Event',
-					start: new Date(y, m, 1),
-					className: 'info'
-				},
-				{
-					id: 999,
-					title: 'Repeating Event',
-					start: new Date(y, m, d - 3, 16, 0),
-					allDay: false,
-					className: 'info'
-				},
-				{
-					id: 666,
-					title: 'Teste do pepe',
-					start: new Date(y, m, d - 3, 16, 0),
-					allDay: false,
-					className: 'info'
-				},
-				{
-					id: 999,
-					title: 'Repeating Event',
-					start: new Date(y, m, d + 4, 16, 0),
-					allDay: false,
-					className: 'info'
-				},
-				{
-					title: 'Meeting',
-					start: new Date(y, m, d, 10, 30),
-					allDay: false,
-					className: 'important'
-				},
-				{
-					title: 'Lunch',
-					start: new Date(y, m, d, 12, 0),
-					end: new Date(y, m, d, 14, 0),
-					allDay: false,
-					className: 'important'
-				},
-				{
-					title: 'Birthday Party',
-					start: new Date(y, m, d + 1, 19, 0),
-					end: new Date(y, m, d + 1, 22, 30),
-					allDay: false,
-				},
-				{
-					title: 'Click for Google',
-					start: new Date(y, m, 28),
-					end: new Date(y, m, 29),
-					url: 'http://google.com/',
-					className: 'success'
-				}
-			],
-		});
-
 		/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 		* Listar itens:
 		* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -282,29 +124,177 @@ include('navbar.php');
 				},
 				success: function retorno_ajax(retorno) {
 					
-					var obj = JSON.parse(retorno);
-                    //var obj_ret = obj.header;
-					alert(obj);
-
-					idagendamento = obj[0].idAgendamento;
-					idusuario = obj[0].idUsuario;
-					idcliente = obj[0].idCliente;
-					idpedido = obj[0].idPedido;
-					title = obj[0].descricao;
-					start = obj[0].hora_ini;
-					end = obj[0].hora_fim; 
-                    
-					$('#calendar').html(retorno);
+					//$('#calendar').html(retorno);
 					
-					events: [{
+					var objlista = JSON.parse(retorno);
+                    //var obj_ret = obj.header
+					
+					var eventsvar = "";
+					for(var i=0; i<objlista.count; i++){
+						//eventsvar += "{ id: " + objlista[i].idAgendamento + ",title: " + objlista[i].descricao + ",start: new Date(" + objlista[i].hora_ini + "), end: " + objlista[i].hora_fim + ",className: 'info'}"
+						eventsvar += {title: 'Lunch',start:new Date(y, m, d, 12, 0),end: new Date(y, m, d, 14, 0),allDay: false,className: 'important'};
+						}
+					
+					
+					console.log(eventsvar);
+					/* initialize the calendar
+					-----------------------------------------------------------------*/
+
+					var calendar = $('#calendar').fullCalendar({
+						header: {
+							left: 'title',
+							center: 'agendaDay,agendaWeek,month',
+							right: 'prev,next today'
+						},
+						editable: true,
+						firstDay: 0, //  1(Monday) this can be changed to 0(Sunday) for the USA system
+						selectable: true,
+						defaultView: 'month',
+
+						axisFormat: 'h:mm',
+						columnFormat: {
+							month: 'ddd', // Mon
+							week: 'ddd d', // Mon 7
+							day: 'dddd M/d', // Monday 9/7
+							agendaDay: 'dddd d'
+						},
+						titleFormat: {
+							month: 'MMMM yyyy', // September 2009
+							week: "MMMM yyyy", // September 2009
+							day: 'MMMM yyyy' // Tuesday, Sep 8, 2009
+						},
+						allDaySlot: false,
+						selectHelper: true,
+						select: function(start, end, allDay) {
+							var title = prompt('Event Title:');
+							if (title) {
+								calendar.fullCalendar('renderEvent', {
+										title: title,
+										start: start,
+										end: end,
+										allDay: allDay
+									},
+									true // make the event "stick"
+								);
+
+								/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+								* Salva no banco de dados as informações de agendamentos feitos via calendário
+								* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+								var ajax_div = $.ajax(null);
+								
+									if(ajax_div){ ajax_div.abort(); }
+										ajax_div = $.ajax({
+										cache: false,
+										async: true,
+										url: '?a=add_event',
+										type: 'post',
+										data: { 
+											title: title,
+											start: start,
+											end: end,
+											allDay: allDay
+										},
+										success: function retorno_ajax(retorno) {
+											if(retorno){
+												alert("Agendamento realizado com sucesso!");  
+											}else{
+												alert("ERRO AO CRIAR O EVENTO! " + retorno);
+											}
+										}
+									});
+							
+							}
+							calendar.fullCalendar('unselect');
+						},
+						droppable: true, // this allows things to be dropped onto the calendar !!!
+						drop: function(date, allDay) { // this function is called when something is dropped
+
+							// retrieve the dropped element's stored Event Object
+							var originalEventObject = $(this).data('eventObject');
+
+							// we need to copy it, so that multiple events don't have a reference to the same object
+							var copiedEventObject = $.extend({}, originalEventObject);
+
+							// assign it the date that was reported
+							copiedEventObject.start = date;
+							copiedEventObject.allDay = allDay;
+
+							// render the event on the calendar
+							// the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
+							$('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
+
+							// is the "remove after drop" checkbox checked?
+							if ($('#drop-remove').is(':checked')) {
+								// if so, remove the element from the "Draggable Events" list
+								$(this).remove();
+							}
+
+						},
 						
+						events: [
 
-					},
-					
-					]
-				}
+							eventsvar,
+							/*
+							{
+								title: 'All Day Event',
+								start: new Date(y, m, 1),
+								className: 'info'
+							},
+							
+							{
+								id: 999,
+								title: 'Repeating Event',
+								start: new Date(y, m, d - 3, 16, 0),
+								allDay: false,
+								className: 'info'
+							},
+							
+							{
+								id: 666,
+								title: 'Teste do pepe',
+								start: new Date(y, m, d - 3, 16, 0),
+								allDay: false,
+								className: 'info'
+							},
+							{
+								id: 999,
+								title: 'Repeating Event',
+								start: new Date(y, m, d + 4, 16, 0),
+								allDay: false,
+								className: 'info'
+							},
+							{
+								title: 'Meeting',
+								start: new Date(y, m, d, 10, 30),
+								allDay: false,
+								className: 'important'
+							},
+							{
+								title: 'Lunch',
+								start: new Date(y, m, d, 12, 0),
+								end: new Date(y, m, d, 14, 0),
+								allDay: false,
+								className: 'important'
+							},
+							{
+								title: 'Birthday Party',
+								start: new Date(y, m, d + 1, 19, 0),
+								end: new Date(y, m, d + 1, 22, 30),
+								allDay: false,
+							},
+							{
+								title: 'Click for Google',
+								start: new Date(y, m, 28),
+								end: new Date(y, m, 29),
+								url: 'http://google.com/',
+								className: 'success'
+							},*/
+						],
+					});
+
+				} // fim da success do lista itens agenda
 			});
-		}
+		} // fim do ajax lista itens agenda
 
 		// Evento inicial:
         $(document).ready(function() {
