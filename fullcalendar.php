@@ -71,6 +71,10 @@ include('navbar.php');
 
 <script>
 
+	function eventsitem(element, index){return "{" + element[index] + "},"};
+
+					
+
 	$(document).ready(function() {
 		var date = new Date();
 		var d = date.getDate();
@@ -128,15 +132,50 @@ include('navbar.php');
 					
 					var objlista = JSON.parse(retorno);
                     //var obj_ret = obj.header
-					
-					var eventsvar = "";
+				    var objagend = {};
+					const eventsvar = [];
+					//const items = [];
 					for(var i=0; i<objlista.count; i++){
-						//eventsvar += "{ id: " + objlista[i].idAgendamento + ",title: " + objlista[i].descricao + ",start: new Date(" + objlista[i].hora_ini + "), end: " + objlista[i].hora_fim + ",className: 'info'}"
-						eventsvar += {title: 'Lunch',start:new Date(y, m, d, 12, 0),end: new Date(y, m, d, 14, 0),allDay: false,className: 'important'};
+						//eventsvar += "{ id: " + objlista[i].idAgendamento + ",title: " + objlista[i].descricao + ",start: " + objlista[i].hora_ini + ", end: " + objlista[i].hora_fim + ",className: 'info'},"
+						//eventsvar += "{ id: " + objlista[i].idAgendamento + ",title: " + objlista[i].descricao + ",start:" + new Date(y, m, d, 12, 0) + ",className: 'info'},"
+						
+
+						objagend = { id: objlista[i].idAgendamento, 
+									 title: objlista[i].descricao, 
+								 	 start: objlista[i].hora_ini, 
+								 	 end: objlista[i].hora_fim, 
+									 className: 'info'};
+
+						eventsvar.push(objagend); 
 						}
+
+						
+						//eventsvar.push({title: 'Lunch',start:new Date(y, m, d, 12, 0),end: new Date(y, m, d, 14, 0),allDay: false,className: 'important'});
+						//eventsteste = {title: 'Lunch',start:new Date(y, m, d, 12, 0),end: new Date(y, m, d, 14, 0),allDay: false,className: 'important'};
+						//eventsteste = {title: 'Lunch',start:new Date(y, m, 24, 12, 0),end: new Date(y, m, 24, 14, 0),allDay: false,className: 'important'};
 					
+					//console.log(eventsvar);
+					eventsconcat = [];
+					function ret(){
+						return eventsconcat;
+					}
 					
-					console.log(eventsvar);
+					function eventsfor(){
+						
+						for(var c=0; c<objlista.count; c++){
+							//return eventsvar[c];
+							
+							eventsconcat += eventsvar[c] + ",";
+							
+						 
+
+							//alert("1" + eventsvar);
+							//alert(eventsconcat);
+							//ret();
+						}
+						return eventsconcat;
+					}	
+
 					/* initialize the calendar
 					-----------------------------------------------------------------*/
 
@@ -231,9 +270,38 @@ include('navbar.php');
 
 						},
 						
-						events: [
+						//printevent: function(item, index, arr){arr[index]=item},
 
-							eventsvar,
+						 /*logArrayElements: function(element, index, array) {
+								console.log("a[" + index + "] = " + element);
+							},*/
+						
+						events: [
+							
+							
+							//eventsvar.forEach(logArrayElements)
+
+
+								/*eventsvar.prototype.forEach = function(fn, scope) {
+									for(var i = 0, len = this.length; i < len; ++i) {
+									fn.call(scope, this[i], i, this);
+									}
+								}*/
+								
+
+							
+							
+							//eventsvar[0],
+							
+							//console.log(eventsvar[0]),
+							
+							//eventsvar.forEach(element => element),
+							//console.log(eventsvar.forEach(element))
+							eventsfor()
+							//alert(eventsfor())
+
+							
+							//alert(eventsvar)
 							/*
 							{
 								title: 'All Day Event',
