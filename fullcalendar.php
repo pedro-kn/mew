@@ -71,7 +71,7 @@ include('navbar.php');
 
 <script>
 
-	function eventsitem(element, index){return "{" + element[index] + "},"};
+	
 
 					
 
@@ -132,22 +132,69 @@ include('navbar.php');
 					
 					var objlista = JSON.parse(retorno);
                     //var obj_ret = obj.header
-				    var objagend = {};
+				    var objagend = new Object();
 					const eventsvar = [];
 					//const items = [];
 					for(var i=0; i<objlista.count; i++){
 						//eventsvar += "{ id: " + objlista[i].idAgendamento + ",title: " + objlista[i].descricao + ",start: " + objlista[i].hora_ini + ", end: " + objlista[i].hora_fim + ",className: 'info'},"
 						//eventsvar += "{ id: " + objlista[i].idAgendamento + ",title: " + objlista[i].descricao + ",start:" + new Date(y, m, d, 12, 0) + ",className: 'info'},"
 						
-
+						
 						objagend = { id: objlista[i].idAgendamento, 
 									 title: objlista[i].descricao, 
 								 	 start: objlista[i].hora_ini, 
 								 	 end: objlista[i].hora_fim, 
 									 className: 'info'};
-
-						eventsvar.push(objagend); 
+						//calendar.addEvent(objagend);	
+						eventsvar.push(objagend);
+						//alert(eventsvar[0])
+						
 						}
+						
+						// TESTE DO ADD EVENT DO DESENVOLVEDOR FULL
+						/*
+
+						document.addEventListener('DOMContentLoaded', function() {
+						var calendarEl = document.getElementById('calendar');
+						
+						 calendar = new FullCalendar.Calendar(calendarEl, {
+							initialView: 'dayGridMonth',
+							headerToolbar: {
+							center: 'addEventButton'
+							},
+							customButtons: {
+							addEventButton: {
+								text: 'add event...',
+								click: function() {
+								var dateStr = prompt('Enter a date in YYYY-MM-DD format');
+								var date = new Date(dateStr + 'T00:00:00'); // will be in local time
+								
+								
+								
+								if (!isNaN(date.valueOf())) { // valid?
+									calendar.addEvent({
+									title: 'dynamic event',
+									start: date,
+									allDay: true
+									});
+									alert('Great. Now, update your database...');
+								} else {
+									alert('Invalid date.');
+								}
+								}
+							}
+							}
+						});
+
+						calendar.render();
+						});
+
+						*/
+						//calendar.addEvent(objagend);
+						
+						//calendar.addEvent(eventsvar[0],[true]);	
+
+						
 
 						
 						//eventsvar.push({title: 'Lunch',start:new Date(y, m, d, 12, 0),end: new Date(y, m, d, 14, 0),allDay: false,className: 'important'});
@@ -155,10 +202,9 @@ include('navbar.php');
 						//eventsteste = {title: 'Lunch',start:new Date(y, m, 24, 12, 0),end: new Date(y, m, 24, 14, 0),allDay: false,className: 'important'};
 					
 					//console.log(eventsvar);
-					eventsconcat = [];
-					function ret(){
-						return eventsconcat;
-					}
+					eventsconcat = "";
+					eventsconcat2 = "";
+					
 					
 					function eventsfor(){
 						
@@ -173,12 +219,15 @@ include('navbar.php');
 							//alert(eventsconcat);
 							//ret();
 						}
+						//console.log(eventsvar);
 						return eventsconcat;
 					}	
 
 					/* initialize the calendar
 					-----------------------------------------------------------------*/
-
+					//document.addEventListener('DOMContentLoaded', function() {
+					//var calendarEl = document.getElementById('calendar');
+					
 					var calendar = $('#calendar').fullCalendar({
 						header: {
 							left: 'title',
@@ -287,17 +336,28 @@ include('navbar.php');
 									fn.call(scope, this[i], i, this);
 									}
 								}*/
+							//alert(eventsvar[0].idAgendamento)	
 								
+								/*
+							jQuery.each(eventsvar,function(c1,v1){	
+								
+								eventsconcat2 = jQuery.each(eventsvar[c1],function(c2,v2){
+									
+									eventsconcat += v2;
+									//alert(eventsconcat)
 
+								})
+								alert()
+							})*/
 							
+								//eventsvar[0],
 							
-							//eventsvar[0],
-							
+							//alert(eventsvar)
 							//console.log(eventsvar[0]),
 							
 							//eventsvar.forEach(element => element),
 							//console.log(eventsvar.forEach(element))
-							eventsfor()
+							//eventsfor()
 							//alert(eventsfor())
 
 							
@@ -359,7 +419,8 @@ include('navbar.php');
 							},*/
 						],
 					});
-
+					
+				//});// fim do event listner do desenvolvedor
 				} // fim da success do lista itens agenda
 			});
 		} // fim do ajax lista itens agenda
@@ -483,9 +544,9 @@ include('navbar.php');
 </head>
 <body   style="background-image: url('assets/coronafree/template/assets/images/pillars.png');  background-repeat: no-repeat; background-size: cover">
 		<div id='wrap'>
-			<div></div>
+			<div><button type="button" aria-pressed="false" class="fc-addEventButton-button fc-button fc-button-primary">addcslashes</button></div>
 			<div id='calendar'></div>
-			<div>""</div>
+			
 			<div style='clear:both'></div>
 		</div>
 </body>
