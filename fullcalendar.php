@@ -1,6 +1,5 @@
 <?php
 
-
 include("db.php");
 $db = new Database();
 
@@ -13,11 +12,6 @@ if (isset($_GET["a"])) {
 	* Encontra os novos valores dos produtos na tela de edição
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if($_GET["a"] == "lista_agenda"){
-	
-
-		//$id = $_POST["id"];
-		//$idProd = $_POST["idProd"];
-		//$quantidade = $_POST["quantidade"];
 
 		$res = $db->select("SELECT idAgendamento, idUsuario, idCliente, idPedido, hora_ini, hora_fim, data_agend, descricao FROM agendamentos");
 
@@ -36,12 +30,15 @@ if (isset($_GET["a"])) {
 
 		$title = $_POST['title'];
 		$allDay = $_POST['allDay'];
+		$start = $_POST['start'];
+		$end = $_POST['end'];
 
 
 		//tratamento para o formato de data
 		
 			//$mes = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "0300 - (Horário Padrão de Brasília)");
 			//$mesn = array("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "");
+			/*
 			$mes = array("(Horário Padrão de Brasília)");
 			$mesn = array("");
 			$start2 = str_replace($mes, $mesn, $_POST['start']);
@@ -51,7 +48,8 @@ if (isset($_GET["a"])) {
 			$end2 = str_replace($mes, $mesn, $_POST['end']);
 			$end1 = strtotime($end2);
 			$end = date("d-m-Y H:i:s",$end1);
-		
+			*/
+
 		$res = $db->_exec("INSERT INTO agendamentos (idUsuario, idCliente, idPedido, hora_ini, hora_fim, data_agend, descricao )
                     		VALUES (20,1,45,'$start','$end',LOCALTIME(),'$title' );");
 
@@ -68,12 +66,7 @@ include('navbar.php');
 
 <head>
 
-
 <script>
-
-	
-
-					
 
 	$(document).ready(function() {
 		var date = new Date();
@@ -127,108 +120,28 @@ include('navbar.php');
 					$('#calendar').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
 				},
 				success: function retorno_ajax(retorno) {
-					
-					//$('#calendar').html(retorno);
-					
-					var objlista = JSON.parse(retorno);
-                    //var obj_ret = obj.header
+										
+					var objlista = JSON.parse(retorno);  
 				    var objagend = new Object();
 					const eventsvar = [];
-					//const items = [];
+					
 					for(var i=0; i<objlista.count; i++){
-						//eventsvar += "{ id: " + objlista[i].idAgendamento + ",title: " + objlista[i].descricao + ",start: " + objlista[i].hora_ini + ", end: " + objlista[i].hora_fim + ",className: 'info'},"
-						//eventsvar += "{ id: " + objlista[i].idAgendamento + ",title: " + objlista[i].descricao + ",start:" + new Date(y, m, d, 12, 0) + ",className: 'info'},"
-						
-						
+
 						objagend = { id: objlista[i].idAgendamento, 
 									 title: objlista[i].descricao, 
 								 	 start: objlista[i].hora_ini, 
 								 	 end: objlista[i].hora_fim, 
 									 className: 'info'};
-						//calendar.addEvent(objagend);	
+	
 						eventsvar.push(objagend);
-						//alert(eventsvar[0])
 						
 						}
-						
-						// TESTE DO ADD EVENT DO DESENVOLVEDOR FULL
-						/*
-
-						document.addEventListener('DOMContentLoaded', function() {
-						var calendarEl = document.getElementById('calendar');
-						
-						 calendar = new FullCalendar.Calendar(calendarEl, {
-							initialView: 'dayGridMonth',
-							headerToolbar: {
-							center: 'addEventButton'
-							},
-							customButtons: {
-							addEventButton: {
-								text: 'add event...',
-								click: function() {
-								var dateStr = prompt('Enter a date in YYYY-MM-DD format');
-								var date = new Date(dateStr + 'T00:00:00'); // will be in local time
-								
-								
-								
-								if (!isNaN(date.valueOf())) { // valid?
-									calendar.addEvent({
-									title: 'dynamic event',
-									start: date,
-									allDay: true
-									});
-									alert('Great. Now, update your database...');
-								} else {
-									alert('Invalid date.');
-								}
-								}
-							}
-							}
-						});
-
-						calendar.render();
-						});
-
-						*/
-						//calendar.addEvent(objagend);
-						
-						//calendar.addEvent(eventsvar[0],[true]);	
-
-						
-
-						
-						//eventsvar.push({title: 'Lunch',start:new Date(y, m, d, 12, 0),end: new Date(y, m, d, 14, 0),allDay: false,className: 'important'});
-						//eventsteste = {title: 'Lunch',start:new Date(y, m, d, 12, 0),end: new Date(y, m, d, 14, 0),allDay: false,className: 'important'};
-						//eventsteste = {title: 'Lunch',start:new Date(y, m, 24, 12, 0),end: new Date(y, m, 24, 14, 0),allDay: false,className: 'important'};
 					
-					//console.log(eventsvar);
-					eventsconcat = "";
-					eventsconcat2 = "";
-					
-					
-					function eventsfor(){
-						
-						for(var c=0; c<objlista.count; c++){
-							//return eventsvar[c];
-							
-							eventsconcat += eventsvar[c] + ",";
-							
-						 
-
-							//alert("1" + eventsvar);
-							//alert(eventsconcat);
-							//ret();
-						}
-						//console.log(eventsvar);
-						return eventsconcat;
-					}	
-
 					/* initialize the calendar
 					-----------------------------------------------------------------*/
-					//document.addEventListener('DOMContentLoaded', function() {
-					//var calendarEl = document.getElementById('calendar');
 					
 					var calendar = $('#calendar').fullCalendar({
+						
 						header: {
 							left: 'title',
 							center: 'agendaDay,agendaWeek,month',
@@ -238,8 +151,12 @@ include('navbar.php');
 						firstDay: 0, //  1(Monday) this can be changed to 0(Sunday) for the USA system
 						selectable: true,
 						defaultView: 'month',
-
+						editable: true,
+						eventLimit: true,
+						allDayDefault: false,
+						timeFormat: 'H:mm',
 						axisFormat: 'h:mm',
+						
 						columnFormat: {
 							month: 'ddd', // Mon
 							week: 'ddd d', // Mon 7
@@ -251,11 +168,13 @@ include('navbar.php');
 							week: "MMMM yyyy", // September 2009
 							day: 'MMMM yyyy' // Tuesday, Sep 8, 2009
 						},
+						
 						allDaySlot: false,
 						selectHelper: true,
 						select: function(start, end, allDay) {
 							var title = prompt('Event Title:');
 							if (title) {
+								
 								calendar.fullCalendar('renderEvent', {
 										title: title,
 										start: start,
@@ -318,111 +237,24 @@ include('navbar.php');
 							}
 
 						},
-						
-						//printevent: function(item, index, arr){arr[index]=item},
+						viewRender: function (view) {
 
-						 /*logArrayElements: function(element, index, array) {
-								console.log("a[" + index + "] = " + element);
-							},*/
-						
+						$('#calendar').fullCalendar('removeEvents');
+						$('#calendar').fullCalendar('addEventSource', eventsvar);
+						$('#calendar').fullCalendar('refetchEvents');
+						},
+
 						events: [
-							
-							
-							//eventsvar.forEach(logArrayElements)
-
-
-								/*eventsvar.prototype.forEach = function(fn, scope) {
-									for(var i = 0, len = this.length; i < len; ++i) {
-									fn.call(scope, this[i], i, this);
-									}
-								}*/
-							//alert(eventsvar[0].idAgendamento)	
-								
-								/*
-							jQuery.each(eventsvar,function(c1,v1){	
-								
-								eventsconcat2 = jQuery.each(eventsvar[c1],function(c2,v2){
-									
-									eventsconcat += v2;
-									//alert(eventsconcat)
-
-								})
-								alert()
-							})*/
-							
-								//eventsvar[0],
-							
-							//alert(eventsvar)
-							//console.log(eventsvar[0]),
-							
-							//eventsvar.forEach(element => element),
-							//console.log(eventsvar.forEach(element))
-							//eventsfor()
-							//alert(eventsfor())
-
-							
-							//alert(eventsvar)
-							/*
-							{
-								title: 'All Day Event',
-								start: new Date(y, m, 1),
-								className: 'info'
-							},
-							
-							{
-								id: 999,
-								title: 'Repeating Event',
-								start: new Date(y, m, d - 3, 16, 0),
-								allDay: false,
-								className: 'info'
-							},
-							
-							{
-								id: 666,
-								title: 'Teste do pepe',
-								start: new Date(y, m, d - 3, 16, 0),
-								allDay: false,
-								className: 'info'
-							},
-							{
-								id: 999,
-								title: 'Repeating Event',
-								start: new Date(y, m, d + 4, 16, 0),
-								allDay: false,
-								className: 'info'
-							},
-							{
-								title: 'Meeting',
-								start: new Date(y, m, d, 10, 30),
-								allDay: false,
-								className: 'important'
-							},
-							{
-								title: 'Lunch',
-								start: new Date(y, m, d, 12, 0),
-								end: new Date(y, m, d, 14, 0),
-								allDay: false,
-								className: 'important'
-							},
-							{
-								title: 'Birthday Party',
-								start: new Date(y, m, d + 1, 19, 0),
-								end: new Date(y, m, d + 1, 22, 30),
-								allDay: false,
-							},
-							{
-								title: 'Click for Google',
-								start: new Date(y, m, 28),
-								end: new Date(y, m, 29),
-								url: 'http://google.com/',
-								className: 'success'
-							},*/
+						
 						],
+
+						eventColor: '#422FD6'
+						
 					});
-					
-				//});// fim do event listner do desenvolvedor
 				} // fim da success do lista itens agenda
 			});
+				
+			
 		} // fim do ajax lista itens agenda
 
 		// Evento inicial:
@@ -433,6 +265,7 @@ include('navbar.php');
 	});
 </script>
 <style>
+
 	.fc .fc-event{
 		color: black;
 	}
@@ -544,9 +377,7 @@ include('navbar.php');
 </head>
 <body   style="background-image: url('assets/coronafree/template/assets/images/pillars.png');  background-repeat: no-repeat; background-size: cover">
 		<div id='wrap'>
-			<div><button type="button" aria-pressed="false" class="fc-addEventButton-button fc-button fc-button-primary">addcslashes</button></div>
 			<div id='calendar'></div>
-			
 			<div style='clear:both'></div>
 		</div>
 </body>
