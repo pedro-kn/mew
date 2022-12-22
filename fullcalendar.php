@@ -9,7 +9,7 @@ $db = new Database();
 if (isset($_GET["a"])) {
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	* Encontra os novos valores dos produtos na tela de edição
+	* Encontra os agendamentos no banco de dados e inclui os agendamentos na tela
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if($_GET["a"] == "lista_agenda"){
 
@@ -55,6 +55,95 @@ if (isset($_GET["a"])) {
 
 		echo $res;
 	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Inclui um evento novo via botao de inclusão:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+
+	if ($_GET["a"] == "add_event_button") {
+
+		$idAgend = $_POST['idagend'];
+		$idPed = $_POST['idpedido'];
+		$descricao = $_POST['descricao'];
+		$start = $_POST['dataini'];
+		$end = $_POST['datafim'];
+
+		$start1 = floatval(preg_replace('/[^0-9]/', '', $start));
+		$end1 = floatval(preg_replace('/[^0-9]/', '', $end));
+		
+		if($descricao == NULL){$descricao = "";}
+
+		if($end1 < $start1){
+			echo 2;
+		}else if($idPed == NULL){
+			$res = $db->_exec("UPDATE agendamentos SET hora_ini = '$start', hora_fim = '$end', descricao = '$descricao', data_agend = LOCALTIME() WHERE idAgendamento = $idAgend");
+			echo $res;
+		}else{
+			$res = $db->_exec("UPDATE agendamentos SET idPedido = $idPed, hora_ini = '$start', hora_fim = '$end', descricao = '$descricao', data_agend = LOCALTIME() WHERE idAgendamento = $idAgend");
+			echo $res;
+		}
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Ocultamente cria o agendamento, e após Exibe lista de itens na div modInsert:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if($_GET["a"] == "lista_mod_insert"){    
+	
+		$usuario = $_POST["usuario"];
+		$cliente = $_POST["cliente"];
+		
+		$ped = $db->_exec("INSERT INTO agendamentos (idAgendamento,idCliente,idUsuario) VALUES ('',$cliente,$usuario)");
+		
+		$age = $db->select("SELECT idAgendamento FROM agendamentos ORDER BY idAgendamento DESC LIMIT 1");
+		
+		$s = $db->select("SELECT idPedido FROM pedidos WHERE idCliente = $cliente ORDER BY idPedido");
+		
+		if(count($s) > 0){
+			
+			echo '<div class="row mb-3">';
+				echo '<div class="col">';
+					echo '<label for="frm_numped_insert" class="form-label">Pedido:</label>';
+						echo '<div class="scrollable">';
+							echo '<select id="frm_numped_insert"  class="select form-control form-control-lg" name="frm_numped_insert" type="text" style="color: #ffffff" >';
+								echo '<option value="" selected></option>';
+								
+									foreach($s as $s1){
+										echo  '<option value="'.$s1["idPedido"].'">'.$s1["idPedido"].'</option>';
+									}
+								
+							echo '</select>';
+						echo '</div>';
+				echo '</div>';
+			echo '</div>';
+		}else{
+			echo '<div class="alert alert-warning" role="alert">';
+				echo 'Nenhum pedido associado a este cliente foi localizado!';
+			echo '</div>';
+		}
+			
+		echo '<div class="table-responsive">';
+		echo '<table id="tb_lista" class="table table-striped table-hover table-sm" style="font-size: 10pt">';
+			echo '<thead>';
+				echo '<tr>';
+					echo '<th style="text-align: center">Dia e Horario de Início</th>';
+					echo '<th style="text-align: center">Dia e Horario de Fim</th>';
+				echo '</tr>';
+			echo '</thead>';
+			echo '<tbody>';
+				echo '<tr >';
+					echo '<td style="text-align: left"><input type="datetime-local" id="data_ini" name="data_ini"></input></td>';
+					echo '<td style="text-align: center"><input type="datetime-local" id="data_fim" name="data_fim"></input></td>';
+				echo '</tr>';
+				echo '<tr >';
+					echo '<td style="text-align: left"><input type="text" id="descricao_include" name="descricao_include"></input></td>';
+					echo '<td><input id="idagend" value="'.$age[0]["idAgendamento"].'" hidden></input></td>';
+					echo '</tr>';
+			echo '</tbody>';
+		echo '</table>';
+		echo '</div>';
+		
+	}
 	
 	die();
 }	
@@ -67,6 +156,62 @@ include('navbar.php');
 <head>
 
 <script>
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Exibir no modal os itens para inclusão:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var ajax_div = $.ajax(null);
+	const listaModinsert = () => {
+		if(ajax_div){ ajax_div.abort(); }
+			ajax_div = $.ajax({
+			cache: false,
+			async: true,
+			url: '?a=lista_mod_insert',
+			type: 'post',
+			data: {pesq: $('#input_pesquisa').val(),
+				usuario: $('#frm_val1_insert').val(),
+				cliente: $('#frm_val2_insert').val()},
+			beforeSend: function(){
+				$('#mod_insert').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
+			},
+			success: function retorno_ajax(retorno) {
+				$('#mod_insert').html(retorno); 
+			}
+		});
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Salva no banco de dados as informações de agendamentos feitos via botão de inclusão
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var ajax_div = $.ajax(null);
+	const incluiClient = () => {
+		if(ajax_div){ ajax_div.abort(); }
+			ajax_div = $.ajax({
+			cache: false,
+			async: true,
+			url: '?a=add_event_button',
+			type: 'post',
+			data: { 
+				idagend: $('#idagend').val(),
+				idpedido: $('#frm_numped_insert').val(),
+				dataini: $('#data_ini').val(),
+				datafim: $('#data_fim').val(),
+				descricao: $('#descricao_include').val(),
+			},
+			success: function retorno_ajax(retorno) {
+				if(retorno==2){
+					alert("A hora de fim precisa ser depois da hora de início!");
+					location.reload();	
+				}else if(retorno==1){
+					alert("Agendamento realizado com sucesso!");
+					location.reload();  
+				}else{
+					alert("ERRO AO CRIAR O EVENTO! " + retorno);
+				}
+			}
+		});
+	}
+
 
 	$(document).ready(function() {
 		var date = new Date();
@@ -117,7 +262,7 @@ include('navbar.php');
 				type: 'post',
 				data: {},
 				beforeSend: function(){
-					$('#calendar').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
+					//$('#calendar').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
 				},
 				success: function retorno_ajax(retorno) {
 										
@@ -135,7 +280,9 @@ include('navbar.php');
 	
 						eventsvar.push(objagend);
 						
-						}
+					}
+
+					
 					
 					/* initialize the calendar
 					-----------------------------------------------------------------*/
@@ -243,6 +390,14 @@ include('navbar.php');
 						$('#calendar').fullCalendar('addEventSource', eventsvar);
 						$('#calendar').fullCalendar('refetchEvents');
 						},
+						
+						eventClick: function(eventsvar, jsEvent, view) {
+
+						alert('Event: ' + eventsvar.title);
+						alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
+						alert('View: ' + view.name);
+
+						},
 
 						events: [
 						
@@ -265,6 +420,12 @@ include('navbar.php');
 	});
 </script>
 <style>
+	.topright {
+	position: absolute;
+	top: 38px;
+	right: 60px;
+	font-size: 15px;
+	}
 
 	.fc .fc-event{
 		color: black;
@@ -377,9 +538,78 @@ include('navbar.php');
 </head>
 <body   style="background-image: url('assets/coronafree/template/assets/images/pillars.png');  background-repeat: no-repeat; background-size: cover">
 		<div id='wrap'>
+			
+			<div>
+				<button type="button" class="btn btn-primary topright" id="incluireventos" onclick="$('#mod_formul').modal('show');"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">Adicionar Novo Evento</button>
+			</div>
+
 			<div id='calendar'></div>
 			<div style='clear:both'></div>
 		</div>
+
+		<!-- Modal formulário Inclusao -->
+		<div class="modal" id="mod_formul">
+				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 70%;">
+					<div class="modal-content">
+						<div class="modal-header" style="align-items: center">
+							<div style="display: flex; align-items: center">
+								<div style="margin-right: 5px">
+									<h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
+								</div>
+								<div>
+									<h5 id="tit_frm_formul" class="modal-title">Incluir Agendamento</h5>
+								</div>
+							</div>
+							<button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul').modal('hide');">X</button>
+						</div>
+						<div class="modal-body modal-dialog-scrollable">
+							<form id="frm_general" name="frm_general" class="col">
+
+							<div class="row mb-3">
+								<div class="col">
+									<label for="frm_val1_insert" class="form-label">Usuário:</label>
+										<div class="scrollable">
+											<select id="frm_val1_insert"  class="select form-control form-control-lg" name="frm_val1_insert" type="text" style="color: #ffffff" >
+												<option value="" selected></option>
+												<?php
+													$desc = $db->select('SELECT idUsuario, nome FROM usuarios');
+													foreach($desc as $s){
+														echo  '<option value="'.$s["idUsuario"].'">'.$s["nome"].'</option>';
+													}
+												?>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="row mb-3">
+									<div class="col">
+										<label for="frm_val2_insert" class="form-label">Cliente:</label>
+											<div class="scrollable">
+											<select id="frm_val2_insert"  onchange="listaModinsert()" class="select form-control form-control-lg" name="frm_val2_insert" type="text" style="color: #ffffff" >
+												<option value="" selected></option>
+												<?php
+													$desc = $db->select('SELECT idCliente, nome FROM clientes');
+													foreach($desc as $s){
+														echo  '<option value="'.$s["idCliente"].'">'.$s["nome"].'</option>';
+													}
+												?>
+											</select>
+											<input id="numpedido" hidden></input>
+										</div>
+									</div>
+								</div>
+								
+								<div id="mod_insert"></div>	
+			
+							</form>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" onclick="$('#mod_formul').modal('hide');">Cancelar</button>
+							<button type="button" class="btn btn-primary" id="OK" onclick="incluiClient();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
+						</div>
+					</div>
+				</div>
+			</div>
 </body>
 
 <?php
