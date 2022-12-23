@@ -50,8 +50,8 @@ if (isset($_GET["a"])) {
 			$end = date("d-m-Y H:i:s",$end1);
 			*/
 
-		$res = $db->_exec("INSERT INTO agendamentos (idUsuario, idCliente, idPedido, hora_ini, hora_fim, data_agend, descricao )
-                    		VALUES (20,1,45,'$start','$end',LOCALTIME(),'$title' );");
+		$res = $db->_exec("INSERT INTO agendamentos (hora_ini, hora_fim, data_agend, descricao )
+                    		VALUES ('$start','$end',LOCALTIME(),'$title' );");
 
 		echo $res;
 	}
@@ -144,6 +144,94 @@ if (isset($_GET["a"])) {
 		echo '</div>';
 		
 	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Busca conteúdo para exibir na div de edição do pedido:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if($_GET["a"] == "get_client"){
+	
+
+		$id = $_POST["id"];
+		$start = $_POST["start"];
+		$end = $_POST["end"];
+		$title = $_POST["title"];
+
+		$sel = $db->select("SELECT a.idUsuario, u.nome as nomeu, a.idCliente, c.nome as nomec, a.idPedido FROM agendamentos a  
+							INNER JOIN clientes c ON c.idCliente = a.idCliente
+                            INNER JOIN usuarios u ON u.idUsuario = a.idUsuario
+							WHERE idAgendamento = $id");
+
+		
+
+		$c_retorno["id"] = $id;
+		$c_retorno["title"] = $title;	
+		$c_retorno["start"] = $start;	
+		$c_retorno["end"] = $end;
+		if($sel != NULL){
+		$c_retorno["idUsuario"] = $sel[0]["idUsuario"];
+		$c_retorno["idCliente"] = $sel[0]["idCliente"];
+		$c_retorno["nomeu"] = $sel[0]["nomeu"];
+		$c_retorno["nomec"] = $sel[0]["nomec"];
+		$c_retorno["idPedido"] = $sel[0]["idPedido"];
+		}
+		echo json_encode($c_retorno);
+		
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Edita o evento onclick:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if($_GET["a"] == "edit_client"){
+		
+
+		$id = $_POST["id"];
+
+		$usuario = $_POST["usuario"];
+		$cliente = $_POST["cliente"];
+		$start = $_POST["start"];
+		$end = $_POST["end"];
+		$idPed = $_POST["idPed"];
+		$descricao = $_POST["descricao"];		
+		
+
+		
+		$res = $db->_exec("UPDATE agendamentos 
+			SET idCliente = {$cliente},  idUsuario = {$usuario}, idPedido = {$idPed},  hora_ini = '$start', hora_fim = '$end',  descricao = '$descricao'
+			WHERE idAgendamento = {$id}");
+
+		echo $res;
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Edita o evento on drag:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if($_GET["a"] == "edit_client_auto"){
+		
+
+		$id = $_POST["id"];
+		$start = $_POST["start"];
+		$end = $_POST["end"];
+
+		$res = $db->_exec("UPDATE agendamentos 
+			SET hora_ini = '$start', hora_fim = '$end'
+			WHERE idAgendamento = {$id}");
+
+		echo $res;
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Deleta conteúdo:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if($_GET["a"] == "del_user"){
+	
+
+		$id = $_POST["id"];
+
+		$res = $db->_exec("DELETE FROM agendamentos WHERE idAgendamento = '{$id}'");
+		
+		echo $res;
+		
+	}
 	
 	die();
 }	
@@ -210,6 +298,74 @@ include('navbar.php');
 				}
 			}
 		});
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Excluir usuário:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var ajax_div = $.ajax(null);
+	function delete_Event(){
+		if( confirm( "Deseja excluir o pedido?")){
+			if(ajax_div){ ajax_div.abort(); }
+				ajax_div = $.ajax({
+				cache: false,
+				async: true,
+				url: '?a=del_user',
+				type: 'post',
+				data: { 
+					id: $("#frm_id_edit").val()
+				},
+				success: function retorno_ajax(retorno) {
+					
+					if(retorno==1){
+						location.reload();
+
+					}else{
+						alert("ERRO AO DELETAR ITENS! " + retorno);
+					}
+				}
+			});
+		}else{
+			lista_itens_agenda();
+		}
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* responssavel por dar o update de valores no modal de edição:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var ajax_div = $.ajax(null);
+	const editClient = () => {
+		
+			if(ajax_div){ ajax_div.abort(); }
+			ajax_div = $.ajax({
+				cache: false,
+				async: true,
+				url: '?a=edit_client',
+				type: 'post',
+				data: { 
+					id: $("#frm_id_edit").val(),
+					usuario: $("#frm_val1_edit").val(),
+					cliente: $("#frm_val2_edit").val(),
+					start: $("#frm_val3_edit").val(),
+					end: $("#frm_val4_edit").val(),
+					idPed: $("#frm_val5_edit").val(),
+					descricao: $("#frm_val6_edit").val(),
+				},
+				beforeSend: function(){
+					$('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
+				},
+				success: function retorno_ajax(retorno) {
+					alert(retorno);
+					if(retorno){
+						$('#mod_formul_edit').modal('hide');
+						location.reload();
+						lista_itens_agenda();  
+					}else{
+						alert("ERRO AO EDITAR USUÁRIO! " + retorno);
+					}
+				}
+			});
+		
 	}
 
 
@@ -373,17 +529,57 @@ include('navbar.php');
 							copiedEventObject.start = date;
 							copiedEventObject.allDay = allDay;
 
+							location.reload();
+
 							// render the event on the calendar
 							// the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
 							$('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
-
+							
 							// is the "remove after drop" checkbox checked?
 							if ($('#drop-remove').is(':checked')) {
 								// if so, remove the element from the "Draggable Events" list
 								$(this).remove();
 							}
-
+							
 						},
+
+						eventDrop: function(copiedEventObject){
+							
+							/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+							* responssavel por dar o update de valores no modal de edição:
+							* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+							var ajax_div = $.ajax(null);
+							
+								if(ajax_div){ ajax_div.abort(); }
+								ajax_div = $.ajax({
+									cache: false,
+									async: true,
+									url: '?a=edit_client_auto',
+									type: 'post',
+									data: { 
+										id: copiedEventObject.id,
+										start: copiedEventObject.start,
+										end: copiedEventObject.end,
+
+									},
+									beforeSend: function(){
+										//$('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
+									},
+									success: function retorno_ajax(retorno) {
+										
+										if(retorno){
+											//$('#mod_formul_edit').modal('hide');
+											location.reload();
+											lista_itens_agenda();  
+										}else{
+											alert("ERRO AO EDITAR USUÁRIO! " + retorno);
+										}
+									}
+								});
+								
+							
+						},
+						
 						viewRender: function (view) {
 
 						$('#calendar').fullCalendar('removeEvents');
@@ -393,9 +589,54 @@ include('navbar.php');
 						
 						eventClick: function(eventsvar, jsEvent, view) {
 
-						alert('Event: ' + eventsvar.title);
-						alert('Coordinates: ' + jsEvent.pageX + ',' + jsEvent.pageY);
-						alert('View: ' + view.name);
+							/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+							* Pesquisar itens do campo de edição:
+							* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+							var ajax_div = $.ajax(null);
+							
+								if(ajax_div){ ajax_div.abort(); }
+								ajax_div = $.ajax({
+									cache: false,
+									async: true,
+									url: '?a=get_client',
+									type: 'post',
+									data: { 
+										
+										id: eventsvar.id,
+										start: eventsvar.start,
+										end: eventsvar.end,
+										title: eventsvar.title,
+
+									},
+									beforeSend: function(){
+										$('#mod_formul_edit').modal("show");
+									},
+									success: function retorno_ajax(retorno) {
+										
+										alert(retorno)
+										var obj = JSON.parse(retorno);
+										//alert(obj.idUsuario);
+										//location.reload();
+											$("#frm_id_edit").val(obj.id);
+											
+											if(obj.nomec != undefined){
+											
+												$("#frm_val1_edit_option").html(obj.nomeu);
+												$("#frm_val2_edit_option").html(obj.nomec);
+												$("#frm_val1_edit_option").val(obj.idUsuario);
+												$("#frm_val2_edit_option").val(obj.idCliente);
+											}
+
+											$("#frm_val3_title_display").val(obj.start);
+											$("#frm_val4_title_display").val(obj.end);	
+											$("#frm_val5_edit").val(obj.idPedido);	
+											$("#frm_val6_edit").val(obj.title);	
+ 
+										
+									}
+								});
+							
+							
 
 						},
 
@@ -549,67 +790,155 @@ include('navbar.php');
 
 		<!-- Modal formulário Inclusao -->
 		<div class="modal" id="mod_formul">
-				<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 70%;">
-					<div class="modal-content">
-						<div class="modal-header" style="align-items: center">
-							<div style="display: flex; align-items: center">
-								<div style="margin-right: 5px">
-									<h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
-								</div>
-								<div>
-									<h5 id="tit_frm_formul" class="modal-title">Incluir Agendamento</h5>
+			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 70%;">
+				<div class="modal-content">
+					<div class="modal-header" style="align-items: center">
+						<div style="display: flex; align-items: center">
+							<div style="margin-right: 5px">
+								<h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
+							</div>
+							<div>
+								<h5 id="tit_frm_formul" class="modal-title">Incluir Agendamento</h5>
+							</div>
+						</div>
+						<button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul').modal('hide');">X</button>
+					</div>
+					<div class="modal-body modal-dialog-scrollable">
+						<form id="frm_general" name="frm_general" class="col">
+
+						<div class="row mb-3">
+							<div class="col">
+								<label for="frm_val1_insert" class="form-label">Usuário:</label>
+									<div class="scrollable">
+										<select id="frm_val1_insert"  class="select form-control form-control-lg" name="frm_val1_insert" type="text" style="color: #ffffff" >
+											<option value="" selected></option>
+											<?php
+												$desc = $db->select('SELECT idUsuario, nome FROM usuarios');
+												foreach($desc as $s){
+													echo  '<option value="'.$s["idUsuario"].'">'.$s["nome"].'</option>';
+												}
+											?>
+										</select>
+									</div>
 								</div>
 							</div>
-							<button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul').modal('hide');">X</button>
-						</div>
-						<div class="modal-body modal-dialog-scrollable">
-							<form id="frm_general" name="frm_general" class="col">
-
 							<div class="row mb-3">
 								<div class="col">
-									<label for="frm_val1_insert" class="form-label">Usuário:</label>
+									<label for="frm_val2_insert" class="form-label">Cliente:</label>
 										<div class="scrollable">
-											<select id="frm_val1_insert"  class="select form-control form-control-lg" name="frm_val1_insert" type="text" style="color: #ffffff" >
-												<option value="" selected></option>
-												<?php
-													$desc = $db->select('SELECT idUsuario, nome FROM usuarios');
-													foreach($desc as $s){
-														echo  '<option value="'.$s["idUsuario"].'">'.$s["nome"].'</option>';
-													}
-												?>
-											</select>
-										</div>
+										<select id="frm_val2_insert"  onchange="listaModinsert()" class="select form-control form-control-lg" name="frm_val2_insert" type="text" style="color: #ffffff" >
+											<option value="" selected></option>
+											<?php
+												$desc = $db->select('SELECT idCliente, nome FROM clientes');
+												foreach($desc as $s){
+													echo  '<option value="'.$s["idCliente"].'">'.$s["nome"].'</option>';
+												}
+											?>
+										</select>
+										<input id="numpedido" hidden></input>
 									</div>
 								</div>
-								<div class="row mb-3">
-									<div class="col">
-										<label for="frm_val2_insert" class="form-label">Cliente:</label>
-											<div class="scrollable">
-											<select id="frm_val2_insert"  onchange="listaModinsert()" class="select form-control form-control-lg" name="frm_val2_insert" type="text" style="color: #ffffff" >
-												<option value="" selected></option>
-												<?php
-													$desc = $db->select('SELECT idCliente, nome FROM clientes');
-													foreach($desc as $s){
-														echo  '<option value="'.$s["idCliente"].'">'.$s["nome"].'</option>';
-													}
-												?>
-											</select>
-											<input id="numpedido" hidden></input>
-										</div>
-									</div>
-								</div>
-								
-								<div id="mod_insert"></div>	
-			
-							</form>
-						</div>
-						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" onclick="$('#mod_formul').modal('hide');">Cancelar</button>
-							<button type="button" class="btn btn-primary" id="OK" onclick="incluiClient();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
-						</div>
+							</div>
+							
+							<div id="mod_insert"></div>	
+		
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" onclick="$('#mod_formul').modal('hide');">Cancelar</button>
+						<button type="button" class="btn btn-primary" id="OK" onclick="incluiClient();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
 					</div>
 				</div>
 			</div>
+		</div>
+
+	<!-- Modal formulário Edição-->
+
+	<div class="modal" id="mod_formul_edit">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 70%;">
+            <div class="modal-content">
+                <div class="modal-header" style="align-items: center">
+                    <div style="display: flex; align-items: center">
+                        <div style="margin-right: 5px">
+                            <h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
+                        </div>
+                        <div>
+                            <h5 id="div_edit_title"></h5>
+                        </div>
+                    </div>
+                    <button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="location.reload();">X</button>
+                </div>
+                <div class="modal-body modal-dialog-scrollable">
+                    <form id="frm_general_exib" name="frm_general">
+                        <div class="row">
+
+                            <div class="col">
+                                <input type="text" style="text-align: left" aria-describedby="frm_id_edit" class="form-control form-control-lg" name="frm_id_edit" id="frm_id_edit" hidden>
+                                
+                                <label for="frm_val1_edit" class="form-label">Usuário:</label>
+                                    <div class="scrollable">
+                                    <select id="frm_val1_edit" value=""  class="select form-control form-control-lg" aria-describedby="frm_val1_edit" name="frm_val1_edit" type="text" style="color: #ffffff">
+                                        <option id="frm_val1_edit_option" value="" selected></option>
+                                        <?php
+                                            $desc = $db->select('SELECT idUsuario, nome FROM usuarios');
+                                            foreach($desc as $s){
+                                                echo  '<option value="'.$s["idUsuario"].'">'.$s["nome"].'</option>';
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                        
+                            <div class="col">
+                                <label for="frm_val2_edit" class="form-label">Cliente:</label>
+                                
+                                    <div class="scrollable">
+                                    <select id="frm_val2_edit"  class="select form-control form-control-lg" aria-describedby="frm_val2_edit" name="frm_val2_edit" type="text" placeholder="" style="color: #ffffff">
+                                        <option id="frm_val2_edit_option" value="" selected></option>
+                                        <?php
+                                            $desc = $db->select('SELECT idCliente, nome FROM clientes');
+                                            foreach($desc as $s){
+                                                echo  '<option value="'.$s["idCliente"].'">'.$s["nome"].'</option>';
+                                            }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+						</div>
+
+                        <div class="row ">
+                            <div class="col">
+                                <label for="frm_val3_edit" class="form-label">Hora de Início: <input type="text" id="frm_val3_title_display" disabled></input></label>
+                                <input type="datetime-local" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val3_edit" class="form-control form-control-lg" name="frm_val3_edit" id="frm_val3_edit" placeholder="">
+                            </div>
+
+                            <div class="col">
+                                <label for="frm_val4_edit" class="form-label">Hora de Fim: <input type="text" id="frm_val4_title_display" disabled></input></label>
+                                <input type="datetime-local" value="" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val4_edit" class="form-control form-control-lg" name="frm_val4_edit" id="frm_val4_edit" placeholder="">
+                            </div>
+                        </div>	
+
+                        <div class="row">					
+                            <div class="col">
+                                <label for="frm_val5_edit" class="form-label">Número do Pedido Associado:</label>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val5_edit" class="form-control form-control-lg" name="frm_val5_edit" id="frm_val5_edit" placeholder="">
+                            </div>
+
+                            <div class="col mb-6">
+                                <label for="frm_val6_edit" class="form-label">Observações:</label>
+                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val6_edit" class="form-control form-control-lg" name="frm_val6_edit" id="frm_val6_edit" placeholder="">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="location.reload();">Cancelar</button>
+					<button type="button" class="btn btn-danger btn-fw" id="frm_DELETE" onclick="delete_Event();"><img id="img_btn_DELETE" style="width: 15px; display: none; margin-right: 10px">Deletar</button>
+					<button type="button" class="btn btn-primary" id="frm_OK" onclick="editClient();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
+				</div>
+            </div>
+        </div>
+    </div>	
 </body>
 
 <?php
