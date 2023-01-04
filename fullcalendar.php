@@ -6,7 +6,7 @@ $db = new Database();
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * Verificação de ações requisitadas via AJAX:
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-if (isset($_GET["a"])) {
+if (isset($_GET['a'])) {
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* Encontra os agendamentos no banco de dados e inclui os agendamentos na tela
@@ -72,11 +72,12 @@ if (isset($_GET["a"])) {
 		$start1 = floatval(preg_replace('/[^0-9]/', '', $start));
 		$end1 = floatval(preg_replace('/[^0-9]/', '', $end));
 		
+		
 		if($descricao == NULL){$descricao = "";}
 
 		if($end1 < $start1){
 			echo 2;
-		}else if($idPed == NULL){
+		}else if($idPed == NULL || $idPed == 'Nenhum pedido associado a este cliente foi localizado!'){
 			$res = $db->_exec("UPDATE agendamentos SET hora_ini = '$start', hora_fim = '$end', descricao = '$descricao', data_agend = LOCALTIME() WHERE idAgendamento = $idAgend");
 			echo $res;
 		}else{
@@ -117,7 +118,7 @@ if (isset($_GET["a"])) {
 				echo '</div>';
 			echo '</div>';
 		}else{
-			echo '<div class="alert alert-warning" role="alert">';
+			echo '<div id="frm_numped_insert" class="alert alert-warning" role="alert">';
 				echo 'Nenhum pedido associado a este cliente foi localizado!';
 			echo '</div>';
 		}
@@ -193,12 +194,15 @@ if (isset($_GET["a"])) {
 		$idPed = $_POST["idPed"];
 		$descricao = $_POST["descricao"];		
 		
-
-		
-		$res = $db->_exec("UPDATE agendamentos 
-			SET idCliente = {$cliente},  idUsuario = {$usuario}, idPedido = {$idPed},  hora_ini = '$start', hora_fim = '$end',  descricao = '$descricao'
-			WHERE idAgendamento = {$id}");
-
+		if($start || $end ==""){
+			$res = $db->_exec("UPDATE agendamentos 
+				SET idCliente = {$cliente},  idUsuario = {$usuario}, idPedido = {$idPed}, descricao = '$descricao'
+				WHERE idAgendamento = {$id}");
+		}else{
+			$res = $db->_exec("UPDATE agendamentos 
+				SET idCliente = {$cliente},  idUsuario = {$usuario}, idPedido = {$idPed},  hora_ini = '$start', hora_fim = '$end',  descricao = '$descricao'
+				WHERE idAgendamento = {$id}");
+		}
 		echo $res;
 	}
 
@@ -475,6 +479,8 @@ include('navbar.php');
 						allDaySlot: false,
 						selectHelper: true,
 						select: function(start, end, allDay) {
+							$('#mod_formul').modal('show');
+							/*
 							var title = prompt('Event Title:');
 							if (title) {
 								
@@ -489,7 +495,7 @@ include('navbar.php');
 
 								/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 								* Salva no banco de dados as informações de agendamentos feitos via calendário
-								* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+								* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 								var ajax_div = $.ajax(null);
 								
 									if(ajax_div){ ajax_div.abort(); }
@@ -514,7 +520,7 @@ include('navbar.php');
 									});
 							
 							}
-							calendar.fullCalendar('unselect');
+							calendar.fullCalendar('unselect');*/
 						},
 						droppable: true, // this allows things to be dropped onto the calendar !!!
 						drop: function(date, allDay) { // this function is called when something is dropped
@@ -544,6 +550,43 @@ include('navbar.php');
 						},
 
 						eventDrop: function(copiedEventObject){
+							
+							/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+							* responssavel por dar o update de valores no modal de edição:
+							* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+							var ajax_div = $.ajax(null);
+							
+								if(ajax_div){ ajax_div.abort(); }
+								ajax_div = $.ajax({
+									cache: false,
+									async: true,
+									url: '?a=edit_client_auto',
+									type: 'post',
+									data: { 
+										id: copiedEventObject.id,
+										start: copiedEventObject.start,
+										end: copiedEventObject.end,
+
+									},
+									beforeSend: function(){
+										//$('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
+									},
+									success: function retorno_ajax(retorno) {
+										
+										if(retorno){
+											//$('#mod_formul_edit').modal('hide');
+											location.reload();
+											lista_itens_agenda();  
+										}else{
+											alert("ERRO AO EDITAR USUÁRIO! " + retorno);
+										}
+									}
+								});
+								
+							
+						},
+
+						eventResize: function(copiedEventObject){
 							
 							/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 							* responssavel por dar o update de valores no modal de edição:
