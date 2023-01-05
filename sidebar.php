@@ -94,11 +94,11 @@
       </a>
     </li>
     <li class="nav-item menu-items">
-      <a class="nav-link" href="assets/coronafree/template/pages/tables/basic-table.html">
+      <a class="nav-link" href="avaliacoes.php">
         <span class="menu-icon">
           <i class="mdi mdi-nutrition"></i>
         </span>
-        <span class="menu-title">Proceidures</span>
+        <span class="menu-title">Avaliações</span>
       </a>
     </li>
     <li class="nav-item menu-items">
