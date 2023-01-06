@@ -15,77 +15,93 @@ if (isset($_GET["a"])) {
 
 	if ($_GET["a"] == "lista_user") {
 
+        $sel = $db->select("SELECT * FROM avaliacoes");
+
 		$res = $db->select("SELECT * FROM perguntas");
 
 		echo '<div class="row">';
             echo '<div class="col-md-4 grid-margin stretch-card">';
                 echo '<div class="card">';
-                echo '<div class="card-body">';
-                    echo '<h4 class="card-title">Cadastro de Avaliações</h4>';
-                    echo '<button type="button" onclick="modal_cad_ava();" class="btn btn-inverse-light btn-fw btn-md" style="height: 32px"><i class="mdi mdi-library-plus" style="margin-right: 5px"></i>Incluir Nova Avaliação</button>';
-                    echo '<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">';
-                    echo '<div class="text-md-center text-xl-left">';
-                        echo '<h6 class="mb-1">Transfer to Paypal</h6>';
-                        echo '<p class="text-muted mb-0">07 Jan 2019, 09:12AM</p>';
+                    echo '<div class="card-body">';
+                        echo '<h4 class="card-title">Cadastro de Avaliações</h4>';
+                        echo '<button type="button" onclick="modal_cad_ava();" class="btn btn-inverse-light btn-fw btn-md" style="height: 32px"><i class="mdi mdi-library-plus" style="margin-right: 5px"></i>Incluir Nova Avaliação</button>';
+                        if($sel>0){
+                            foreach($sel as $s){
+                            echo '<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">';
+                                echo '<div onclick="get_item(\'' . $s["idAvaliacoes"] . '\')" class="text-md-center text-xl-left">';
+                                    echo '<h6 class="mb-1">'.$s['descricao'].'</h6>';
+                                    echo '<p class="text-muted mb-0">'.$s['data_hora'].'</p>';
+                                echo '</div>';
+                                echo '<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">';
+                                    echo '<i title="Deletar" onclick="del_ava(\'' . $s["idAvaliacoes"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
+                                 echo '</div>';
+                            echo '</div>';
+                            }
+                        }else{
+                            echo '<div class="alert alert-warning" role="alert">';
+                                echo 'Nenhum registro localizado!';
+                            echo '</div>';
+                            }
+                        /*
+                        echo '<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">';
+                            echo '<div class="text-md-center text-xl-left">';
+                                echo '<h6 class="mb-1">Tranfer to Stripe</h6>';
+                                echo '<p class="text-muted mb-0">07 Jan 2019, 09:12AM</p>';
+                            echo '</div>';
+                            echo '<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">';
+                                echo '<h6 class="font-weight-bold mb-0">$593</h6>';
+                            echo '</div>';
+                        echo '</div>';*/
+
                     echo '</div>';
-                    echo '</div>';
-                    echo '<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">';
-                    echo '<div class="text-md-center text-xl-left">';
-                        echo '<h6 class="mb-1">Tranfer to Stripe</h6>';
-                        echo '<p class="text-muted mb-0">07 Jan 2019, 09:12AM</p>';
-                    echo '</div>';
-                    echo '<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">';
-                        echo '<h6 class="font-weight-bold mb-0">$593</h6>';
-                    echo '</div>';
-                    echo '</div>';
-                echo '</div>';
                 echo '</div>';
             echo '</div>';
             echo '<div class="col-md-8 grid-margin stretch-card">';
                 echo '<div class="card">';
-                echo '<div class="card-body">';
-                    echo '<div class="d-flex flex-row justify-content-between">';
-                    echo '<h4 class="card-title mb-1">Cadastro de Perguntas</h4>';
-                    echo '<button type="button" onclick="incluiUser();" class="btn btn-inverse-light btn-fw btn-md" style="height: 32px"><i class="mdi mdi-library-plus" style="margin-right: 5px"></i>Incluir Nova Pergunta</button>';
-                    echo '</div>';
-                    echo '<div class="row">';
-                    echo '<div class="col-12">';
-
-                        if($res>0){
-                        $countr = 0;
-                        foreach($res as $r){
-                            $countr++;
-                            echo '<div class="preview-list">';
-                            echo '<div class="preview-item border-bottom">';
-                                echo '<div class="preview-thumbnail">';
-                                    echo '<i class="mdi mdi-checkbox-blank-outline"></i>';
-                                echo '</div>';
-                                echo '<div class="preview-item-content d-sm-flex flex-grow">';
-                                echo '<div class="flex-grow">';
-                                    echo '<h6 class="preview-subject">'.$r['pergunta'].'</h6>';
-                                    //echo '<p class="text-muted mb-0">Broadcast web app mockup</p>';
-                                echo '</div>';
-                                echo '<td style="text-align: center">';
-                                    echo '<i title="Deletar" onclick="del_item(\'' . $r["idPergunta"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
-                                echo '</td>';
-                                echo '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
-                                    echo '<p class="text-muted">'.$countr.'</p>';
-                                echo '</div>';
-                                echo '</div>';
-                            echo '</div>';
-                            echo '</div>';
-                        }  
-                        }else{
-                        echo '<div class="alert alert-warning" role="alert">';
-                            echo 'Nenhum registro localizado!';
+                    echo '<div class="card-body">';
+                        echo '<div class="d-flex flex-row justify-content-between">';
+                            echo '<h4 class="card-title mb-1">Cadastro de Perguntas</h4>';
+                            echo '<button type="button" onclick="incluiUser();" class="btn btn-inverse-light btn-fw btn-md" style="height: 32px"><i class="mdi mdi-library-plus" style="margin-right: 5px"></i>Incluir Nova Pergunta</button>';
                         echo '</div>';
-                        }
-                    echo '</div>';
+                            echo '<div class="row">';
+                            echo '<div class="col-12">';
+
+                                if($res>0){
+                                $countr = 0;
+                                foreach($res as $r){
+                                    $countr++;
+                                    echo '<div class="preview-list">';
+                                    echo '<div class="preview-item border-bottom">';
+                                        echo '<div class="preview-thumbnail">';
+                                            echo '<i class="mdi mdi-chevron-double-right"></i>';
+                                        echo '</div>';
+                                        echo '<div class="preview-item-content d-sm-flex flex-grow">';
+                                        echo '<div class="flex-grow">';
+                                            echo '<h6 class="preview-subject">'.$r['pergunta'].'</h6>';
+                                            //echo '<p class="text-muted mb-0">Broadcast web app mockup</p>';
+                                        echo '</div>';
+                                        echo '<td style="text-align: center">';
+                                            echo '<i title="Deletar" onclick="del_item(\'' . $r["idPergunta"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
+                                        echo '</td>';
+                                        echo '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
+                                            echo '<p class="text-muted">'.$countr.'</p>';
+                                        echo '</div>';
+                                        echo '</div>';
+                                    echo '</div>';
+                                    echo '</div>';
+                                }  
+                                }else{
+                                echo '<div class="alert alert-warning" role="alert">';
+                                    echo 'Nenhum registro localizado!';
+                                echo '</div>';
+                                }
+                            echo '</div>';
+                        echo '</div>';
                     echo '</div>';
                 echo '</div>';
-                echo '</div>';
             echo '</div>';
-            echo '</div>';
+        echo '</div>';
+        
           
     
   
@@ -107,14 +123,18 @@ if (isset($_GET["a"])) {
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "inclui_avaliacao") {
 
+        $descricao = $_POST["descricao"];
         $usuario = $_POST["usuario"];
         $cliente = $_POST["cliente"];
         $checklist = $_POST["checklist"];
 
-        echo 1;
-        die();
-        $res = $db->_exec("INSERT INTO avaliacoes (idCliente,idUsuario,data_hora) VALUES ($cliente,$usuario,LOCALTIME())");
+        $res = $db->_exec("INSERT INTO avaliacoes (idCliente,idUsuario,data_hora,descricao) VALUES ($cliente,$usuario,LOCALTIME(),'{$descricao}')");
         
+        $sel = $db->select("SELECT idAvaliacoes FROM avaliacoes ORDER BY idAvaliacoes DESC LIMIT 1");
+
+        foreach($checklist as $c){
+            $res = $db->_exec("INSERT INTO list_perg_ava (idPergunta,idAvaliacoes) VALUES ($c,{$sel[0]['idAvaliacoes']})");
+        }
 
 		echo $res;
 	}
@@ -135,13 +155,13 @@ if (isset($_GET["a"])) {
             echo '<div class="preview-list">';
                 echo '<div class="preview-item border-bottom">';
                     echo '<div class="preview-thumbnail">';
-                    echo '<input type="checkbox" id="$perg[]" name="$perg[]" value="'.$r['idPergunta'].'">';
+                    echo '<input type="checkbox" onclick="check_sel();" id="pergts" name="pergts" value="'.$r['idPergunta'].'">';
                     echo '</div>';
                         echo '<div class="preview-item-content d-sm-flex flex-grow">';
                             echo '<div class="flex-grow">';
                                 //echo '<h6 class="preview-subject">'.$r['pergunta'].'</h6>';
                                 
-                                echo '<label for="$perg[]">'.$r['pergunta'].'</label><br>';
+                                echo '<label for="pergts">'.$r['pergunta'].'</label><br>';
                             echo '</div>';
                         echo '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
                         $countr++;
@@ -150,17 +170,6 @@ if (isset($_GET["a"])) {
                     echo '</div>';
                 echo '</div>';
             echo '</div>';
-            /*
-            <form action="/action_page.php">
-            <input type="checkbox" id="vehicle1" name="vehicle1" value="Bike">
-            <label for="vehicle1"> I have a bike</label><br>
-            <input type="checkbox" id="vehicle2" name="vehicle2" value="Car">
-            <label for="vehicle2"> I have a car</label><br>
-            <input type="checkbox" id="vehicle3" name="vehicle3" value="Boat">
-            <label for="vehicle3"> I have a boat</label><br><br>
-            <input type="submit" value="Submit">
-            </form>
-            */
         }  
         echo '</form>';
         }else{
@@ -191,14 +200,37 @@ if (isset($_GET["a"])) {
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	* Deleta conteúdo:
+	* Deleta pergunta do cadastro de perguntas:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "del_user") {
-
 
 		$id = $_POST["id"];
 
 		$res = $db->_exec("DELETE FROM perguntas WHERE idPergunta = '{$id}'");
+
+		echo $res;
+	}
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Deleta avaliação do cadastro de avaliações:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if ($_GET["a"] == "del_aval") {
+
+		$id = $_POST["id"];
+
+		$res = $db->_exec("DELETE FROM avaliacoes WHERE idAvaliacoes = '{$id}'");
+
+		echo $res;
+	}
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Deleta pergunta da avaliação selecionada:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if ($_GET["a"] == "del_perg_aval") {
+
+		$id = $_POST["id"];
+
+		$res = $db->_exec("DELETE FROM list_perg_ava WHERE idLPA = '{$id}'");
 
 		echo $res;
 	}
@@ -208,22 +240,75 @@ if (isset($_GET["a"])) {
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "get_user") {
 
-
 		$id = $_POST["id"];
 
-		$res = $db->select("SELECT nome, cpf, telefone, email, obs FROM clientes WHERE idCliente = '{$id}'");
+        $res = $db->select("SELECT c.nome as nomec, v.nome as nomev, a.descricao as descricao
+                        FROM avaliacoes a
+                        INNER JOIN clientes c ON c.idCliente = a.idCliente
+                        INNER JOIN usuarios v ON v.idUsuario = a.idUsuario
+                        WHERE a.idAvaliacoes = '{$id}'");
+        
+        $sel = $db->select("SELECT l.idLPA, l.idPergunta, l.idAvaliacoes, p.pergunta
+                        FROM list_perg_ava l 
+                        INNER JOIN perguntas p ON p.idPergunta = l.idPergunta
+                        WHERE l.idAvaliacoes = '{$id}'");
 
-		if (count($res) > 0) {
-			$res[0]['nome'] = utf8_encode($res[0]['nome']);
-			$res[0]['cpf'] = utf8_encode($res[0]['cpf']);
-			$res[0]['telefone'] = utf8_encode($res[0]['telefone']);
-			$res[0]['email'] = utf8_encode($res[0]['email']);
-			$res[0]['obs'] = utf8_encode($res[0]['obs']);
+        echo '<div class="row">';
+            echo '<div class="offset-md-2 col-md-8 grid-margin stretch-card">';
+                echo '<div class="card">';
+                    echo '<div class="card-body">';
+                        echo '<div class="d-flex flex-row ">';
+                            echo '<h4 class="card-title mb-1">'.$res[0]['descricao'].'</h4>';   
+                        echo '</div>';
+                        echo '<div class="row">';
+                            echo '<div class="col-6">';
+                                echo '<p class="text-muted mb-0">Usuário:</p>';
+                                echo '<h6 class="mb-1">'.$res[0]['nomev'].'</h6>';
+                            echo '</div>'; 
+                            echo '<div class="col-6">';
+                                echo '<p class="text-muted mb-0">Cliente:</p>';
+                                echo '<h6 class="mb-1">'.$res[0]['nomec'].'</h6>';
+                            echo '</div>'; 
+                        echo '</div>';
+                            echo '<div class="row">';
+                            echo '<div class="col-12">';
 
-			$a_retorno["res"] = $res;
-			$c_retorno = json_encode($a_retorno["res"]);
-			print_r($c_retorno);
-		}
+                                if($sel>0){
+                                $countr = 0;
+                                foreach($sel as $s){
+                                    $countr++;
+                                    echo '<div class="preview-list">';
+                                    echo '<div class="preview-item border-bottom">';
+                                        echo '<div class="preview-thumbnail">';
+                                            echo '<i class="mdi mdi-chevron-double-right"></i>';
+                                        echo '</div>';
+                                        echo '<div class="preview-item-content d-sm-flex flex-grow">';
+                                        echo '<div class="flex-grow">';
+                                            echo '<h6 class="preview-subject">'.$s['pergunta'].'</h6>';
+                                            //echo '<p class="text-muted mb-0">Broadcast web app mockup</p>';
+                                        echo '</div>';
+                                        echo '<td style="text-align: center">';
+                                            echo '<i title="Deletar" onclick="del_perg_ava(\'' . $s["idLPA"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
+                                        echo '</td>';
+                                        echo '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
+                                            echo '<p class="text-muted">'.$countr.'</p>';
+                                        echo '</div>';
+                                        echo '</div>';
+                                    echo '</div>';
+                                    echo '</div>';
+                                }  
+                                }else{
+                                echo '<div class="alert alert-warning" role="alert">';
+                                    echo 'Nenhum registro localizado!';
+                                echo '</div>';
+                                }
+                            echo '</div>';
+                        echo '</div>';
+                    echo '</div>';
+                echo '</div>';
+            echo '</div>';
+        echo '</div>';
+        
 	}
 
 	die();
@@ -235,7 +320,8 @@ include('navbar.php');
 ?>
 
 <script>
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* Listar itens:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var ajax_div = $.ajax(null);
@@ -265,6 +351,25 @@ include('navbar.php');
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Função para obter os valores das perguntas selecionaas via checkbox:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    var a_perguntas = [];
+    $(document).on("click", "input[type=checkbox]", function(e) {
+		if ($(this).is(":checked")) {
+			a_perguntas.push($(this).val());
+		}
+	});
+   //nao esta sendo usado ->
+    var a_itens = [];
+    function check_sel(){
+		$('input[name=pergts]').each(function () {
+			if(this.checked){
+				a_itens.push($(this).val());
+			}
+		});
+    }    
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* Incluir a nova avaliação a partir do modal de inclusao de avaliacao:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var ajax_div = $.ajax(null);
@@ -276,9 +381,11 @@ include('navbar.php');
           url: '?a=inclui_avaliacao',
           type: 'post',
           data: { 
+                descricao: $('#frm_val0_insert').val(),
                 usuario: $('#frm_val1_insert').val(),
                 cliente: $('#frm_val2_insert').val(),
-                checklist: $('#$perg[]').val(),
+                checklist: a_perguntas,
+                checklist1: a_itens,
               },
           beforeSend: function(){
               },
@@ -367,21 +474,11 @@ include('navbar.php');
                 id: id,
             },
 			beforeSend: function(){
-                $('#mod_formul_edit').modal("show");
-			},
-			success: function retorno_ajax(retorno) {
-				
-				if(retorno){
-                    $("#frm_id").val(id);
-                    
-					var obj_ret = JSON.parse(retorno);
-
-					$("#frm_nome_edit").val(obj_ret[0].nome);
-					$("#frm_cpf_edit").val(obj_ret[0].cpf);
-					$("#frm_phone_edit").val(obj_ret[0].telefone);
-					$("#frm_email_edit").val(obj_ret[0].email);	
-					$("#frm_obs_edit").val(obj_ret[0].obs);
-				}
+                $('#div_conteudo2').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
+            },
+            success: function retorno_ajax(retorno) {
+                $('#div_conteudo2').html(retorno); 
+			
 			}
 		});
 	}
@@ -421,7 +518,7 @@ include('navbar.php');
 	}
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	* Excluir usuário:
+	* Excluir pergunta do cadastro de perguntas:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var ajax_div = $.ajax(null);
 	function del_item(id){
@@ -431,6 +528,64 @@ include('navbar.php');
 		    	cache: false,
 		    	async: true,
 		    	url: '?a=del_user',
+		    	type: 'post',
+		    	data: { 
+                    id: id,
+                },
+		    	success: function retorno_ajax(retorno) {
+                    if(retorno){
+						location.reload();
+                    	lista_itens();  
+                	}else{
+                    	alert("ERRO AO DELETAR USUÁRIO! " + retorno);
+                	}
+		    	}
+		    });
+        }else{
+            lista_itens();
+        }	
+	}
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Excluir avaliação do cadastro de avaliações:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var ajax_div = $.ajax(null);
+	function del_ava(id){
+        if( confirm( "Deseja excluir a avaliação?")){
+            if(ajax_div){ ajax_div.abort(); }
+		        ajax_div = $.ajax({
+		    	cache: false,
+		    	async: true,
+		    	url: '?a=del_aval',
+		    	type: 'post',
+		    	data: { 
+                    id: id,
+                },
+		    	success: function retorno_ajax(retorno) {
+                    if(retorno){
+						location.reload();
+                    	lista_itens();  
+                	}else{
+                    	alert("ERRO AO DELETAR USUÁRIO! " + retorno);
+                	}
+		    	}
+		    });
+        }else{
+            lista_itens();
+        }	
+	}
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Excluir pergunta da avaliação selecionada:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var ajax_div = $.ajax(null);
+	function del_perg_ava(id){
+        if( confirm( "Deseja excluir a pergunta dessa avaliação?")){
+            if(ajax_div){ ajax_div.abort(); }
+		        ajax_div = $.ajax({
+		    	cache: false,
+		    	async: true,
+		    	url: '?a=del_perg_aval',
 		    	type: 'post',
 		    	data: { 
                     id: id,
@@ -469,6 +624,14 @@ include('navbar.php');
 				</div>
 				<div class="modal-body modal-dialog-scrollable container-fluid" style="max-width: 300 px">
 					<form id="frm_general" name="frm_general" class= "col">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="frm_val0_insert" class="form-label">Nome da Avaliação:</label>
+                                <div class="scrollable">
+                                <input id="frm_val0_insert"  class="select form-control form-control-lg" name="frm_val0_insert" type="text" style="color: #ffffff"></input>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row mb-3">
                             <div class="col">
                                 <label for="frm_val1_insert" class="form-label">Usuário:</label>
@@ -516,7 +679,8 @@ include('navbar.php');
 
 <body>
     <div class="content-wrapper">
-        <div id="div_conteudo" class="template-demo"></div>          
+        <div id="div_conteudo" class="template-demo"></div>    
+        <div id="div_conteudo2" class="template-demo"></div>     
     </div>
 </body> 
 
