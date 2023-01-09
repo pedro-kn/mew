@@ -128,7 +128,7 @@ if (isset($_GET["a"])) {
         $cliente = $_POST["cliente"];
         $checklist = $_POST["checklist"];
 
-        $res = $db->_exec("INSERT INTO avaliacoes (idCliente,idUsuario,data_hora,descricao) VALUES ($cliente,$usuario,LOCALTIME(),'{$descricao}')");
+        $res = $db->_exec("INSERT INTO avaliacoes (idCliente,idUsuario,data_hora,descricao,stats) VALUES ($cliente,$usuario,LOCALTIME(),'{$descricao}',1)");
         
         $sel = $db->select("SELECT idAvaliacoes FROM avaliacoes ORDER BY idAvaliacoes DESC LIMIT 1");
 
@@ -137,6 +137,40 @@ if (isset($_GET["a"])) {
         }
 
 		echo $res;
+	}
+
+     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Inclui as repostas da avalia~ção:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if ($_GET["a"] == "inclui_resposta") {
+
+        $id = $_POST["id"];
+        $resposta = $_POST["resposta"];
+        $count = $_POST["count"];
+
+        $array_resp = array();
+
+        $array_resp = explode("$@$", $resposta, -1);
+        
+        $sel = $db->select("SELECT idLPA FROM list_perg_ava  WHERE idAvaliacoes = {$id} ORDER BY idLPA");
+        $sele = $db->select("SELECT stats FROM avaliacoes WHERE idAvaliacoes = {$id}");
+
+        if($sele[0]['stats']==1){
+            $i=0;
+            foreach($array_resp as $a){
+                $res = $db->_exec("INSERT INTO resp_ava (idLPA,idAvaliacoes,resposta) VALUES ({$sel[$i]['idLPA']},$id,'$a')");
+                $i++;
+            }
+
+            $updt = $db->_exec("UPDATE avaliacoes SET stats = 2 WHERE idAvaliacoes = '{$id}'");
+
+            echo $res;
+        }else{
+            echo 2;
+        }
+
+        
+
 	}
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -242,7 +276,7 @@ if (isset($_GET["a"])) {
 
 		$id = $_POST["id"];
 
-        $res = $db->select("SELECT c.nome as nomec, v.nome as nomev, a.descricao as descricao
+        $res = $db->select("SELECT c.nome as nomec, v.nome as nomev, a.descricao as descricao, a.stats as stats
                         FROM avaliacoes a
                         INNER JOIN clientes c ON c.idCliente = a.idCliente
                         INNER JOIN usuarios v ON v.idUsuario = a.idUsuario
@@ -253,61 +287,99 @@ if (isset($_GET["a"])) {
                         INNER JOIN perguntas p ON p.idPergunta = l.idPergunta
                         WHERE l.idAvaliacoes = '{$id}'");
 
-        echo '<div class="row">';
-            echo '<div class="offset-md-2 col-md-8 grid-margin stretch-card">';
-                echo '<div class="card">';
-                    echo '<div class="card-body">';
-                        echo '<div class="d-flex flex-row ">';
-                            echo '<h4 class="card-title mb-1">'.$res[0]['descricao'].'</h4>';   
-                        echo '</div>';
-                        echo '<div class="row">';
-                            echo '<div class="col-6">';
-                                echo '<p class="text-muted mb-0">Usuário:</p>';
-                                echo '<h6 class="mb-1">'.$res[0]['nomev'].'</h6>';
-                            echo '</div>'; 
-                            echo '<div class="col-6">';
-                                echo '<p class="text-muted mb-0">Cliente:</p>';
-                                echo '<h6 class="mb-1">'.$res[0]['nomec'].'</h6>';
-                            echo '</div>'; 
-                        echo '</div>';
-                            echo '<div class="row">';
-                            echo '<div class="col-12">';
+        $sel1 = $db->select("SELECT r.resposta
+                        FROM list_perg_ava l 
+                        INNER JOIN resp_ava r ON r.idLPA = l.idLPA
+                        WHERE l.idAvaliacoes = '{$id}'");
+        
+        //monta o corpo de exibição de cada avaliação
+
+        $body = "";
+
+        $body .= '<div class="row">';
+            $body .= '<div class="offset-md-2 col-md-8 grid-margin stretch-card">';
+                $body .= '<div class="card">';
+                    $body .= '<div class="card-body">';
+                        $body .= '<div class="d-flex flex-row ">';
+                        $body .= '<h4 class="card-title mb-1">'.$res[0]['descricao'].'</h4>';   
+                            $body .= '</div>';
+                            $body .= '<div class="row">';
+                                $body .= '<div class="col-6">';
+                                $body .= '<p class="text-muted mb-0">Usuário:</p>';
+                                $body .= '<h6 class="mb-1">'.$res[0]['nomev'].'</h6>';
+                            $body .= '</div>'; 
+                            $body .= '<div class="col-6">';
+                                $body .= '<p class="text-muted mb-0">Cliente:</p>';
+                                $body .= '<h6 class="mb-1">'.$res[0]['nomec'].'</h6>';
+                            $body .= '</div>'; 
+                        $body .= '</div>';
+                            $body .= '<div class="row">';
+                            $body .= '<div class="col-12">';
 
                                 if($sel>0){
                                 $countr = 0;
+                                $array_res = array();
                                 foreach($sel as $s){
-                                    $countr++;
-                                    echo '<div class="preview-list">';
-                                    echo '<div class="preview-item border-bottom">';
-                                        echo '<div class="preview-thumbnail">';
-                                            echo '<i class="mdi mdi-chevron-double-right"></i>';
-                                        echo '</div>';
-                                        echo '<div class="preview-item-content d-sm-flex flex-grow">';
-                                        echo '<div class="flex-grow">';
-                                            echo '<h6 class="preview-subject">'.$s['pergunta'].'</h6>';
-                                            //echo '<p class="text-muted mb-0">Broadcast web app mockup</p>';
-                                        echo '</div>';
-                                        echo '<td style="text-align: center">';
-                                            echo '<i title="Deletar" onclick="del_perg_ava(\'' . $s["idLPA"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
-                                        echo '</td>';
-                                        echo '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
-                                            echo '<p class="text-muted">'.$countr.'</p>';
-                                        echo '</div>';
-                                        echo '</div>';
-                                    echo '</div>';
-                                    echo '</div>';
+                                        $countr++;
+                                        $body .= '<div class="preview-list">';
+                                            $body .= '<div class="preview-item border-bottom">';
+                                                $body .= '<div class="preview-thumbnail">';
+                                                $body .= '<i class="mdi mdi-chevron-double-right"></i>';
+                                            $body .= '</div>';
+                                            $body .= '<div class="preview-item-content d-sm-flex flex-grow">';
+                                                $body .= '<div class="flex-grow">';
+                                                $body .= '<h6 class="preview-subject">'.$s['pergunta'].'</h6>';
+                                                $body .= '<input id="resp_input'.$countr.'" "type="text" size="70"';
+                                                    if($res[0]['stats']==2){
+                                                        $body .= 'disabled';
+                                                    }
+                                                $body .= '>';
+                                            $body .= '</div>';
+                                            $body .= '<td style="text-align: center">';
+                                                $body .= '<i title="Deletar" onclick="del_perg_ava(\'' . $s["idLPA"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
+                                                    
+                                            $body .= '</td>';
+                                            $body .= '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
+                                                $body .= '<p class="text-muted">'.$countr.'</p>';
+                                            $body .= '</div>';
+                                        $body .= '</div>';
+                                    $body .= '</div>';
+                                $body .= '</div>';
                                 }  
                                 }else{
-                                echo '<div class="alert alert-warning" role="alert">';
-                                    echo 'Nenhum registro localizado!';
-                                echo '</div>';
+                                $body .= '<div class="alert alert-warning" role="alert">';
+                                    $body .= 'Nenhum registro localizado!';
+                                $body .= '</div>';
                                 }
-                            echo '</div>';
-                        echo '</div>';
-                    echo '</div>';
-                echo '</div>';
-            echo '</div>';
-        echo '</div>';
+                            $body .= '</div>';
+                        $body .= '</div>';
+                    $body .= '<div class="modal-footer">';
+                        if($res[0]['stats']==2){
+                           
+                        }else{
+                            $body .= '<button type="button" class="btn btn-primary" id="OK" onclick="incluiResposta(\'' . $countr+1 . '\',\'' . $id . '\');"><img id="img_btn_ok" style="width: 15px; color: black; display: none; margin-right: 10px">OK</button>';
+                        }
+                    $body .= '</div>';
+                $body .= '</div>';
+            $body .= '</div>';
+        $body .= '</div>';
+    $body .= '</div>';
+
+    //exibe as respostas nos campos de input
+
+
+
+    //$retorno["body"]=json_encode($body);
+    $retorno["body"]=$body;
+    //$retorno["idLPA"]=json_encode($array_res);
+    foreach($sel1 as $s){
+        $retorno["resp"]=$sel1;
+    }
+    $retorno["count"]=$countr;
+    
+    
+    echo json_encode($retorno);
+    //echo $retorno["body"];
         
 	}
 
@@ -402,6 +474,45 @@ include('navbar.php');
 	}
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Incluir as respostas a partir do modal de inclusao de respostas:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var ajax_div = $.ajax(null);
+	const incluiResposta = (count,id) => {
+        if(count>0){
+            var resposta = "";
+            
+            for(var i=1;i<count;i++){
+               resposta += $('#resp_input'+i+'').val() + '$@$';
+            }
+
+        }
+        if(ajax_div){ ajax_div.abort(); }
+         
+        ajax_div = $.ajax({
+          cache: false,
+          async: true,
+          url: '?a=inclui_resposta',
+          type: 'post',
+          data: { 
+                id: id,
+                resposta: resposta,
+                count: count
+              },
+          beforeSend: function(){
+              },
+          success: function retorno_ajax(retorno) {
+            alert(retorno)
+            if(retorno==1){     
+                location.reload();
+                lista_itens(); 
+            }else{
+                alert("A RESPOSTA JA FOI REGISTRADA, MONTE UMA NOVA AVALIAÇÃO OU APAGUE AS PERGUNTAS JA FEITAS" + retorno);
+            }
+          }
+      });
+	}
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* Incluir nova avaliação:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var ajax_div = $.ajax(null);
@@ -477,7 +588,19 @@ include('navbar.php');
                 $('#div_conteudo2').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
             },
             success: function retorno_ajax(retorno) {
-                $('#div_conteudo2').html(retorno); 
+                
+                var obj = JSON.parse(retorno);
+                var objbody = obj.body;
+                var objresp = obj.resp;
+                console.log(objresp[0])
+
+                $('#div_conteudo2').html(objbody);
+                //$('#resp_input1').val(objresp);
+                
+                for(var i=1;i<=obj.count;i++){
+                    $('#resp_input'+i+'').val(objresp[i-1].resposta);
+                }
+                
 			
 			}
 		});
