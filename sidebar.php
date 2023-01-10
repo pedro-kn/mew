@@ -5,7 +5,7 @@
 </style>
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
   <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-    <a class="sidebar-brand brand-logo" href="main.php"><img src="assets/coronafree/template/assets/images/logo.svg" alt="logo" /></a>
+    <a  href="main.php"><img src="assets/coronafree/template/assets/images/estetica.png" alt="logo" width="133" height="70" /></a>
     <a class="sidebar-brand brand-logo-mini" href="main.php"><img src="assets/coronafree/template/assets/images/logo-mini.svg" alt="logo" /></a>
   </div>
   <ul class="nav">
@@ -30,7 +30,7 @@
               </div>
             </div>
             <div class="preview-item-content">
-              <p class="preview-subject ellipsis mb-1 text-small">Account settings</p>
+              <p class="preview-subject ellipsis mb-1 text-small">Configurações</p>
             </div>
           </a>
           <div class="dropdown-divider"></div>
@@ -41,32 +41,32 @@
               </div>
             </div>
             <div class="preview-item-content">
-              <p class="preview-subject ellipsis mb-1 text-small">Change Password</p>
+              <p class="preview-subject ellipsis mb-1 text-small">Trocar Senha</p>
             </div>
           </a>
           <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item preview-item">
+          <a href="fullcalendar.php" class="dropdown-item preview-item">
             <div class="preview-thumbnail">
               <div class="preview-icon bg-dark rounded-circle">
                 <i class="mdi mdi-calendar-today text-success"></i>
               </div>
             </div>
             <div class="preview-item-content">
-              <p class="preview-subject ellipsis mb-1 text-small">To-do list</p>
+              <p class="preview-subject ellipsis mb-1 text-small">Minha Agenda</p>
             </div>
           </a>
         </div>
       </div>
     </li>
     <li class="nav-item nav-category">
-      <span class="nav-link">Navigation</span>
+      <span class="nav-link">Navegação</span>
     </li>
     <li class="nav-item menu-items">
       <a class="nav-link" href="fullcalendar.php">
         <span class="menu-icon">
           <i class="mdi mdi-calendar"></i>
         </span>
-        <span class="menu-title">Corona Calendar</span>
+        <span class="menu-title">Agenda</span>
       </a>
     </li>
     <li class="nav-item menu-items">
@@ -74,14 +74,13 @@
         <span class="menu-icon">
           <i class="mdi mdi-account-card-details"></i>
         </span>
-        <span class="menu-title">User</span>
+        <span class="menu-title">Usuários</span>
         <i class="menu-arrow"></i>
       </a>
       <div class="collapse" id="ui-basic">
         <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="vendedor.php">Employees</a></li>
-          <li class="nav-item"> <a class="nav-link" href="clientes.php">Clients</a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/ui-features/typography.html">Typography</a></li>
+          <li class="nav-item"> <a class="nav-link" href="vendedor.php">Empregados</a></li>
+          <li class="nav-item"> <a class="nav-link" href="clientes.php">Clientes</a></li>
         </ul>
       </div>
     </li>
@@ -90,7 +89,7 @@
         <span class="menu-icon">
           <i class="mdi mdi-pill"></i>
         </span>
-        <span class="menu-title">Products</span>
+        <span class="menu-title">Produtos</span>
       </a>
     </li>
     <li class="nav-item menu-items">
@@ -109,39 +108,6 @@
         <span class="menu-title">Pedidos</span>
       </a>
     </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="assets/coronafree/template/pages/icons/mdi.html">
-        <span class="menu-icon">
-          <i class="mdi mdi-contacts"></i>
-        </span>
-        <span class="menu-title">Icons</span>
-      </a>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-        <span class="menu-icon">
-          <i class="mdi mdi-security"></i>
-        </span>
-        <span class="menu-title">User Pages</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse" id="auth">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/samples/blank-page.html"> Blank Page </a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/samples/error-404.html"> 404 </a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/samples/error-500.html"> 500 </a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/samples/login.html"> Login </a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/samples/register.html"> Register </a></li>
-        </ul>
-      </div>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="documentation">
-        <span class="menu-icon">
-          <i class="mdi mdi-file-document-box"></i>
-        </span>
-        <span class="menu-title">Documentation</span>
-      </a>
-    </li>
+    
   </ul>
 </nav>

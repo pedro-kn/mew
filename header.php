@@ -5,7 +5,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Corona Calendar</title>
+    <title>Espaço Estética</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="assets/coronafree/template/assets/vendors/mdi/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="assets/coronafree/template/assets/vendors/css/vendor.bundle.base.css">
@@ -21,7 +21,7 @@
     <!-- Layout styles -->
     <link rel="stylesheet" href="assets/coronafree/template/assets/css/style.css">
     <!-- End layout styles -->
-    <link rel="shortcut icon" href="assets/coronafree/template/assets/images/images.png" />
+    <link rel="shortcut icon" href="assets/coronafree/template/assets/images/E.webp"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
      <!-- carrega jQuery e funções do calendário -->
     <link href='assets/fullcalendarmaster/css/fullcalendar.css' rel='stylesheet' />

@@ -28,30 +28,27 @@ if (isset($_GET['a'])) {
 
 	if ($_GET["a"] == "add_event") {
 
-		$title = $_POST['title'];
-		$allDay = $_POST['allDay'];
 		$start = $_POST['start'];
 		$end = $_POST['end'];
-
 
 		//tratamento para o formato de data
 		
 			//$mes = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "0300 - (Horário Padrão de Brasília)");
 			//$mesn = array("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "");
-			/*
-			$mes = array("(Horário Padrão de Brasília)");
+			
+			$mes = array("GMT-0300 (Horário Padrão de Brasília)");
 			$mesn = array("");
+
 			$start2 = str_replace($mes, $mesn, $_POST['start']);
 			$start1 = strtotime($start2);
-			$start = date("d-m-Y H:i:s",$start1);
+			$start = date("Y-m-d\TH:i",$start1);
 
 			$end2 = str_replace($mes, $mesn, $_POST['end']);
 			$end1 = strtotime($end2);
-			$end = date("d-m-Y H:i:s",$end1);
-			*/
-
-		$res = $db->_exec("INSERT INTO agendamentos (hora_ini, hora_fim, data_agend, descricao )
-                    		VALUES ('$start','$end',LOCALTIME(),'$title' );");
+			$end = date("Y-m-d\TH:i",$end1);
+			
+		$res = $db->_exec("INSERT INTO agendamentos (hora_ini, hora_fim)
+                    		VALUES ('$start','$end');");
 
 		echo $res;
 	}
@@ -94,10 +91,21 @@ if (isset($_GET['a'])) {
 		$usuario = $_POST["usuario"];
 		$cliente = $_POST["cliente"];
 		
-		$ped = $db->_exec("INSERT INTO agendamentos (idAgendamento,idCliente,idUsuario) VALUES ('',$cliente,$usuario)");
-		
-		$age = $db->select("SELECT idAgendamento FROM agendamentos ORDER BY idAgendamento DESC LIMIT 1");
-		
+		//checa se o ultimo insert tem cliente ou não (isso interpreta se o agendamento veio via botão inset ou click na agenda)
+
+		$nullcheck = $db->select("SELECT idAgendamento, idCliente FROM agendamentos ORDER BY idAgendamento DESC LIMIT 1");
+		$id = $nullcheck[0]['idAgendamento'];
+
+		if($nullcheck[0]['idCliente']==NULL){
+			$ped= $db->_exec("UPDATE agendamentos 
+				SET idCliente = $cliente, idUsuario = $usuario
+				WHERE idAgendamento = {$id}");
+		}else{
+			$ped = $db->_exec("INSERT INTO agendamentos (idAgendamento,idCliente,idUsuario) VALUES ('',$cliente,$usuario)");
+		}
+
+		$age = $db->select("SELECT idAgendamento, hora_ini, hora_fim FROM agendamentos ORDER BY idAgendamento DESC LIMIT 1");
+
 		$s = $db->select("SELECT idPedido FROM pedidos WHERE idCliente = $cliente ORDER BY idPedido");
 		
 		if(count($s) > 0){
@@ -133,8 +141,8 @@ if (isset($_GET['a'])) {
 			echo '</thead>';
 			echo '<tbody>';
 				echo '<tr >';
-					echo '<td style="text-align: left"><input type="datetime-local" id="data_ini" name="data_ini"></input></td>';
-					echo '<td style="text-align: center"><input type="datetime-local" id="data_fim" name="data_fim"></input></td>';
+					echo '<td style="text-align: left"><input type="datetime-local" id="data_ini" name="data_ini" value="'.$age[0]["hora_ini"].'"></input></td>';
+					echo '<td style="text-align: center"><input type="datetime-local" id="data_fim" name="data_fim" value="'.$age[0]["hora_fim"].'"></input></td>';
 				echo '</tr>';
 				echo '<tr >';
 					echo '<td style="text-align: left"><input type="text" id="descricao_include" name="descricao_include"></input></td>';
@@ -153,21 +161,17 @@ if (isset($_GET['a'])) {
 	
 
 		$id = $_POST["id"];
-		$start = $_POST["start"];
-		$end = $_POST["end"];
 		$title = $_POST["title"];
 
-		$sel = $db->select("SELECT a.idUsuario, u.nome as nomeu, a.idCliente, c.nome as nomec, a.idPedido FROM agendamentos a  
+		$sel = $db->select("SELECT a.idUsuario, u.nome as nomeu, a.idCliente, c.nome as nomec, a.idPedido, a.hora_ini as horaini, a.hora_fim as horafim FROM agendamentos a  
 							INNER JOIN clientes c ON c.idCliente = a.idCliente
                             INNER JOIN usuarios u ON u.idUsuario = a.idUsuario
 							WHERE idAgendamento = $id");
 
-		
-
 		$c_retorno["id"] = $id;
 		$c_retorno["title"] = $title;	
-		$c_retorno["start"] = $start;	
-		$c_retorno["end"] = $end;
+		$c_retorno["start"] = $sel[0]["horaini"];;	
+		$c_retorno["end"] = $sel[0]["horafim"];;
 		if($sel != NULL){
 		$c_retorno["idUsuario"] = $sel[0]["idUsuario"];
 		$c_retorno["idCliente"] = $sel[0]["idCliente"];
@@ -176,6 +180,7 @@ if (isset($_GET['a'])) {
 		$c_retorno["idPedido"] = $sel[0]["idPedido"];
 		}
 		echo json_encode($c_retorno);
+		
 		
 	}
 
@@ -194,9 +199,11 @@ if (isset($_GET['a'])) {
 		$idPed = $_POST["idPed"];
 		$descricao = $_POST["descricao"];		
 		
-		if($start || $end ==""){
+		if($usuario == "" || $cliente == "" || $start == "" || $end == "" || $descricao == ""){
+			$res = 2;
+		}elseif($idPed == "" || $idPed == NULL){
 			$res = $db->_exec("UPDATE agendamentos 
-				SET idCliente = {$cliente},  idUsuario = {$usuario}, idPedido = {$idPed}, descricao = '$descricao'
+				SET idCliente = {$cliente},  idUsuario = {$usuario}, idPedido = '', hora_ini = '$start', hora_fim = '$end', descricao = '$descricao'
 				WHERE idAgendamento = {$id}");
 		}else{
 			$res = $db->_exec("UPDATE agendamentos 
@@ -211,10 +218,18 @@ if (isset($_GET['a'])) {
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if($_GET["a"] == "edit_client_auto"){
 		
-
 		$id = $_POST["id"];
-		$start = $_POST["start"];
-		$end = $_POST["end"];
+
+		$mes = array("GMT-0300 (Horário Padrão de Brasília)");
+			$mesn = array("");
+
+			$start2 = str_replace($mes, $mesn, $_POST['start']);
+			$start1 = strtotime($start2);
+			$start = date("Y-m-d\TH:i",$start1);
+
+			$end2 = str_replace($mes, $mesn, $_POST['end']);
+			$end1 = strtotime($end2);
+			$end = date("Y-m-d\TH:i",$end1);
 
 		$res = $db->_exec("UPDATE agendamentos 
 			SET hora_ini = '$start', hora_fim = '$end'
@@ -232,6 +247,19 @@ if (isset($_GET['a'])) {
 		$id = $_POST["id"];
 
 		$res = $db->_exec("DELETE FROM agendamentos WHERE idAgendamento = '{$id}'");
+		
+		echo $res;
+		
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Exclui o ultimo registro quando o insert de agendamento não foi completo corretamente
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if($_GET["a"] == "cancel_user"){
+
+		$s = $db->select("SELECT idAgendamento FROM agendamentos ORDER BY idAgendamento DESC LIMIT 1");
+		
+		$res = $db->_exec("DELETE FROM agendamentos WHERE idAgendamento = '{$s[0]['idAgendamento']}'");
 		
 		echo $res;
 		
@@ -268,6 +296,8 @@ include('navbar.php');
 			},
 			success: function retorno_ajax(retorno) {
 				$('#mod_insert').html(retorno); 
+
+
 			}
 		});
 	}
@@ -335,6 +365,30 @@ include('navbar.php');
 	}
 
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Exclui o ultimo registro quando o insert de agendamento não foi completo corretamente
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var ajax_div = $.ajax(null);
+	function cancela_insert(){
+		if(ajax_div){ ajax_div.abort(); }
+			ajax_div = $.ajax({
+			cache: false,
+			async: true,
+			url: '?a=cancel_user',
+			type: 'post',
+			data: { 
+				
+			},
+			success: function retorno_ajax(retorno) {
+				if(retorno==1){
+					location.reload();
+				}else{
+					alert("ERRO AO DELETAR ITENS! " + retorno);
+				}
+			}
+		});
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* responssavel por dar o update de valores no modal de edição:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var ajax_div = $.ajax(null);
@@ -360,6 +414,10 @@ include('navbar.php');
 				},
 				success: function retorno_ajax(retorno) {
 					alert(retorno);
+					if(retorno==2){
+						alert("ERRO AO EDITAR USUÁRIO, FAVOR INSERIR NOME DO CLIENTE DO USUÁRIO, HORÁRIOS DE AGENDAMENTO E DESCRIÇÃO! " + retorno); 
+					}
+
 					if(retorno){
 						$('#mod_formul_edit').modal('hide');
 						location.reload();
@@ -371,6 +429,15 @@ include('navbar.php');
 			});
 		
 	}
+
+	$(document).ready(function(){
+
+		$("#mod_formul").on('hide.bs.modal', function(){
+			alert('O agendamento não foi concluído e não foi salvo na agenda.');
+			cancela_insert();
+		});
+
+	});
 
 
 	$(document).ready(function() {
@@ -448,7 +515,7 @@ include('navbar.php');
 					-----------------------------------------------------------------*/
 					
 					var calendar = $('#calendar').fullCalendar({
-						
+						locale: 'pt-br',
 						header: {
 							left: 'title',
 							center: 'agendaDay,agendaWeek,month',
@@ -463,7 +530,24 @@ include('navbar.php');
 						allDayDefault: false,
 						timeFormat: 'H:mm',
 						axisFormat: 'h:mm',
+
+						ignoreTimezone: false,
+						monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+						monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+						dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sabado'],
+						dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
 						
+						buttonText: {
+							prev: "&nbsp;&#9668;&nbsp;",
+							next: "&nbsp;&#9658;&nbsp;",
+							prevYear: "&nbsp;&lt;&lt;&nbsp;",
+							nextYear: "&nbsp;&gt;&gt;&nbsp;",
+							today: "Hoje",
+							month: "Mês",
+							week: "Semana",
+							day: "Dia"
+						},
+
 						columnFormat: {
 							month: 'ddd', // Mon
 							week: 'ddd d', // Mon 7
@@ -479,23 +563,10 @@ include('navbar.php');
 						allDaySlot: false,
 						selectHelper: true,
 						select: function(start, end, allDay) {
-							$('#mod_formul').modal('show');
-							/*
-							var title = prompt('Event Title:');
-							if (title) {
-								
-								calendar.fullCalendar('renderEvent', {
-										title: title,
-										start: start,
-										end: end,
-										allDay: allDay
-									},
-									true // make the event "stick"
-								);
 
 								/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 								* Salva no banco de dados as informações de agendamentos feitos via calendário
-								* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+								* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 								var ajax_div = $.ajax(null);
 								
 									if(ajax_div){ ajax_div.abort(); }
@@ -505,22 +576,25 @@ include('navbar.php');
 										url: '?a=add_event',
 										type: 'post',
 										data: { 
-											title: title,
+
 											start: start,
 											end: end,
-											allDay: allDay
+
+										},
+										beforeSend: function(){
+											$('#mod_formul').modal('show');
 										},
 										success: function retorno_ajax(retorno) {
+											alert(retorno)
 											if(retorno){
-												alert("Agendamento realizado com sucesso!");  
+												
 											}else{
 												alert("ERRO AO CRIAR O EVENTO! " + retorno);
 											}
 										}
 									});
 							
-							}
-							calendar.fullCalendar('unselect');*/
+							
 						},
 						droppable: true, // this allows things to be dropped onto the calendar !!!
 						drop: function(date, allDay) { // this function is called when something is dropped
@@ -611,9 +685,7 @@ include('navbar.php');
 									success: function retorno_ajax(retorno) {
 										
 										if(retorno){
-											//$('#mod_formul_edit').modal('hide');
-											location.reload();
-											lista_itens_agenda();  
+											
 										}else{
 											alert("ERRO AO EDITAR USUÁRIO! " + retorno);
 										}
@@ -646,34 +718,33 @@ include('navbar.php');
 									data: { 
 										
 										id: eventsvar.id,
-										start: eventsvar.start,
-										end: eventsvar.end,
 										title: eventsvar.title,
 
 									},
 									beforeSend: function(){
 										$('#mod_formul_edit').modal("show");
+										
 									},
 									success: function retorno_ajax(retorno) {
 										
-										alert(retorno)
+								
 										var obj = JSON.parse(retorno);
-										//alert(obj.idUsuario);
-										//location.reload();
-											$("#frm_id_edit").val(obj.id);
-											
-											if(obj.nomec != undefined){
-											
-												$("#frm_val1_edit_option").html(obj.nomeu);
-												$("#frm_val2_edit_option").html(obj.nomec);
-												$("#frm_val1_edit_option").val(obj.idUsuario);
-												$("#frm_val2_edit_option").val(obj.idCliente);
-											}
 
-											$("#frm_val3_title_display").val(obj.start);
-											$("#frm_val4_title_display").val(obj.end);	
-											$("#frm_val5_edit").val(obj.idPedido);	
-											$("#frm_val6_edit").val(obj.title);	
+										$("#frm_id_edit").val(obj.id);
+										
+										if(obj.nomec != undefined){
+										
+											$("#frm_val1_edit_option").html(obj.nomeu);
+											$("#frm_val2_edit_option").html(obj.nomec);
+											$("#frm_val1_edit_option").val(obj.idUsuario);
+											$("#frm_val2_edit_option").val(obj.idCliente);
+										}
+										
+										$("#frm_val3_edit").val(obj.start)
+										$("#frm_val4_edit").val(obj.end);
+
+										$("#frm_val5_edit").val(obj.idPedido);	
+										$("#frm_val6_edit").val(obj.title);	
  
 										
 									}
@@ -906,20 +977,21 @@ include('navbar.php');
                             <h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
                         </div>
                         <div>
-                            <h5 id="div_edit_title"></h5>
+                            <h5 id="div_edit_title" style="text-align: center">Agendamento</h5>
                         </div>
                     </div>
                     <button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="location.reload();">X</button>
                 </div>
                 <div class="modal-body modal-dialog-scrollable">
-                    <form id="frm_general_exib" name="frm_general">
+                    <form id="frm_general_exib" name="frm_general" class="container-fluid" style="display: grid; align-items: center">
                         <div class="row">
 
                             <div class="col">
                                 <input type="text" style="text-align: left" aria-describedby="frm_id_edit" class="form-control form-control-lg" name="frm_id_edit" id="frm_id_edit" hidden>
-                                
-                                <label for="frm_val1_edit" class="form-label">Usuário:</label>
-                                    <div class="scrollable">
+                                <div class="col" style="text-align: left">
+                                	<label for="frm_val1_edit" class="form-label">Usuário:</label>
+                                </div>    
+									<div class="scrollable">
                                     <select id="frm_val1_edit" value=""  class="select form-control form-control-lg" aria-describedby="frm_val1_edit" name="frm_val1_edit" type="text" style="color: #ffffff">
                                         <option id="frm_val1_edit_option" value="" selected></option>
                                         <?php
@@ -933,8 +1005,9 @@ include('navbar.php');
                             </div>
                         
                             <div class="col">
-                                <label for="frm_val2_edit" class="form-label">Cliente:</label>
-                                
+								<div class="col" style="text-align: left">
+									<label for="frm_val2_edit" class="form-label">Cliente:</label>
+								</div>
                                     <div class="scrollable">
                                     <select id="frm_val2_edit"  class="select form-control form-control-lg" aria-describedby="frm_val2_edit" name="frm_val2_edit" type="text" placeholder="" style="color: #ffffff">
                                         <option id="frm_val2_edit_option" value="" selected></option>
@@ -951,25 +1024,33 @@ include('navbar.php');
 
                         <div class="row ">
                             <div class="col">
-                                <label for="frm_val3_edit" class="form-label">Hora de Início: <input type="text" id="frm_val3_title_display" disabled></input></label>
-                                <input type="datetime-local" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val3_edit" class="form-control form-control-lg" name="frm_val3_edit" id="frm_val3_edit" placeholder="">
+								<div class="col" style="text-align: left">
+									<label for="frm_val3_edit" class="form-label">Hora de Início:</label>
+								</div>
+								<input type="datetime-local" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val3_edit" class="form-control form-control-lg" name="frm_val3_edit" id="frm_val3_edit">
                             </div>
 
                             <div class="col">
-                                <label for="frm_val4_edit" class="form-label">Hora de Fim: <input type="text" id="frm_val4_title_display" disabled></input></label>
-                                <input type="datetime-local" value="" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val4_edit" class="form-control form-control-lg" name="frm_val4_edit" id="frm_val4_edit" placeholder="">
+								<div class="col" style="text-align: left">
+									<label for="frm_val4_edit" class="form-label">Hora de Fim:</label>
+								</div>
+								<input type="datetime-local" value="" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val4_edit" class="form-control form-control-lg" name="frm_val4_edit" id="frm_val4_edit">
                             </div>
                         </div>	
 
                         <div class="row">					
                             <div class="col">
-                                <label for="frm_val5_edit" class="form-label">Número do Pedido Associado:</label>
-                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val5_edit" class="form-control form-control-lg" name="frm_val5_edit" id="frm_val5_edit" placeholder="">
+								<div class="col" style="text-align: left">
+									<label for="frm_val5_edit" class="form-label">Número do Pedido Associado:</label>
+								</div>
+								<input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val5_edit" class="form-control form-control-lg" name="frm_val5_edit" id="frm_val5_edit" placeholder="">
                             </div>
 
                             <div class="col mb-6">
-                                <label for="frm_val6_edit" class="form-label">Observações:</label>
-                                <input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val6_edit" class="form-control form-control-lg" name="frm_val6_edit" id="frm_val6_edit" placeholder="">
+								<div class="col" style="text-align: left">
+									<label for="frm_val6_edit" class="form-label">Observações:</label>
+								</div>
+								<input type="text" style="text-align: left; background-color:#2A3038" aria-describedby="frm_val6_edit" class="form-control form-control-lg" name="frm_val6_edit" id="frm_val6_edit" placeholder="">
                             </div>
                         </div>
                     </form>
