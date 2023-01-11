@@ -13,7 +13,9 @@ if (isset($_GET['a'])) {
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if($_GET["a"] == "lista_agenda"){
 
-		$res = $db->select("SELECT idAgendamento, idUsuario, idCliente, idPedido, hora_ini, hora_fim, data_agend, descricao FROM agendamentos");
+		$res = $db->select("SELECT idAgendamento, idUsuario, a.idCliente, c.idCliente, c.nome, idPedido, hora_ini, hora_fim, data_agend, descricao 
+							FROM agendamentos a
+							INNER JOIN clientes c WHERE c.idCliente = a.idCliente");
 
 		$count = count($res);
 		$res["count"]=$count;
@@ -145,9 +147,12 @@ if (isset($_GET['a'])) {
 					echo '<td style="text-align: center"><input type="datetime-local" id="data_fim" name="data_fim" value="'.$age[0]["hora_fim"].'"></input></td>';
 				echo '</tr>';
 				echo '<tr >';
+					echo '<th style="text-align: center">Descrição:</th>';
+				echo '</tr>';
+				echo '<tr >';
 					echo '<td style="text-align: left"><input type="text" id="descricao_include" name="descricao_include"></input></td>';
 					echo '<td><input id="idagend" value="'.$age[0]["idAgendamento"].'" hidden></input></td>';
-					echo '</tr>';
+				echo '</tr>';
 			echo '</tbody>';
 		echo '</table>';
 		echo '</div>';
@@ -197,10 +202,15 @@ if (isset($_GET['a'])) {
 		$start = $_POST["start"];
 		$end = $_POST["end"];
 		$idPed = $_POST["idPed"];
-		$descricao = $_POST["descricao"];		
+		$descricao = $_POST["descricao"];
+		
+		$start1 = floatval(preg_replace('/[^0-9]/', '', $start));
+		$end1 = floatval(preg_replace('/[^0-9]/', '', $end));
 		
 		if($usuario == "" || $cliente == "" || $start == "" || $end == "" || $descricao == ""){
 			$res = 2;
+		}elseif($end1 < $start1){
+			$res = 3;
 		}elseif($idPed == "" || $idPed == NULL){
 			$res = $db->_exec("UPDATE agendamentos 
 				SET idCliente = {$cliente},  idUsuario = {$usuario}, idPedido = '', hora_ini = '$start', hora_fim = '$end', descricao = '$descricao'
@@ -413,11 +423,13 @@ include('navbar.php');
 					$('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
 				},
 				success: function retorno_ajax(retorno) {
-					alert(retorno);
-					if(retorno==2){
-						alert("ERRO AO EDITAR USUÁRIO, FAVOR INSERIR NOME DO CLIENTE DO USUÁRIO, HORÁRIOS DE AGENDAMENTO E DESCRIÇÃO! " + retorno); 
-					}
 
+					if(retorno==3){
+						alert("ERRO AO EDITAR AGENDAMENTO, A HORA DE FIM PRECISA SER DEPOIS DA HORA DE INÍCIO! " + retorno); 
+					}
+					if(retorno==2){
+						alert("ERRO AO EDITAR AGENDAMENTO, FAVOR INSERIR NOME DO CLIENTE DO USUÁRIO, HORÁRIOS DE AGENDAMENTO E DESCRIÇÃO! " + retorno); 
+					}
 					if(retorno){
 						$('#mod_formul_edit').modal('hide');
 						location.reload();
@@ -433,7 +445,7 @@ include('navbar.php');
 	$(document).ready(function(){
 
 		$("#mod_formul").on('hide.bs.modal', function(){
-			alert('O agendamento não foi concluído e não foi salvo na agenda.');
+			alert('O agendamento não foi concluído e portanto não foi salvo na agenda.');
 			cancela_insert();
 		});
 
@@ -500,10 +512,11 @@ include('navbar.php');
 					for(var i=0; i<objlista.count; i++){
 
 						objagend = { id: objlista[i].idAgendamento, 
-									 title: objlista[i].descricao, 
+									 title: objlista[i].nome + '\n' + objlista[i].descricao, 
 								 	 start: objlista[i].hora_ini, 
 								 	 end: objlista[i].hora_fim, 
-									 className: 'info'};
+									 className: 'info',
+									 textColor: '#FFFFFF'};
 	
 						eventsvar.push(objagend);
 						
@@ -524,7 +537,7 @@ include('navbar.php');
 						editable: true,
 						firstDay: 0, //  1(Monday) this can be changed to 0(Sunday) for the USA system
 						selectable: true,
-						defaultView: 'month',
+						defaultView: 'agendaWeek',
 						editable: true,
 						eventLimit: true,
 						allDayDefault: false,
@@ -753,12 +766,14 @@ include('navbar.php');
 							
 
 						},
-
+						
 						events: [
 						
 						],
-
-						eventColor: '#422FD6'
+						
+						eventColor: '#422FD6',
+						
+						
 						
 					});
 				} // fim da success do lista itens agenda

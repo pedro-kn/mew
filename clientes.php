@@ -43,7 +43,7 @@ if (isset($_GET["a"])) {
 			echo '<tbody>';
 			foreach ($res as $r) {
 
-				echo '<tr>';
+				echo '<tr onclick="get_item_rel('. $r["idCliente"] .')">';
 				echo '<td style="text-align: left">' . $r["nome"] . '</td>';
 				echo '<td style="text-align: center">' . $r["cpf"] . '</td>';
 				echo '<td style="text-align: center">' . $r["telefone"] . '</td>';
@@ -142,6 +142,177 @@ if (isset($_GET["a"])) {
 		}
 	}
 
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Busca conteúdo para exibição no modal de relatorio:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if ($_GET["a"] == "get_relatorio") {
+
+		$id = $_POST["id"];
+
+		$sel = $db->select("SELECT a.idAvaliacoes, a.descricao, c.nome as nome, a.idCliente, c.idCliente FROM avaliacoes a
+                            INNER JOIN clientes c ON c.idCliente = a.idCliente
+							WHERE a.idCliente = '{$id}'");
+		
+			echo '<div class="col-md-12 grid-margin stretch-card">';
+				echo '<div class="card">';
+					echo '<div class="card-body">';
+						if(count($sel)>0){
+							echo '<div class="row justify-content-between">';
+								echo '<div class="col-10">';
+									echo '<h4 class="card-title">Relatorios de '. $sel[0]['nome'] .'</h4>';
+								echo '</div>';
+								echo '<div class="col-2">';
+									echo '<button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$("#mod_formul_relatorio").modal("hide");">X</button>';
+								echo '</div>';
+							echo '</div>';
+							foreach($sel as $s){
+							echo '<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">';
+								echo '<div onclick="get_rel(\'' . $s["idAvaliacoes"] . '\')" class="text-md-center text-xl-left">';
+									echo '<h6 class="mb-1">'.$s['descricao'].'</h6>';
+									echo '<p class="text-muted mb-0">'.$s['nome'].'</p>';
+								echo '</div>';
+								echo '<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">';
+									echo '<i title="Deletar" onclick="del_ava(\'' . $s["idAvaliacoes"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
+									echo '</div>';
+							echo '</div>';
+							}
+						}else{
+							echo '<div class="alert alert-warning" role="alert">';
+								echo 'Nenhum registro localizado!';
+							echo '</div>';
+							}
+						/*
+						echo '<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">';
+							echo '<div class="text-md-center text-xl-left">';
+								echo '<h6 class="mb-1">Tranfer to Stripe</h6>';
+								echo '<p class="text-muted mb-0">07 Jan 2019, 09:12AM</p>';
+							echo '</div>';
+							echo '<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">';
+								echo '<h6 class="font-weight-bold mb-0">$593</h6>';
+							echo '</div>';
+						echo '</div>';*/
+
+					echo '</div>';
+				echo '</div>';
+			echo '</div>';
+		
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Busca detalhes do relatorio selecionado:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	if ($_GET["a"] == "get_rel_det") {
+
+		$id = $_POST["id"];
+
+        $res = $db->select("SELECT c.nome as nomec, v.nome as nomev, a.descricao as descricao, a.stats as stats
+                        FROM avaliacoes a
+                        INNER JOIN clientes c ON c.idCliente = a.idCliente
+                        INNER JOIN usuarios v ON v.idUsuario = a.idUsuario
+                        WHERE a.idAvaliacoes = '{$id}'");
+        
+        $sel = $db->select("SELECT l.idLPA, l.idPergunta, l.idAvaliacoes, p.pergunta
+                        FROM list_perg_ava l 
+                        INNER JOIN perguntas p ON p.idPergunta = l.idPergunta
+                        WHERE l.idAvaliacoes = '{$id}'");
+
+        $sel1 = $db->select("SELECT r.resposta
+                        FROM list_perg_ava l 
+                        INNER JOIN resp_ava r ON r.idLPA = l.idLPA
+                        WHERE l.idAvaliacoes = '{$id}'");
+        
+        //monta o corpo de exibição de cada avaliação
+
+        $body = "";
+
+        //$body .= '<div class="row">';
+            $body .= '<div class=" col-md-12 grid-margin stretch-card">';
+                $body .= '<div class="card">';
+                    $body .= '<div class="card-body">';
+                        $body .= '<div class="d-flex flex-row justify-content-between">';
+                        $body .= '<h4 class="card-title mb-1">'.$res[0]['descricao'].'</h4>';
+						if($res[0]['stats']!==2){
+							$body .= '<h6 class="card-title mb-1">Respostas Pendentes!</h6>';
+						}   
+                            $body .= '</div>';
+                            $body .= '<div class="row">';
+                                $body .= '<div class="col-6">';
+                                $body .= '<p class="text-muted mb-0">Usuário:</p>';
+                                $body .= '<h6 class="mb-1">'.$res[0]['nomev'].'</h6>';
+                            $body .= '</div>'; 
+                            $body .= '<div class="col-6">';
+                                $body .= '<p class="text-muted mb-0">Cliente:</p>';
+                                $body .= '<h6 class="mb-1">'.$res[0]['nomec'].'</h6>';
+                            $body .= '</div>'; 
+                        $body .= '</div>';
+                            $body .= '<div class="row">';
+                            $body .= '<div class="col-12">';
+
+                                if($sel>0){
+                                $countr = 0;
+                                $array_res = array();
+                                foreach($sel as $s){
+                                        $countr++;
+                                        $body .= '<div class="preview-list">';
+                                            $body .= '<div class="preview-item border-bottom">';
+                                                $body .= '<div class="preview-thumbnail">';
+                                                $body .= '<i class="mdi mdi-chevron-double-right"></i>';
+                                            $body .= '</div>';
+                                            $body .= '<div class="preview-item-content d-sm-flex flex-grow">';
+                                                $body .= '<div class="flex-grow">';
+                                                $body .= '<h6 class="preview-subject">'.$s['pergunta'].'</h6>';
+                                                $body .= '<input id="resp_input'.$countr.'" "type="text" size="60"';
+                                                    //if($res[0]['stats']==2){
+                                                        $body .= 'disabled';
+                                                    //}
+                                                $body .= '>';
+                                            $body .= '</div>';
+                                            $body .= '<td style="text-align: center">';
+                                                $body .= '<i title="Deletar" onclick="del_perg_ava(\'' . $s["idLPA"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
+                                                    
+                                            $body .= '</td>';
+                                            $body .= '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
+                                                $body .= '<p class="text-muted">'.$countr.'</p>';
+                                            $body .= '</div>';
+                                        $body .= '</div>';
+                                    $body .= '</div>';
+                                $body .= '</div>';
+                                }  
+                                }else{
+                                $body .= '<div class="alert alert-warning" role="alert">';
+                                    $body .= 'Nenhum registro localizado!';
+                                $body .= '</div>';
+                                }
+                            $body .= '</div>';
+                        $body .= '</div>';
+                    $body .= '<div class="modal-footer">';
+
+                    $body .= '</div>';
+                $body .= '</div>';
+            $body .= '</div>';
+        $body .= '</div>';
+    //$body .= '</div>';
+
+    //exibe as respostas nos campos de input
+
+
+
+    //$retorno["body"]=json_encode($body);
+    $retorno["body"]=$body;
+    //$retorno["idLPA"]=json_encode($array_res);
+    //foreach($sel1 as $s){
+
+        $retorno["resp"]=$sel1;
+
+    //}
+    $retorno["count"]=$countr;
+    
+    
+    echo json_encode($retorno);
+    //echo $retorno["body"];
+        
+	}
+
 	die();
 }
 
@@ -211,6 +382,15 @@ include('navbar.php');
 		lista_itens();
 	});
 
+	// ifnalizacao das divs em aberto no modal de relatorio
+	$(document).ready(function(){
+
+		$("#mod_formul_relatorio").on('hide.bs.modal', function(){
+			location.reload();
+		});
+
+	});
+
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* Pesquisar itens:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -241,6 +421,63 @@ include('navbar.php');
 					$("#frm_email_edit").val(obj_ret[0].email);	
 					$("#frm_obs_edit").val(obj_ret[0].obs);
 				}
+			}
+		});
+	}
+
+	 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Pesquisar itens:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var ajax_div = $.ajax(null);
+	const get_rel = (id) => {
+        if(ajax_div){ ajax_div.abort(); }
+		ajax_div = $.ajax({
+			cache: false,
+			async: true,
+			url: '?a=get_rel_det',
+			type: 'post',
+			data: { 
+                id: id,
+            },
+			beforeSend: function(){
+                $('#div_relatorio2').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
+            },
+            success: function retorno_ajax(retorno) {
+                
+                var obj = JSON.parse(retorno);
+                var objbody = obj.body;
+                var objresp = obj.resp;
+
+                $('#div_relatorio2').html(objbody);
+
+                for(var i=1;i<=obj.count;i++){
+                    if(objresp[i-1].resposta!==undefined){
+                        $('#resp_input'+i+'').val(objresp[i-1].resposta);
+                    }
+                }
+			}
+		});
+	}
+
+	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	* Pesquisar itens para o modal de relatorios:
+	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+	var ajax_div = $.ajax(null);
+	const get_item_rel = (id) => {
+        if(ajax_div){ ajax_div.abort(); }
+		ajax_div = $.ajax({
+			cache: false,
+			async: true,
+			url: '?a=get_relatorio',
+			type: 'post',
+			data: { 
+                id: id,
+            },
+			beforeSend: function(){
+                $('#mod_formul_relatorio').modal("show");
+			},
+			success: function retorno_ajax(retorno) {
+				$('#div_relatorio').html(retorno); 
 			}
 		});
 	}
@@ -444,6 +681,37 @@ include('navbar.php');
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" onclick="$('#mod_formul_edit').modal('hide');">Cancelar</button>
 					<button type="button" class="btn btn-primary" id="frm_OK" onclick="editUser();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal formulário de relatorioo -->
+	<div class="modal" id="mod_formul_relatorio">
+		
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 70%;">
+			<div class="modal-content">
+				<div class="modal-header" style="align-items: center">
+					<div style="display: flex; align-items: center">
+						<div style="margin-right: 5px">
+							<h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
+						</div>
+						<div>
+							<h5 id="tit_frm_formul_edit" class="modal-title">Relatorios</h5>
+						</div>
+					</div>
+					<button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul_relatorio').modal('hide');">X</button>
+				</div>
+				<div class="row">
+					<div class="col-md-4">
+						<div id="div_relatorio"></div>
+					</div>
+					<div class="col-md-8">
+						<div id="div_relatorio2"></div>
+					</div>
+				</div>
+				
+				<div class="modal-footer">
 				</div>
 			</div>
 		</div>

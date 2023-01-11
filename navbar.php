@@ -12,7 +12,7 @@
         <ul class="navbar-nav navbar-nav-right">
         
         <li class="nav-item nav-settings d-none d-lg-block">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="assets/coronafree/template/index.html">
             <i class="mdi mdi-view-grid"></i>
             </a>
         </li>
@@ -105,10 +105,10 @@
             </div>
         </li>
         <li class="nav-item dropdown">
-            <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
+            <a class="nav-link" id="profileDropdown" href="" data-toggle="dropdown">
             <div class="navbar-profile">
                 <img class="img-xs rounded-circle" src="assets/coronafree/template/assets/images/faces/pedro.jpeg" alt="">
-                <p class="mb-0 d-none d-sm-block navbar-profile-name">Pedro Kneubuehler</p>
+                <p class="mb-0 d-none d-sm-block navbar-profile-name">Faça o Login!</p>
                 <i class="mdi mdi-menu-down d-none d-sm-block"></i>
             </div>
             </a>
@@ -126,14 +126,14 @@
                 </div>
             </a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item preview-item">
+            <a class="dropdown-item preview-item" href="login.php">
                 <div class="preview-thumbnail">
                 <div class="preview-icon bg-dark rounded-circle">
                     <i class="mdi mdi-logout text-danger"></i>
                 </div>
                 </div>
-                <div class="preview-item-content">
-                <p class="preview-subject mb-1">Log out</p>
+                <div class="preview-item-content" >
+               <p class="preview-subject mb-1">Log in</p>
                 </div>
             </a>
             <div class="dropdown-divider"></div>

@@ -15,7 +15,8 @@ if (isset($_GET["a"])) {
 
 	if ($_GET["a"] == "lista_user") {
 
-        $sel = $db->select("SELECT * FROM avaliacoes");
+        $sel = $db->select("SELECT a.idAvaliacoes, a.descricao, c.nome, a.idCliente, c.idCliente FROM avaliacoes a
+                            INNER JOIN clientes c WHERE c.idCliente = a.idCliente");
 
 		$res = $db->select("SELECT * FROM perguntas");
 
@@ -30,7 +31,7 @@ if (isset($_GET["a"])) {
                             echo '<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">';
                                 echo '<div onclick="get_item(\'' . $s["idAvaliacoes"] . '\')" class="text-md-center text-xl-left">';
                                     echo '<h6 class="mb-1">'.$s['descricao'].'</h6>';
-                                    echo '<p class="text-muted mb-0">'.$s['data_hora'].'</p>';
+                                    echo '<p class="text-muted mb-0">'.$s['nome'].'</p>';
                                 echo '</div>';
                                 echo '<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">';
                                     echo '<i title="Deletar" onclick="del_ava(\'' . $s["idAvaliacoes"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
@@ -372,9 +373,11 @@ if (isset($_GET["a"])) {
     //$retorno["body"]=json_encode($body);
     $retorno["body"]=$body;
     //$retorno["idLPA"]=json_encode($array_res);
-    foreach($sel1 as $s){
+    //foreach($sel1 as $s){
+
         $retorno["resp"]=$sel1;
-    }
+
+    //}
     $retorno["count"]=$countr;
     
     
@@ -592,16 +595,14 @@ include('navbar.php');
                 var obj = JSON.parse(retorno);
                 var objbody = obj.body;
                 var objresp = obj.resp;
-                console.log(objresp[0])
 
                 $('#div_conteudo2').html(objbody);
-                //$('#resp_input1').val(objresp);
-                
+
                 for(var i=1;i<=obj.count;i++){
-                    $('#resp_input'+i+'').val(objresp[i-1].resposta);
+                    if(objresp[i-1].resposta!==undefined){
+                        $('#resp_input'+i+'').val(objresp[i-1].resposta);
+                    }
                 }
-                
-			
 			}
 		});
 	}
