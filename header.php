@@ -1,3 +1,24 @@
+<?php
+     //FUNÇOES PARA LOGOUT DE USUARIOS (COOKIES ESTAO SENDO SETADOS EM login.php)
+     function logOut() {
+        //setcookie('userDetails[username]',"", time()-1200);
+
+        setcookie("idUsuario","", time()-1200);
+        setcookie("nome","", time()-1200);
+        setcookie("senha","", time()-1200);
+        setcookie("permissao","", time()-1200);
+        //unset($_COOKIE);
+    }
+
+    if ('POST' === $_SERVER['REQUEST_METHOD'])
+    {
+        logOut();
+        header('Location: ./login.php');
+        exit;    
+    }
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
   
@@ -39,7 +60,9 @@
 		
 		<link href="./assets/bootstrap/js/bootstrap.min.js" rel="stylesheet">
   
+    
   </head>
+  
  
     <div class="container-scroller">
       

@@ -72,10 +72,11 @@ if (isset($_GET["a"])) {
 		$nome = $_POST["nome"];
 		$telefone = $_POST["telefone"];
 		$email = $_POST["email"];
+		$senha = md5($_POST["senha"]);
 		$status = 1;
 		
 
-		$res = $db->_exec("INSERT INTO usuarios (idUsuario,nome,telefone,email,statuscli) VALUES ('','$nome','$telefone','$email','$status')");
+		$res = $db->_exec("INSERT INTO usuarios (idUsuario,nome,telefone,email,statuscli,senha) VALUES ('','$nome','$telefone','$email','$status','$senha')");
 
 		echo $res;
 	}
@@ -90,9 +91,10 @@ if (isset($_GET["a"])) {
 		$nome = $_POST["nome"];
 		$telefone = $_POST["telefone"];
 		$email = $_POST["email"];
+		$senha = md5($_POST["senha"]);
 
 		$res = $db->_exec("UPDATE usuarios 
-			SET idUsuario = '{$id}', nome = '{$nome}', telefone = '{$telefone}', email = '{$email}'
+			SET idUsuario = '{$id}', nome = '{$nome}', telefone = '{$telefone}', email = '{$email}', senha = '{$senha}'
 			WHERE idUsuario = '{$id}'");
 
 		echo $res;
@@ -177,6 +179,7 @@ include('navbar.php');
                 nome: $('#Nome').val(),
                 telefone: $('#phone').val(),
                 email: $('#email').val(),
+				senha: $('#senha').val(),
             },
 			beforeSend: function(){
 
@@ -247,6 +250,7 @@ include('navbar.php');
                 nome: $("#frm_nome_edit").val(),
                 telefone: $("#frm_phone_edit").val(),
                 email: $("#frm_email_edit").val(),
+				senha: $("#frm_senha_edit").val(),
             },
 			beforeSend: function(){
                 $('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
@@ -346,6 +350,13 @@ include('navbar.php');
 								<small>Exemplo: joao12@endereco.com</small><br><br>	
 							</div>
 						</div>
+						<div class="row">
+							<div class="col">
+								<label for="Comissão" class="form-label">Senha:</label>
+								<input type="password" style="text-align: left" aria-describedby="email" class="form-control form-control-lg" name="email" id="email" placeholder="">
+								
+							</div>
+						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
@@ -392,6 +403,12 @@ include('navbar.php');
 							<div class="col">
 								<label for="frm_email_edit" class="form-label">E-mail:</label>
 								<input type="text" style="text-align: left" aria-describedby="frm_email_edit" class="form-control form-control-lg" name="frm_email_edit" id="frm_email_edit" placeholder="">
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col">
+								<label for="frm_senha_edit" class="form-label">Senha:</label>
+								<input type="password" style="text-align: left" aria-describedby="frm_senha_edit" class="form-control form-control-lg" name="frm_senha_edit" id="frm_senha_edit" placeholder="">
 							</div>
 						</div>
 					</form>

@@ -13,12 +13,22 @@
       <div class="profile-desc">
         <div class="profile-pic">
           <div class="count-indicator">
-            <img class="img-xs rounded-circle " src="assets/coronafree/template/assets/images/faces/pedro.jpeg" alt="">
+            <img class="img-xs rounded-circle " src="assets/coronafree/template/assets/images/faces/user.png" alt="">
             <span class="count bg-success"></span>
           </div>
           <div class="profile-name">
-            <h5 class="mb-0 font-weight-normal">Pedro Kneubuehler</h5>
-            <span>Key Member</span>
+
+          <?php
+            if(!empty($_COOKIE['nome'])){
+              echo '<h5 class="mb-0 font-weight-normal">'.$_COOKIE['nome'].'</h5>';
+              echo '<span>Usuario Nível '.$_COOKIE['permissao'].'</span>';
+            }else{
+              echo '<a href="./login.php">';
+              echo '<h5 class="mb-0 font-weight-normal">Faça o Login!</h5>';
+              echo '<span>Clique aqui para o Login</span>';
+              echo '</a>';
+            }
+          ?>
           </div>
         </div>
         <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
