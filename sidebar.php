@@ -21,7 +21,10 @@
           <?php
             if(!empty($_COOKIE['nome'])){
               echo '<h5 class="mb-0 font-weight-normal">'.$_COOKIE['nome'].'</h5>';
-              echo '<span>Usuario Nível '.$_COOKIE['permissao'].'</span>';
+              echo '<span>';
+				if($_COOKIE['permissao']==1){echo 'Usuário';}
+				elseif($_COOKIE['permissao']==2){echo 'Gerente';}
+			  echo '</span>';
             }else{
               echo '<a href="./login.php">';
               echo '<h5 class="mb-0 font-weight-normal">Faça o Login!</h5>';
@@ -68,56 +71,109 @@
         </div>
       </div>
     </li>
-    <li class="nav-item nav-category">
-      <span class="nav-link">Navegação</span>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="fullcalendar.php">
-        <span class="menu-icon">
-          <i class="mdi mdi-calendar"></i>
-        </span>
-        <span class="menu-title">Agenda</span>
-      </a>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-        <span class="menu-icon">
-          <i class="mdi mdi-account-card-details"></i>
-        </span>
-        <span class="menu-title">Usuários</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse" id="ui-basic">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="vendedor.php">Empregados</a></li>
-          <li class="nav-item"> <a class="nav-link" href="clientes.php">Clientes</a></li>
-        </ul>
-      </div>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="produtos.php">
-        <span class="menu-icon">
-          <i class="mdi mdi-pill"></i>
-        </span>
-        <span class="menu-title">Produtos</span>
-      </a>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="avaliacoes.php">
-        <span class="menu-icon">
-          <i class="mdi mdi-nutrition"></i>
-        </span>
-        <span class="menu-title">Avaliações</span>
-      </a>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="pedidos.php">
-        <span class="menu-icon">
-          <i class="mdi mdi-note-text"></i>
-        </span>
-        <span class="menu-title">Pedidos</span>
-      </a>
-    </li>
-    
+    <div <?php if(empty($_COOKIE['nome'])){echo "hidden";}?>>
+		<li class="nav-item nav-category">
+		<span class="nav-link">Navegação</span>
+		</li>
+
+		<li class="nav-item menu-items">
+			<?php 
+				$link = "fullcalendar.php"; 
+				if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+					echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				}else{ 
+					echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				} 
+			?>
+				<span class="menu-icon">
+					<i class="mdi mdi-calendar"></i>
+				</span>
+			<span class="menu-title">Agenda</span>
+			</a>
+		</li>        
+
+		<li class="nav-item menu-items">
+		<a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+			<span class="menu-icon">
+			<i class="mdi mdi-account-card-details"></i>
+			</span>
+			<span class="menu-title">Usuários</span>
+			<i class="menu-arrow"></i>
+		</a>
+		<div class="collapse" id="ui-basic">
+			<ul class="nav flex-column sub-menu">
+				<div <?php if($_COOKIE['permissao']==1){echo "hidden";}?>>
+					<li class="nav-item">
+						<?php 
+							$link = "vendedor.php"; 
+							if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+								echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">Funcionários'; 
+							}else{ 
+								echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">Funcionários'; 
+							} 
+						?>
+						</a>
+					</li>
+				</div>
+				<li class="nav-item">
+					<?php 
+						$link = "clientes.php"; 
+						if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+							echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">Clientes'; 
+						}else{ 
+							echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">Clientes'; 
+						} 
+					?> 
+					</a>
+				</li>
+			</ul>
+		</div>
+		</li>
+		<li class="nav-item menu-items">
+			<?php 
+				$link = "produtos.php"; 
+				if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+					echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				}else{ 
+					echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				} 
+			?>
+			<span class="menu-icon">
+			<i class="mdi mdi-pill"></i>
+			</span>
+			<span class="menu-title">Produtos</span>
+		</a>
+		</li>
+		<li class="nav-item menu-items">
+			<?php 
+				$link = "avaliacoes.php"; 
+				if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+					echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				}else{ 
+					echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				} 
+			?>
+			<span class="menu-icon">
+			<i class="mdi mdi-nutrition"></i>
+			</span>
+			<span class="menu-title">Avaliações</span>
+		</a>
+		</li>
+		<li class="nav-item menu-items">
+			<?php 
+				$link = "pedidos.php"; 
+				if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+					echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				}else{ 
+					echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				} 
+			?>
+			<span class="menu-icon">
+			<i class="mdi mdi-note-text"></i>
+			</span>
+			<span class="menu-title">Pedidos</span>
+		</a>
+		</li>
+	</div>
   </ul>
 </nav>

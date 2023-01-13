@@ -12,8 +12,7 @@ if (isset($_GET["a"])) {
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* Buscar conteúdo:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-
+	
 	if ($_GET["a"] == "lista_user") {
 
 		$pesquisa = $_POST['pesq'];
@@ -35,9 +34,11 @@ if (isset($_GET["a"])) {
 			echo '<th style="text-align: center">Telefone</th>';
 			echo '<th style="text-align: center">E-mail</th>';
 			echo '<th style="text-align: center">Observação</th>';
-			echo '<th style="text-align: center">Status</th>';
-			echo '<th style="text-align: center">Editar</th>';
-			echo '<th style="text-align: center">Deletar</th>';
+			if($_COOKIE['permissao']==2){
+				echo '<th style="text-align: center">Status</th>';
+				echo '<th style="text-align: center">Editar</th>';
+				echo '<th style="text-align: center">Deletar</th>';
+			}
 			echo '</tr>';
 			echo '</thead>';
 			echo '<tbody>';
@@ -49,13 +50,15 @@ if (isset($_GET["a"])) {
 				echo '<td style="text-align: center">' . $r["telefone"] . '</td>';
 				echo '<td style="text-align: center">' . $r["email"] . '</td>';
 				echo '<td style="text-align: center">' . $r["obs"] . '</td>';
-				echo '<td style="text-align: center">' . $r["statuscli"] . '</td>';
-				echo '<td style="text-align: center">';
-				echo '<i title="Editar" onclick="get_item(\'' . $r["idCliente"] . '\')" class="mdi mdi-table-edit" style="cursor: pointer"></i>';
-				echo '</td>';
-				echo '<td style="text-align: center">';
-				echo '<i title="Deletar" onclick="del_item(\'' . $r["idCliente"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
-				echo '</td>';
+				if($_COOKIE['permissao']==2){
+					echo '<td style="text-align: center">' . $r["statuscli"] . '</td>';
+					echo '<td style="text-align: center">';
+					echo '<i title="Editar" onclick="get_item(\'' . $r["idCliente"] . '\')" class="mdi mdi-table-edit" style="cursor: pointer"></i>';
+					echo '</td>';
+					echo '<td style="text-align: center">';
+					echo '<i title="Deletar" onclick="del_item(\'' . $r["idCliente"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
+					echo '</td>';
+				}
 				echo '</tr>';
 			}
 			echo '</tbody>';
@@ -111,7 +114,6 @@ if (isset($_GET["a"])) {
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "del_user") {
 
-
 		$id = $_POST["id"];
 
 		$res = $db->_exec("DELETE FROM clientes WHERE idCliente = '{$id}'");
@@ -123,7 +125,6 @@ if (isset($_GET["a"])) {
 	* Busca conteúdo:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "get_user") {
-
 
 		$id = $_POST["id"];
 
@@ -181,16 +182,6 @@ if (isset($_GET["a"])) {
 								echo 'Nenhum registro localizado!';
 							echo '</div>';
 							}
-						/*
-						echo '<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">';
-							echo '<div class="text-md-center text-xl-left">';
-								echo '<h6 class="mb-1">Tranfer to Stripe</h6>';
-								echo '<p class="text-muted mb-0">07 Jan 2019, 09:12AM</p>';
-							echo '</div>';
-							echo '<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">';
-								echo '<h6 class="font-weight-bold mb-0">$593</h6>';
-							echo '</div>';
-						echo '</div>';*/
 
 					echo '</div>';
 				echo '</div>';
@@ -295,22 +286,12 @@ if (isset($_GET["a"])) {
 
     //exibe as respostas nos campos de input
 
-
-
-    //$retorno["body"]=json_encode($body);
     $retorno["body"]=$body;
-    //$retorno["idLPA"]=json_encode($array_res);
-    //foreach($sel1 as $s){
-
-        $retorno["resp"]=$sel1;
-
-    //}
+    $retorno["resp"]=$sel1;
     $retorno["count"]=$countr;
     
-    
     echo json_encode($retorno);
-    //echo $retorno["body"];
-        
+
 	}
 
 	die();
@@ -331,7 +312,7 @@ include('navbar.php');
 			ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=lista_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=lista_user',
 			type: 'post',
 			data: {pesq: $('#input_pesquisa').val()},
 			beforeSend: function(){
@@ -352,7 +333,7 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=inclui_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=inclui_user',
 			type: 'post',
 			data: { 
                 nome: $('#Nome').val(),
@@ -400,7 +381,7 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=get_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_user',
 			type: 'post',
 			data: { 
                 id: id,
@@ -434,7 +415,7 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=get_rel_det',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_rel_det',
 			type: 'post',
 			data: { 
                 id: id,
@@ -468,7 +449,7 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=get_relatorio',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_relatorio',
 			type: 'post',
 			data: { 
                 id: id,
@@ -491,7 +472,7 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=edit_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_user',
 			type: 'post',
 			data: { 
                 id: $("#frm_id").val(),
@@ -526,7 +507,7 @@ include('navbar.php');
 		        ajax_div = $.ajax({
 		    	cache: false,
 		    	async: true,
-		    	url: '?a=del_user',
+		    	url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=del_user',
 		    	type: 'post',
 		    	data: { 
                     id: id,
@@ -723,13 +704,7 @@ include('navbar.php');
 	</button>
 	<div class="content-wrapper"   style="background-image: url('assets/coronafree/template/assets/images/galaxy3.png'); background-repeat: no-repeat; background-size: cover;">
 		<div class="page-header">
-			<h3 class="page-title"> Clientes </h3>
-			<nav aria-label="breadcrumb">
-				<ol class="breadcrumb">
-					<li class="breadcrumb-item"><a href="vendedor.php">Funcionários</a></li>
-					<li class="breadcrumb-item active" aria-current="page">Clientes</li>
-				</ol>
-			</nav>
+			<h3 class="page-title"> Usuários </h3>
 		</div>
 		<div class="row">
 			<div class="col-12 grid-margin stretch-card">
@@ -756,6 +731,6 @@ include('navbar.php');
 				</div>
 			</div>
 
-			<?php
-			include('bottom.php');
-			?>
+<?php
+include('bottom.php');
+?>

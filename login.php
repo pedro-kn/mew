@@ -23,8 +23,7 @@ if (isset($_GET["a"])) {
 		}else{
 
 			$sel = $db->select("SELECT idUsuario, nome, statuscli, senha FROM usuarios WHERE nome = '$nome'");
-			//print_r(empty($sel));
-			//die();
+
 			if(!empty($sel)){					
 				if ($sel[0]["senha"]==$senha) {
 
@@ -62,6 +61,7 @@ include('navbar.php');
 ?>
 
 <script>
+	
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * Monta Cookie:
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -127,7 +127,7 @@ include('navbar.php');
 						</div>
 						
 						<div id="div_retorno" class="d-flex"></div>
-						<p class="sign-up">Não tem uma Conta?<a href="#"> Registre-se</a></p>
+					
 					
 				</div>
 			</div>

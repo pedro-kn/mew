@@ -139,17 +139,20 @@
             <div class="dropdown-divider"></div>
             <?php
             if(!empty($_COOKIE['nome'])){
+                //echo '<a type="submit" for="sub1" class="dropdown-item preview-item"';
                 echo '<form action="'.($_SERVER['PHP_SELF']).'" method="POST">';
-                echo '<input type="submit" class="dropdown-item preview-item">';
-                    echo '<div class="preview-thumbnail">';
+                    echo '<div class="preview-thumbnail col">';
                     echo '<div class="preview-icon bg-dark  rounded-circle">';
                         echo '<i class="mdi mdi-logout text-danger"></i>';
                     echo '</div>';
                     echo '</div>';
-                    echo '<div class="preview-item-content" >';
-                        echo '<p class="preview-subject mb-1">Log out</p>';
+                    echo '<div class="preview-item-content col" >';
+                    echo '<input id="sub1" type="submit" value="Logout" class="dropdown-item preview-item"></input>';
                     echo '</div>';
-                echo '<form>';
+                   
+                echo '</form>';
+
+                echo '</a>';
                 }else{
                     echo '<a class="dropdown-item preview-item" href="login.php">';
                     echo '<div class="preview-thumbnail">';
@@ -160,9 +163,10 @@
                     echo '<div class="preview-item-content" >';
                         echo '<p class="preview-subject mb-1">Log in</p>';
                     echo '</div>';
+                    echo '</a>';
                 }
                 ?>
-            </a>
+            
             <div class="dropdown-divider"></div>
             <p class="p-3 mb-0 text-center">Configurações Avançadas</p>
             </div>

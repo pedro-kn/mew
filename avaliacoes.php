@@ -43,16 +43,6 @@ if (isset($_GET["a"])) {
                                 echo 'Nenhum registro localizado!';
                             echo '</div>';
                             }
-                        /*
-                        echo '<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">';
-                            echo '<div class="text-md-center text-xl-left">';
-                                echo '<h6 class="mb-1">Tranfer to Stripe</h6>';
-                                echo '<p class="text-muted mb-0">07 Jan 2019, 09:12AM</p>';
-                            echo '</div>';
-                            echo '<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">';
-                                echo '<h6 class="font-weight-bold mb-0">$593</h6>';
-                            echo '</div>';
-                        echo '</div>';*/
 
                     echo '</div>';
                 echo '</div>';
@@ -102,12 +92,9 @@ if (isset($_GET["a"])) {
                 echo '</div>';
             echo '</div>';
         echo '</div>';
-        
-          
-    
-  
 	}
-	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+	
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* Inserir conteúdo:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "inclui_user") {
@@ -140,7 +127,7 @@ if (isset($_GET["a"])) {
 		echo $res;
 	}
 
-     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* Inclui as repostas da avalia~ção:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "inclui_resposta") {
@@ -169,9 +156,6 @@ if (isset($_GET["a"])) {
         }else{
             echo 2;
         }
-
-        
-
 	}
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -218,7 +202,6 @@ if (isset($_GET["a"])) {
 	* Edita conteúdo:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "edit_user") {
-
 
 		$id = $_POST["id"];
 		$nome = $_POST["nome"];
@@ -368,22 +351,12 @@ if (isset($_GET["a"])) {
 
     //exibe as respostas nos campos de input
 
-
-
-    //$retorno["body"]=json_encode($body);
     $retorno["body"]=$body;
-    //$retorno["idLPA"]=json_encode($array_res);
-    //foreach($sel1 as $s){
-
-        $retorno["resp"]=$sel1;
-
-    //}
+    $retorno["resp"]=$sel1;
     $retorno["count"]=$countr;
     
-    
     echo json_encode($retorno);
-    //echo $retorno["body"];
-        
+
 	}
 
 	die();
@@ -405,7 +378,7 @@ include('navbar.php');
 			ajax_div = $.ajax({
         cache: false,
         async: true,
-        url: '?a=lista_user',
+        url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=lista_user',
         type: 'post',
         data: {},
         beforeSend: function(){
@@ -453,7 +426,7 @@ include('navbar.php');
         ajax_div = $.ajax({
           cache: false,
           async: true,
-          url: '?a=inclui_avaliacao',
+          url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=inclui_avaliacao',
           type: 'post',
           data: { 
                 descricao: $('#frm_val0_insert').val(),
@@ -494,7 +467,7 @@ include('navbar.php');
         ajax_div = $.ajax({
           cache: false,
           async: true,
-          url: '?a=inclui_resposta',
+          url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=inclui_resposta',
           type: 'post',
           data: { 
                 id: id,
@@ -526,7 +499,7 @@ include('navbar.php');
             ajax_div = $.ajax({
                 cache: false,
                 async: true,
-                url: '?a=inclui_user',
+                url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=inclui_user',
                 type: 'post',
                 data: { 
                         pergunta: pergunta,
@@ -554,7 +527,7 @@ include('navbar.php');
             ajax_div = $.ajax({
             cache: false,
             async: true,
-            url: '?a=lista_mod_insert',
+            url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=lista_mod_insert',
             type: 'post',
             data: {
                 },
@@ -582,7 +555,7 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=get_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_user',
 			type: 'post',
 			data: { 
                 id: id,
@@ -616,7 +589,7 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=edit_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_user',
 			type: 'post',
 			data: { 
                 id: $("#frm_id").val(),
@@ -651,7 +624,7 @@ include('navbar.php');
 		        ajax_div = $.ajax({
 		    	cache: false,
 		    	async: true,
-		    	url: '?a=del_user',
+		    	url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=del_user',
 		    	type: 'post',
 		    	data: { 
                     id: id,
@@ -680,7 +653,7 @@ include('navbar.php');
 		        ajax_div = $.ajax({
 		    	cache: false,
 		    	async: true,
-		    	url: '?a=del_aval',
+		    	url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=del_aval',
 		    	type: 'post',
 		    	data: { 
                     id: id,
@@ -709,7 +682,7 @@ include('navbar.php');
 		        ajax_div = $.ajax({
 		    	cache: false,
 		    	async: true,
-		    	url: '?a=del_perg_aval',
+		    	url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=del_perg_aval',
 		    	type: 'post',
 		    	data: { 
                     id: id,
@@ -808,11 +781,6 @@ include('navbar.php');
     </div>
 </body> 
 
-
-
-
-
 <?php
-
 include('bottom.php');
 ?>

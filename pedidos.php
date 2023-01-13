@@ -204,8 +204,6 @@
         * Inserir conteúdo dentro da lista de pedidos criada em lista_mod_insert:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         if($_GET["a"] == "inclui_pedido"){
-            
-
 
             $quantidade = $_POST["quantidade"];
             $produto = $_POST["produto"];
@@ -223,7 +221,6 @@
 
             $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($pedido,$produto,$quantidade,'$reais') ORDER BY idProduto");
             
-            
             echo $res;
         }
 
@@ -231,13 +228,10 @@
         * Inserir novo item dentro do menu de edição
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         if($_GET["a"] == "inclui_item_editget"){
-            
-
 
             $id = $_POST["id"];
             
             $res = $db->_exec("INSERT INTO itens_pedido (idPedido,idProduto,quantidade,preco) VALUES ($id,1,'','') ORDER BY idProduto");
-            
             
             echo $res;
         }
@@ -246,8 +240,6 @@
         * editar conteúdo dentro da lista de pedidos do modal de edição:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         if($_GET["a"] == "edita_pedido"){
-            
-
 
             $id = $_POST["id"];
             $idPed = $_POST["idPed"];
@@ -327,7 +319,6 @@
             
             //update nos valores da tabela pedidos
             $res = $db->_exec("UPDATE pedidos SET quantidade = $somaquantidade, preco = '$reais', nf = '', statusped = 2 WHERE idPedido = $numpedido");
-            
            
             echo $res;
         }
@@ -371,14 +362,11 @@
             echo $res;
         }
 
-        
-
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Edita o pedido:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         if($_GET["a"] == "edit_client"){
             
-
             $id = $_POST["id"];
 
             $usuario = $_POST["usuario"];
@@ -387,9 +375,7 @@
             $statusped = $_POST["statusped"];
             $quantidade = $_POST["quantidade"];
             $valor = $_POST["valor"];		
-            
 
-            
             $res = $db->_exec("UPDATE pedidos 
                 SET idCliente = {$cliente},  idUsuario = {$usuario}
                 WHERE idPedido = {$id}");
@@ -402,7 +388,6 @@
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         if($_GET["a"] == "del_user"){
         
-
             $id = $_POST["id"];
 
             $sel = $db->select("SELECT statusped FROM pedidos WHERE idPedido = $id");
@@ -472,7 +457,6 @@
                 $placeholderdesc = "";
                 $desc2 = "";
                 $desc3 = "";
-                
 
                 $lista = $db->select("SELECT i.idPedido, p.descricao as descricao, i.idItens_pedido as idItens, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
                                     FROM itens_pedido i
@@ -496,41 +480,15 @@
                         $desc2 .= '<option id="select_prod_edit" onchange="selected" value="'.$d["idProduto"].'">'.$d["descricao"].'</option>';
                     }  
                     
-
                 //select de quantidade   
                 $quantidade = 0;
-
 
                 //montagem do body         
                 $count = 0;
                 $countarray = array();
-                /*
-                foreach($lista as $s){
                 
-                    $count = $count+1;
-                    $countarray[$count] = $count;
-                    $body .= '<tr>';
-                        $body .= '<td id="edit_desc" style="text-align: left">';
-                        $body .= '<div class="scrollable" >';
-                            $body .= '<select id="select_prod_edit'.($count).'" onchange="exibe_val_edit(\''.$countarray[$count].'\',\''.$s["idItens"].'\')" class="select form-control" type="text" style="color: #ffffff">';
-                                $body .= '<option id="select_prod_edit_plac" value="'.$lista[$count-1]["idProduto"].'" selected>'.$lista[$count-1]["descricao"].'</option>';
-                                $body .= $desc2;
-                            $body .= '</select>';
-                        $body .= '</div>';
-                        $body .= '</td>';
-                        $body .= '<td style="text-align: center"><input id="edit_quant'.$count.'" type="number" value="'.$s["quantidade"].'" onchange="exibe_val_edit(\''.$countarray[$count].'\',\''.$s["idItens"].'\')" min="0" max="100"></input></td>';
-                        $body .= '<td style="text-align: center"><input type="text" style="text-align: center; background-color: #2A3038; color: #light" class="form-control" id="exibe_val_prod'.$count.'" value="'.$s["valor"].'" disabled></input></td>';
-                        $body .= '<td style="text-align: center"><input class="form-control" id="exibe_valfinal_prod'.$count.'" type="text" value="'.$s["preco_final"].'" style="text-align: center; background-color: #2A3038" disabled></input></td>';
-                        $body .= '<td style="text-align: center"><a class="dropdown-item preview-item" onclick="editPed(\''.$countarray[$count].'\',\''.$s["idItens"].'\',\''.$id.'\')"><i class="mdi mdi-checkbox-marked-outline text-sucess" ></i><p style"font-size: 5pt" id="icon_edit'.$count.'"></p></a></td>';
-                }*/
-
-                
-                //echo $max;
                 for ($count=1; $count<=$max; $count++) {
-                    //code
-                    //when push an element just do $max++;
-                    
-                    //$count = $count+1;
+
                     $countarray[$count] = $count;
                     $body .= '<tr>';
                         $body .= '<td id="edit_desc" style="text-align: left">';
@@ -546,8 +504,7 @@
                         $body .= '<td style="text-align: center"><input class="form-control" id="exibe_valfinal_prod'.$count.'" type="text" value="'.$lista[$count-1]["preco_final"].'" style="text-align: center; background-color: #2A3038" disabled></input></td>';
                         $body .= '<td style="text-align: center"><a class="dropdown-item preview-item" onclick="editPed(\''.$countarray[$count].'\',\''.$lista[$count-1]["idItens"].'\',\''.$id.'\')"><i class="mdi mdi-checkbox-marked-outline text-sucess" ></i><p style"font-size: 5pt" id="icon_edit'.$count.'"></p></a></td>';
                     
-                    }
-                    						
+                    }					
                 
                 $title = '<h5 id="div_edit_title" class="modal-title">Informações do Pedido '.$id.'</h5>';
                 
@@ -565,38 +522,27 @@
         * Encontra os novos valores dos produtos na tela de edição
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         if($_GET["a"] == "get_val_prod"){
-        
 
             $id = $_POST["id"];
             $idProd = $_POST["idProd"];
             $quantidade = $_POST["quantidade"];
 
             $res = $db->select("SELECT valor FROM produtos WHERE idProduto = $idProd");
-            /*$res = $db->select("SELECT i.idPedido, p.descricao, i.idProduto, p.idProduto, p.valor as valor, i.quantidade, i.preco as preco_final
-                                    FROM itens_pedido i
-                                    INNER JOIN produtos p ON p.idProduto = i.idProduto 
-                                    WHERE i.idItens_pedido = {$id}");*/
             
             if(count($res) > 0){
             
                 $res[0]['valor'] = remove_acento($res[0]['valor']);
-                //$res[0]['preco_final'] = remove_acento($res[0]['preco_final']);
-    
                 $float_var = preg_replace('/[^0-9]/', '', $res[0]["valor"]);
-
                 $preco = (floatval($float_var)*floatval($quantidade))/100;
-                
                 $reais = "R$ " . number_format($preco, 2, ",", ".");
-               
-                
+
                 $c_retorno = array();
                 $body = "";
 	
                 $c_retorno["valor"] = $res[0]['valor'];	
                 $c_retorno["valorf"] = $reais;
                 echo json_encode($c_retorno);
-                
-            
+
             }
         }
 
@@ -605,7 +551,6 @@
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
         if($_GET["a"] == "get_det_ped"){
         
-
             $id = $_POST["id"];
 
             $res = $db->select("SELECT p.idPedido, p.idCliente, p.idUsuario, c.nome as nomec, v.nome as nomev, p.quantidade, p.preco, p.nf, p.statusped
@@ -641,18 +586,10 @@
                 
                 $c_retorno["title"] = $title;	
                 $c_retorno["header"] = $res;	
-                //$a_retorno["res"] = $res;
-                //$c_retorno["header"] = json_encode($a_retorno["res"]);
                 $c_retorno["body"] = $body;
                 echo json_encode($c_retorno);
-                //print_r(json_encode($c_retorno));
-                //print_r($a_retorno["res"]);
-
             }
         }
-
-       
-
         die();
     }
 
@@ -665,13 +602,10 @@
 
 
     <script type="text/javascript" src="assets/js/plentz-jquery-maskmoney-cdbeeac/src/jquery.maskMoney.js"></script>
-    
-   
     <script type="text/javascript">
 
-    
-        //Variavel para monitoramento de edição de itens pendentes dentro do modal de edição de pedidos
-        var editcheck = 0;
+    //Variavel para monitoramento de edição de itens pendentes dentro do modal de edição de pedidos
+    var editcheck = 0;
 
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Listar itens:
@@ -682,7 +616,7 @@
                 ajax_div = $.ajax({
                 cache: false,
                 async: true,
-                url: '?a=lista_user',
+                url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=lista_user',
                 type: 'post',
                 data: {pesq: $('#input_pesquisa').val() 			},
                 beforeSend: function(){
@@ -704,7 +638,7 @@
                 ajax_div = $.ajax({
                 cache: false,
                 async: true,
-                url: '?a=inclui_pedido',
+                url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=inclui_pedido',
                 type: 'post',
                 data: {quantidade: quantidade,
                     produto: produto,
@@ -730,7 +664,7 @@
                 ajax_div = $.ajax({
                 cache: false,
                 async: true,
-                url: '?a=inclui_item_editget',
+                url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=inclui_item_editget',
                 type: 'post',
                 data: {id: id},
                 
@@ -760,7 +694,7 @@
                 ajax_div = $.ajax({
                 cache: false,
                 async: true,
-                url: '?a=edita_pedido',
+                url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edita_pedido',
                 type: 'post',
                 data: {quantidade: $('#edit_quant' + countarray + '').val(),
                        id: $('#select_prod_edit' + countarray + '').val(),
@@ -790,7 +724,7 @@
                 ajax_div = $.ajax({
                 cache: false,
                 async: true,
-                url: '?a=lista_mod_insert',
+                url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=lista_mod_insert',
                 type: 'post',
                 data: {pesq: $('#input_pesquisa').val(),
                     usuario: $('#frm_val1_insert').val(),
@@ -813,7 +747,7 @@
                 ajax_div = $.ajax({
                 cache: false,
                 async: true,
-                url: '?a=get_val_prod',
+                url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_val_prod',
                 type: 'post',
                 data: {
                     quantidade: $('#edit_quant' + countarray + '').val(),
@@ -821,7 +755,6 @@
                     id: id},
                 beforeSend: function(){},
                 success: function retorno_ajax(retorno) {
-                    //alert(retorno);
                     var obj = JSON.parse(retorno);
                     
                     $('#exibe_val_prod' + countarray + '').val(obj.valor);
@@ -843,18 +776,16 @@
             ajax_div = $.ajax({
                 cache: false,
                 async: true,
-                url: '?a=inclui_client',
+                url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=inclui_client',
                 type: 'post',
                 data: { 
                     numpedido: $('#numpedido').val(),
-                
                 },
                 beforeSend: function(){
 
                     $('#modal_formul').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
                 },
                 success: function retorno_ajax(retorno) {
-                    alert(retorno);
                     if(retorno){
                         $('#mod_formul').modal('hide');
                         location.reload();
@@ -871,7 +802,6 @@
             lista_itens();
         });
 
-
         /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         * Pesquisar itens do campo de edição:
         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -881,7 +811,7 @@
             ajax_div = $.ajax({
                 cache: false,
                 async: true,
-                url: '?a=get_client',
+                url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_client',
                 type: 'post',
                 data: { 
                     id: id,
@@ -890,10 +820,8 @@
                     $('#mod_formul_edit').modal("show");
                 },
                 success: function retorno_ajax(retorno) {
-                    alert(retorno);
                     var obj = JSON.parse(retorno);
-                    
-                    //alert(teste.header);
+
                     if(retorno==2){
                         alert("Não é possível editar o pedido pois a nota fiscal já foi emitida!");
                         location.reload();
@@ -935,7 +863,7 @@
             ajax_div = $.ajax({
                 cache: false,
                 async: true,
-                url: '?a=get_det_ped',
+                url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_det_ped',
                 type: 'post',
                 data: { 
                     id: id,
@@ -944,32 +872,29 @@
                     $('#mod_formul_exibe').modal("show");
                 },
                 success: function retorno_ajax(retorno) {
-                    alert(retorno);
                     var obj = JSON.parse(retorno);
+
+                    $("#frm_id_exibe").val(id);
                     
-                    //alert(teste.header);
-                    //if(retorno){
-                        $("#frm_id_exibe").val(id);
-                        
-                        var obj_ret = obj.header;
-                        
-                        if(obj_ret[0].nf==""){
-                            var nf = "NF não emitida";
-                        }else{
-                            var nf = obj_ret[0].nf;
-                        };
+                    var obj_ret = obj.header;
+                    
+                    if(obj_ret[0].nf==""){
+                        var nf = "NF não emitida";
+                    }else{
+                        var nf = obj_ret[0].nf;
+                    };
 
-                        $("#frm_val1_exibe").val(obj_ret[0].nomev);
-                        $("#frm_val2_exibe").val(obj_ret[0].nomec);
-                        $("#frm_val3_exibe").val(nf);
-                        $("#frm_val4_exibe").val(obj_ret[0].statusped);	
-                        $("#frm_val5_exibe").val(obj_ret[0].quantidade);	
-                        $("#frm_val6_exibe").val(obj_ret[0].preco);	
+                    $("#frm_val1_exibe").val(obj_ret[0].nomev);
+                    $("#frm_val2_exibe").val(obj_ret[0].nomec);
+                    $("#frm_val3_exibe").val(nf);
+                    $("#frm_val4_exibe").val(obj_ret[0].statusped);	
+                    $("#frm_val5_exibe").val(obj_ret[0].quantidade);	
+                    $("#frm_val6_exibe").val(obj_ret[0].preco);	
 
-                        $('#div_exibe_title').html(obj.title); 
+                    $('#div_exibe_title').html(obj.title); 
 
-                        $('#div_exibe_ped').html(obj.body); 
-                    //}
+                    $('#div_exibe_ped').html(obj.body); 
+                    
                 }
             });
         }
@@ -984,7 +909,7 @@
                 ajax_div = $.ajax({
                     cache: false,
                     async: true,
-                    url: '?a=edit_client',
+                    url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_client',
                     type: 'post',
                     data: { 
                         id: $("#frm_id_edit").val(),
@@ -999,7 +924,7 @@
                         $('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
                     },
                     success: function retorno_ajax(retorno) {
-                        alert(retorno);
+
                         if(retorno){
                             $('#mod_formul_edit').modal('hide');
                             location.reload();
@@ -1024,13 +949,12 @@
                     ajax_div = $.ajax({
                     cache: false,
                     async: true,
-                    url: '?a=inclui_nf',
+                    url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=inclui_nf',
                     type: 'post',
                     data: { 
                         id: id,
                     },
                     success: function retorno_ajax(retorno) {
-                        alert(retorno);
                         if(retorno){
                             location.reload();
                             lista_itens();  
@@ -1053,7 +977,7 @@
                     ajax_div = $.ajax({
                     cache: false,
                     async: true,
-                    url: '?a=del_user',
+                    url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=del_user',
                     type: 'post',
                     data: { 
                         id: id,
