@@ -296,7 +296,7 @@ include('navbar.php');
 			ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=lista_mod_insert',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=lista_mod_insert',
 			type: 'post',
 			data: {pesq: $('#input_pesquisa').val(),
 				usuario: $('#frm_val1_insert').val(),
@@ -321,7 +321,7 @@ include('navbar.php');
 			ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=add_event_button',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=add_event_button',
 			type: 'post',
 			data: { 
 				idagend: $('#idagend').val(),
@@ -354,7 +354,7 @@ include('navbar.php');
 				ajax_div = $.ajax({
 				cache: false,
 				async: true,
-				url: '?a=del_user',
+				url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=del_user',
 				type: 'post',
 				data: { 
 					id: $("#frm_id_edit").val()
@@ -383,7 +383,7 @@ include('navbar.php');
 			ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=cancel_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=cancel_user',
 			type: 'post',
 			data: { 
 				
@@ -408,7 +408,7 @@ include('navbar.php');
 			ajax_div = $.ajax({
 				cache: false,
 				async: true,
-				url: '?a=edit_client',
+				url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_client',
 				type: 'post',
 				data: { 
 					id: $("#frm_id_edit").val(),
@@ -497,7 +497,7 @@ include('navbar.php');
 				ajax_div = $.ajax({
 				cache: false,
 				async: true,
-				url: '?a=lista_agenda',
+				url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=lista_agenda',
 				type: 'post',
 				data: {},
 				beforeSend: function(){
@@ -586,7 +586,7 @@ include('navbar.php');
 										ajax_div = $.ajax({
 										cache: false,
 										async: true,
-										url: '?a=add_event',
+										url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=add_event',
 										type: 'post',
 										data: { 
 
@@ -647,7 +647,7 @@ include('navbar.php');
 								ajax_div = $.ajax({
 									cache: false,
 									async: true,
-									url: '?a=edit_client_auto',
+									url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_client_auto',
 									type: 'post',
 									data: { 
 										id: copiedEventObject.id,
@@ -684,7 +684,7 @@ include('navbar.php');
 								ajax_div = $.ajax({
 									cache: false,
 									async: true,
-									url: '?a=edit_client_auto',
+									url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_client_auto',
 									type: 'post',
 									data: { 
 										id: copiedEventObject.id,
@@ -726,7 +726,7 @@ include('navbar.php');
 								ajax_div = $.ajax({
 									cache: false,
 									async: true,
-									url: '?a=get_client',
+									url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_client',
 									type: 'post',
 									data: { 
 										
@@ -908,11 +908,11 @@ include('navbar.php');
 </head>
 <body   style="background-image: url('assets/coronafree/template/assets/images/pillars.png');  background-repeat: no-repeat; background-size: cover">
 		<div id='wrap'>
-			
+			<!--
 			<div>
 				<button type="button" class="btn btn-primary topright" id="incluireventos" onclick="$('#mod_formul').modal('show');"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">Adicionar Novo Evento</button>
 			</div>
-
+-->
 			<div id='calendar'></div>
 			<div style='clear:both'></div>
 		</div>
@@ -935,26 +935,26 @@ include('navbar.php');
 					<div class="modal-body modal-dialog-scrollable">
 						<form id="frm_general" name="frm_general" class="col">
 
-						<div class="row mb-3">
+						<div class="row">
 							<div class="col">
-								<label for="frm_val1_insert" class="form-label">Usuário:</label>
-									<div class="scrollable">
-										<select id="frm_val1_insert"  class="select form-control form-control-lg" name="frm_val1_insert" type="text" style="color: #ffffff" >
-											<option value="" selected></option>
-											<?php
-												$desc = $db->select('SELECT idUsuario, nome FROM usuarios');
-												foreach($desc as $s){
-													echo  '<option value="'.$s["idUsuario"].'">'.$s["nome"].'</option>';
-												}
-											?>
-										</select>
-									</div>
+							<label for="frm_val1_insert" class="form-label">Usuário:</label>
+								<div class="scrollable">
+									<select id="frm_val1_insert"  class="select form-control form-control-lg" name="frm_val1_insert" type="text" style="color: #ffffff" >
+										<option value="" selected></option>
+										<?php
+											$desc = $db->select('SELECT idUsuario, nome FROM usuarios');
+											foreach($desc as $s){
+												echo  '<option value="'.$s["idUsuario"].'">'.$s["nome"].'</option>';
+											}
+										?>
+									</select>
 								</div>
 							</div>
-							<div class="row mb-3">
-								<div class="col">
-									<label for="frm_val2_insert" class="form-label">Cliente:</label>
-										<div class="scrollable">
+						</div>
+						<div class="row">
+							<div class="col">
+								<label for="frm_val2_insert" class="form-label">Cliente:</label>
+									<div class="scrollable">
 										<select id="frm_val2_insert"  onchange="listaModinsert()" class="select form-control form-control-lg" name="frm_val2_insert" type="text" style="color: #ffffff" >
 											<option value="" selected></option>
 											<?php
@@ -964,10 +964,10 @@ include('navbar.php');
 												}
 											?>
 										</select>
-										<input id="numpedido" hidden></input>
-									</div>
+									<input id="numpedido" hidden></input>
 								</div>
 							</div>
+						</div>
 							
 							<div id="mod_insert"></div>	
 		
