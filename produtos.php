@@ -13,7 +13,6 @@ if (isset($_GET["a"])) {
 	* Buscar conteúdo:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-
 	if ($_GET["a"] == "lista_user") {
 
 		$pesquisa = $_POST['pesq'];
@@ -70,7 +69,6 @@ if (isset($_GET["a"])) {
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "inclui_user") {
 
-	
 		$descricao = $_POST["descricao"];
 		$valor = $_POST["valor"];
 		$quantidade = $_POST["quantidade"];
@@ -86,7 +84,6 @@ if (isset($_GET["a"])) {
 	* Edita conteúdo:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "edit_user") {
-
 
 		$id = $_POST["id"];
 		$descricao = $_POST["descricao"];
@@ -107,7 +104,6 @@ if (isset($_GET["a"])) {
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "del_user") {
 
-
 		$id = $_POST["id"];
 
 		$res = $db->_exec("DELETE FROM produtos WHERE idProduto = '{$id}'");
@@ -119,7 +115,6 @@ if (isset($_GET["a"])) {
 	* Busca conteúdo:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "get_user") {
-
 
 		$id = $_POST["id"];
 
@@ -156,7 +151,7 @@ include('navbar.php');
 			ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=lista_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=lista_user',
 			type: 'post',
 			data: {pesq: $('#input_pesquisa').val()},
 			beforeSend: function(){
@@ -177,7 +172,7 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=inclui_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=inclui_user',
 			type: 'post',
 			data: { 
                 descricao: $('#descricao').val(),
@@ -216,7 +211,7 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=get_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_user',
 			type: 'post',
 			data: { 
                 id: id,
@@ -225,17 +220,16 @@ include('navbar.php');
                 $('#mod_formul_edit').modal("show");
 			},
 			success: function retorno_ajax(retorno) {
-				
 				if(retorno){
-                    $("#frm_id").val(id);
-                    
-					var obj_ret = JSON.parse(retorno);
+				$("#frm_id").val(id);
+				
+				var obj_ret = JSON.parse(retorno);
 
-					$("#frm_descricao_edit").val(obj_ret[0].descricao);
-					$("#frm_valor_edit").val(obj_ret[0].valor);
-					$("#frm_codbar_edit").val(obj_ret[0].codbar);
-					$("#frm_obs_edit").val(obj_ret[0].obs);
-					$("#frm_quantidade_edit").val(obj_ret[0].quantidade);
+				$("#frm_descricao_edit").val(obj_ret[0].descricao);
+				$("#frm_valor_edit").val(obj_ret[0].valor);
+				$("#frm_codbar_edit").val(obj_ret[0].codbar);
+				$("#frm_obs_edit").val(obj_ret[0].obs);
+				$("#frm_quantidade_edit").val(obj_ret[0].quantidade);
 				}
 			}
 		});
@@ -250,7 +244,7 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=edit_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_user',
 			type: 'post',
 			data: { 
                 id: $("#frm_id").val(),
@@ -285,7 +279,7 @@ include('navbar.php');
 		        ajax_div = $.ajax({
 		    	cache: false,
 		    	async: true,
-		    	url: '?a=del_user',
+		    	url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=del_user',
 		    	type: 'post',
 		    	data: { 
                     id: id,
@@ -307,8 +301,8 @@ include('navbar.php');
     
 	//Mascaras para inputs e exibição com JSMASK
 	$(document).ready(function(){
-  		$('#valor').maskMoney({prefix:'R$', thousands:'.', decimal:','});
-		$('#frm_valor_edit').maskMoney({prefix:'R$', thousands:'.', decimal:','});
+  		$('#valor').maskMoney({prefix:'R$ ', thousands:'.', decimal:','});
+		$('#frm_valor_edit').maskMoney({prefix:'R$ ', thousands:'.', decimal:','});
 		//$('#cpf').mask('000.000.000-00');
 		//$('#frm_cpf_edit').mask('000.000.000-00');
 	});

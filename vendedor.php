@@ -13,7 +13,6 @@ if (isset($_GET["a"])) {
 	* Buscar conteúdo:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-
 	if ($_GET["a"] == "lista_user") {
 
 		$pesquisa = $_POST['pesq'];
@@ -30,28 +29,32 @@ if (isset($_GET["a"])) {
 			echo '<table id="tb_lista" class="table table-hover table-md" style="font-size: 10pt">';
 			echo '<thead>';
 			echo '<tr>';
-			echo '<th style="text-align: left">Nome</th>';
+			echo '<th style="text-align: center">Nome</th>';
 			echo '<th style="text-align: center">Telefone</th>';
 			echo '<th style="text-align: center">E-mail</th>';
-			echo '<th style="text-align: center">Status</th>';
-			echo '<th style="text-align: center">Editar</th>';
-			echo '<th style="text-align: center">Deletar</th>';
+			if($_COOKIE['permissao']==2){
+				echo '<th style="text-align: center">Status</th>';
+				echo '<th style="text-align: center">Editar</th>';
+				echo '<th style="text-align: center">Deletar</th>';
+			}
 			echo '</tr>';
 			echo '</thead>';
 			echo '<tbody>';
 			foreach ($res as $r) {
 
 				echo '<tr>';
-				echo '<td style="text-align: left">' . $r["nome"] . '</td>';
+				echo '<td style="text-align: center">' . $r["nome"] . '</td>';
 				echo '<td style="text-align: center">' . $r["telefone"] . '</td>';
 				echo '<td style="text-align: center">' . $r["email"] . '</td>';
-				echo '<td style="text-align: center">' . $r["statuscli"] . '</td>';
-				echo '<td style="text-align: center">';
-				echo '<i title="Editar" onclick="get_item(\'' . $r["idUsuario"] . '\')" class="mdi mdi-table-edit" style="cursor: pointer"></i>';
-				echo '</td>';
-				echo '<td style="text-align: center">';
-				echo '<i title="Deletar" onclick="del_item(\'' . $r["idUsuario"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
-				echo '</td>';
+				if($_COOKIE['permissao']==2){
+					echo '<td style="text-align: center">' . $r["statuscli"] . '</td>';
+					echo '<td style="text-align: center">';
+					echo '<i title="Editar" onclick="get_item(\'' . $r["idUsuario"] . '\')" class="mdi mdi-table-edit" style="cursor: pointer"></i>';
+					echo '</td>';
+					echo '<td style="text-align: center">';
+					echo '<i title="Deletar" onclick="del_item(\'' . $r["idUsuario"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
+					echo '</td>';
+				}
 				echo '</tr>';
 			}
 			echo '</tbody>';
@@ -63,19 +66,19 @@ if (isset($_GET["a"])) {
 			echo '</div>';
 		}
 	}
+
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* Inserir conteúdo:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "inclui_user") {
 
-	
 		$nome = $_POST["nome"];
 		$telefone = $_POST["telefone"];
 		$email = $_POST["email"];
-		$status = 1;
+		$senha = md5($_POST["senha"]);
+		$status = $_POST["permissao"];;
 		
-
-		$res = $db->_exec("INSERT INTO usuarios (idUsuario,nome,telefone,email,statuscli) VALUES ('','$nome','$telefone','$email','$status')");
+		$res = $db->_exec("INSERT INTO usuarios (idUsuario,nome,telefone,email,statuscli,senha) VALUES ('','$nome','$telefone','$email',{$status},'$senha')");
 
 		echo $res;
 	}
@@ -85,14 +88,15 @@ if (isset($_GET["a"])) {
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "edit_user") {
 
-
 		$id = $_POST["id"];
 		$nome = $_POST["nome"];
 		$telefone = $_POST["telefone"];
 		$email = $_POST["email"];
+		$senha = md5($_POST["senha"]);
+		$permissao = $_POST["permissao"];
 
 		$res = $db->_exec("UPDATE usuarios 
-			SET idUsuario = '{$id}', nome = '{$nome}', telefone = '{$telefone}', email = '{$email}'
+			SET idUsuario = '{$id}', nome = '{$nome}', telefone = '{$telefone}', email = '{$email}', statuscli = {$permissao}, senha = '{$senha}'
 			WHERE idUsuario = '{$id}'");
 
 		echo $res;
@@ -102,7 +106,6 @@ if (isset($_GET["a"])) {
 	* Deleta conteúdo:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "del_user") {
-
 
 		$id = $_POST["id"];
 
@@ -115,7 +118,6 @@ if (isset($_GET["a"])) {
 	* Busca conteúdo:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	if ($_GET["a"] == "get_user") {
-
 
 		$id = $_POST["id"];
 
@@ -150,7 +152,7 @@ include('navbar.php');
 			ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=lista_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=lista_user',
 			type: 'post',
 			data: {pesq: $('#input_pesquisa').val()},
 			beforeSend: function(){
@@ -171,12 +173,14 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=inclui_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=inclui_user',
 			type: 'post',
 			data: { 
                 nome: $('#Nome').val(),
                 telefone: $('#phone').val(),
                 email: $('#email').val(),
+				senha: $('#senha').val(),
+				permissao: $('#permissao').val(),
             },
 			beforeSend: function(){
 
@@ -208,7 +212,7 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=get_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_user',
 			type: 'post',
 			data: { 
                 id: id,
@@ -216,8 +220,7 @@ include('navbar.php');
 			beforeSend: function(){
                 $('#mod_formul_edit').modal("show");
 			},
-			success: function retorno_ajax(retorno) {
-				
+			success: function retorno_ajax(retorno) {			
 				if(retorno){
                     $("#frm_id").val(id);
                     
@@ -240,18 +243,21 @@ include('navbar.php');
 		ajax_div = $.ajax({
 			cache: false,
 			async: true,
-			url: '?a=edit_user',
+			url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_user',
 			type: 'post',
 			data: { 
                 id: $("#frm_id").val(),
                 nome: $("#frm_nome_edit").val(),
                 telefone: $("#frm_phone_edit").val(),
                 email: $("#frm_email_edit").val(),
+				senha: $("#frm_senha_edit").val(),
+				permissao: $("#frm_permissao_edit").val(),
             },
 			beforeSend: function(){
                 $('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
 			},
 			success: function retorno_ajax(retorno) {
+				alert(retorno);
 				if(retorno){
                     $('#mod_formul_edit').modal('hide');
                     location.reload();
@@ -273,7 +279,7 @@ include('navbar.php');
 		        ajax_div = $.ajax({
 		    	cache: false,
 		    	async: true,
-		    	url: '?a=del_user',
+		    	url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=del_user',
 		    	type: 'post',
 		    	data: { 
                     id: id,
@@ -346,6 +352,22 @@ include('navbar.php');
 								<small>Exemplo: joao12@endereco.com</small><br><br>	
 							</div>
 						</div>
+						<div class="row">
+							<div class="col">
+								<label for="Comissão" class="form-label">Senha:</label>
+								<input type="password" style="text-align: left" aria-describedby="senha" class="form-control form-control-lg" name="senha" id="senha" placeholder="">
+								
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<label for="permissao" class="form-label">Nível de Permissão:</label>
+								<select style="text-align: left" aria-describedby="permissao" class="form-control form-control-lg" name="permissao" id="permissao" placeholder="">
+									<option value="1" selected>Usuário</option>
+									<option value="2">Gerente</option>
+								</select>
+							</div>
+						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
@@ -394,6 +416,21 @@ include('navbar.php');
 								<input type="text" style="text-align: left" aria-describedby="frm_email_edit" class="form-control form-control-lg" name="frm_email_edit" id="frm_email_edit" placeholder="">
 							</div>
 						</div>
+						<div class="row mb-3">
+							<div class="col">
+								<label for="frm_senha_edit" class="form-label">Senha:</label>
+								<input type="password" style="text-align: left" aria-describedby="frm_senha_edit" class="form-control form-control-lg" name="frm_senha_edit" id="frm_senha_edit" placeholder="">
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col">
+								<label for="frm_permissao_edit" class="form-label">Nível de Permissão:</label>
+								<select style="text-align: left" aria-describedby="frm_permissao_edit" class="form-control form-control-lg" name="frm_permissao_edit" id="frm_permissao_edit" placeholder="">
+									<option value="1" selected>Usuário</option>
+									<option value="2">Gerente</option>
+								</select>
+							</div>
+						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
@@ -426,12 +463,12 @@ include('navbar.php');
 						<p class="card-description">Visualize a lista de registros de funcionários</p>
 
 						<div class="form-group row">
-							<div class="col-10" class="size-md">
+							<div class="col-<?php if($_COOKIE['permissao']==1){echo "12";}else{echo "10";}?>" class="size-md">
 								<div class="input-group">
 								<input type="text" class="form-control" onkeyup="lista_itens()" id="input_pesquisa" placeholder="Pesquise">
 								</div>
 							</div>
-							<div class="col-2">
+							<div class="col-2" <?php if($_COOKIE['permissao']==1){echo "hidden";}?>>
 								<div class="input-group">
 									<button type="button" onclick="$('#mod_formul').modal('show');" class="btn btn-inverse-light btn-fw btn-md" style="height: 38px"><i class="mdi mdi-library-plus" style="margin-right: 5px"></i>Incluir</button>
 								</div>
@@ -443,6 +480,6 @@ include('navbar.php');
 				</div>
 			</div>
 
-			<?php
-			include('bottom.php');
-			?>
+<?php
+include('bottom.php');
+?>

@@ -5,7 +5,7 @@
 </style>
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
   <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-    <a class="sidebar-brand brand-logo" href="main.php"><img src="assets/coronafree/template/assets/images/logo.svg" alt="logo" /></a>
+    <a  href="main.php"><img src="assets/coronafree/template/assets/images/estetica.png" alt="logo" width="133" height="70" /></a>
     <a class="sidebar-brand brand-logo-mini" href="main.php"><img src="assets/coronafree/template/assets/images/logo-mini.svg" alt="logo" /></a>
   </div>
   <ul class="nav">
@@ -13,12 +13,25 @@
       <div class="profile-desc">
         <div class="profile-pic">
           <div class="count-indicator">
-            <img class="img-xs rounded-circle " src="assets/coronafree/template/assets/images/faces/pedro.jpeg" alt="">
+            <img class="img-xs rounded-circle " src="assets/coronafree/template/assets/images/faces/user.png" alt="">
             <span class="count bg-success"></span>
           </div>
           <div class="profile-name">
-            <h5 class="mb-0 font-weight-normal">Pedro Kneubuehler</h5>
-            <span>Key Member</span>
+
+          <?php
+            if(!empty($_COOKIE['nome'])){
+              echo '<h5 class="mb-0 font-weight-normal">'.$_COOKIE['nome'].'</h5>';
+              echo '<span>';
+				if($_COOKIE['permissao']==1){echo 'Usuário';}
+				elseif($_COOKIE['permissao']==2){echo 'Gerente';}
+			  echo '</span>';
+            }else{
+              echo '<a href="./login.php">';
+              echo '<h5 class="mb-0 font-weight-normal">Faça o Login!</h5>';
+              echo '<span>Clique aqui para o Login</span>';
+              echo '</a>';
+            }
+          ?>
           </div>
         </div>
         <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
@@ -30,7 +43,7 @@
               </div>
             </div>
             <div class="preview-item-content">
-              <p class="preview-subject ellipsis mb-1 text-small">Account settings</p>
+              <p class="preview-subject ellipsis mb-1 text-small">Configurações</p>
             </div>
           </a>
           <div class="dropdown-divider"></div>
@@ -41,107 +54,126 @@
               </div>
             </div>
             <div class="preview-item-content">
-              <p class="preview-subject ellipsis mb-1 text-small">Change Password</p>
+              <p class="preview-subject ellipsis mb-1 text-small">Trocar Senha</p>
             </div>
           </a>
           <div class="dropdown-divider"></div>
-          <a href="#" class="dropdown-item preview-item">
+          <a href="fullcalendar.php" class="dropdown-item preview-item">
             <div class="preview-thumbnail">
               <div class="preview-icon bg-dark rounded-circle">
                 <i class="mdi mdi-calendar-today text-success"></i>
               </div>
             </div>
             <div class="preview-item-content">
-              <p class="preview-subject ellipsis mb-1 text-small">To-do list</p>
+              <p class="preview-subject ellipsis mb-1 text-small">Minha Agenda</p>
             </div>
           </a>
         </div>
       </div>
     </li>
-    <li class="nav-item nav-category">
-      <span class="nav-link">Navigation</span>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="fullcalendar.php">
-        <span class="menu-icon">
-          <i class="mdi mdi-calendar"></i>
-        </span>
-        <span class="menu-title">Corona Calendar</span>
-      </a>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
-        <span class="menu-icon">
-          <i class="mdi mdi-account-card-details"></i>
-        </span>
-        <span class="menu-title">User</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse" id="ui-basic">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="vendedor.php">Employees</a></li>
-          <li class="nav-item"> <a class="nav-link" href="clientes.php">Clients</a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/ui-features/typography.html">Typography</a></li>
-        </ul>
-      </div>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="produtos.php">
-        <span class="menu-icon">
-          <i class="mdi mdi-pill"></i>
-        </span>
-        <span class="menu-title">Products</span>
-      </a>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="assets/coronafree/template/pages/tables/basic-table.html">
-        <span class="menu-icon">
-          <i class="mdi mdi-nutrition"></i>
-        </span>
-        <span class="menu-title">Proceidures</span>
-      </a>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="pedidos.php">
-        <span class="menu-icon">
-          <i class="mdi mdi-note-text"></i>
-        </span>
-        <span class="menu-title">Pedidos</span>
-      </a>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="assets/coronafree/template/pages/icons/mdi.html">
-        <span class="menu-icon">
-          <i class="mdi mdi-contacts"></i>
-        </span>
-        <span class="menu-title">Icons</span>
-      </a>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
-        <span class="menu-icon">
-          <i class="mdi mdi-security"></i>
-        </span>
-        <span class="menu-title">User Pages</span>
-        <i class="menu-arrow"></i>
-      </a>
-      <div class="collapse" id="auth">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/samples/blank-page.html"> Blank Page </a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/samples/error-404.html"> 404 </a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/samples/error-500.html"> 500 </a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/samples/login.html"> Login </a></li>
-          <li class="nav-item"> <a class="nav-link" href="assets/coronafree/template/pages/samples/register.html"> Register </a></li>
-        </ul>
-      </div>
-    </li>
-    <li class="nav-item menu-items">
-      <a class="nav-link" href="documentation">
-        <span class="menu-icon">
-          <i class="mdi mdi-file-document-box"></i>
-        </span>
-        <span class="menu-title">Documentation</span>
-      </a>
-    </li>
+    <div <?php if(empty($_COOKIE['nome'])){echo "hidden";}?>>
+		<li class="nav-item nav-category">
+		<span class="nav-link">Navegação</span>
+		</li>
+
+		<li class="nav-item menu-items">
+			<?php 
+				$link = "fullcalendar.php"; 
+				if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+					echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				}else{ 
+					echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				} 
+			?>
+				<span class="menu-icon">
+					<i class="mdi mdi-calendar"></i>
+				</span>
+			<span class="menu-title">Agenda</span>
+			</a>
+		</li>        
+
+		<li class="nav-item menu-items">
+		<a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+			<span class="menu-icon">
+			<i class="mdi mdi-account-card-details"></i>
+			</span>
+			<span class="menu-title">Usuários</span>
+			<i class="menu-arrow"></i>
+		</a>
+		<div class="collapse" id="ui-basic">
+			<ul class="nav flex-column sub-menu">
+				<div <?php if($_COOKIE['permissao']==1){echo "hidden";}?>>
+					<li class="nav-item">
+						<?php 
+							$link = "vendedor.php"; 
+							if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+								echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">Funcionários'; 
+							}else{ 
+								echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">Funcionários'; 
+							} 
+						?>
+						</a>
+					</li>
+				</div>
+				<li class="nav-item">
+					<?php 
+						$link = "clientes.php"; 
+						if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+							echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">Clientes'; 
+						}else{ 
+							echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">Clientes'; 
+						} 
+					?> 
+					</a>
+				</li>
+			</ul>
+		</div>
+		</li>
+		<li class="nav-item menu-items">
+			<?php 
+				$link = "produtos.php"; 
+				if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+					echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				}else{ 
+					echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				} 
+			?>
+			<span class="menu-icon">
+			<i class="mdi mdi-pill"></i>
+			</span>
+			<span class="menu-title">Produtos</span>
+		</a>
+		</li>
+		<li class="nav-item menu-items">
+			<?php 
+				$link = "avaliacoes.php"; 
+				if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+					echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				}else{ 
+					echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				} 
+			?>
+			<span class="menu-icon">
+			<i class="mdi mdi-nutrition"></i>
+			</span>
+			<span class="menu-title">Avaliações</span>
+		</a>
+		</li>
+		<li class="nav-item menu-items">
+			<?php 
+				$link = "pedidos.php"; 
+				if(strpos($_SERVER['REQUEST_URI'], $link) !== false){ 
+					echo '<a class="nav-link active" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				}else{ 
+					echo '<a class="nav-link" href="./'.$link.'?uid='.$_COOKIE["idUsuario"].'">'; 
+				} 
+			?>
+			<span class="menu-icon">
+			<i class="mdi mdi-note-text"></i>
+			</span>
+			<span class="menu-title">Pedidos</span>
+		</a>
+		</li>
+	</div>
   </ul>
 </nav>
