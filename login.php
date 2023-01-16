@@ -85,7 +85,7 @@ include('navbar.php');
 			success: function retorno_ajax(retorno) {
 				console.log(retorno);
 				if(retorno==1){
-					document.location.href="./main.php";
+					document.location.href="./fullcalendar.php";
 				}else{
 					if (retorno) {
 						$('#div_retorno').html(retorno);
