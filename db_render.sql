@@ -7,7 +7,7 @@ CREATE TABLE clientes (
                 cpf VARCHAR(16),
                 telefone VARCHAR(16),
                 email VARCHAR(30),
-                obs VARCHAR(200),
+                obs VARCHAR(100),
                 statuscli INT(1));
 INSERT INTO clientes (nome, cpf, telefone, email, obs, statuscli)
 			VALUES	('Client 1','111.111.111-11','(99) 9 9999-9999','client@testmail.com','Teste',1);
@@ -50,11 +50,10 @@ CREATE TABLE agendamentos (
                 idCliente INT(11),
                 FOREIGN KEY (idCliente) REFERENCES clientes(idCliente),
                 idPedido INT(11),
-                FOREIGN KEY (idPedido) REFERENCES pedidos(idPedido),
-                hora_ini DATETIME,
-                hora_fim DATETIME,
+                hora_ini VARCHAR(100),
+                hora_fim VARCHAR(100),
                 data_agend DATETIME,
-                descricao VARCHAR(200));
+                descricao VARCHAR(100));
 CREATE TABLE avaliacoes (
 				idAvaliacoes INT(11) NOT NULL AUTO_INCREMENT,
                 PRIMARY KEY (idAvaliacoes),
@@ -108,6 +107,6 @@ CREATE TABLE resp_ava (
                 PRIMARY KEY (idResp_ava),
                 idLPA INT(11),
                 idAvaliacoes INT(11),
-                resposta VARCHAR(200));                
+                resposta VARCHAR(200));    
 
 
