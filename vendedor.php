@@ -257,7 +257,6 @@ include('navbar.php');
                 $('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
 			},
 			success: function retorno_ajax(retorno) {
-				alert(retorno);
 				if(retorno){
                     $('#mod_formul_edit').modal('hide');
                     location.reload();

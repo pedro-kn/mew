@@ -62,7 +62,13 @@
   
     
   </head>
-  
+  	<style>
+	.form-control{
+		color: #ffffff;
+		--bs-text-opacity: 1;
+		color: rgba(var(--bs-white-rgb), var(--bs-text-opacity)) !important;
+	}
+	</style>		
  
     <div class="container-scroller">
       

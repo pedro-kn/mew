@@ -47,7 +47,9 @@ if (isset($_GET['a'])) {
 
 			$end2 = str_replace($mes, $mesn, $_POST['end']);
 			$end1 = strtotime($end2);
-			$end = date("Y-m-d\TH:i",$end1);
+			$ender = $end1 + 5400;
+			$end = date("Y-m-d\TH:i",$ender);
+			
 			
 		$res = $db->_exec("INSERT INTO agendamentos (hora_ini, hora_fim)
                     		VALUES ('$start','$end');");
@@ -143,16 +145,18 @@ if (isset($_GET['a'])) {
 			echo '</thead>';
 			echo '<tbody>';
 				echo '<tr >';
-					echo '<td style="text-align: left"><input type="datetime-local" id="data_ini" name="data_ini" value="'.$age[0]["hora_ini"].'"></input></td>';
+					echo '<td style="text-align: center"><input type="datetime-local" id="data_ini" name="data_ini" value="'.$age[0]["hora_ini"].'"></input></td>';
 					echo '<td style="text-align: center"><input type="datetime-local" id="data_fim" name="data_fim" value="'.$age[0]["hora_fim"].'"></input></td>';
 				echo '</tr>';
-				echo '<tr >';
-					echo '<th style="text-align: center">Descrição:</th>';
-				echo '</tr>';
-				echo '<tr >';
-					echo '<td style="text-align: left"><input type="text" id="descricao_include" name="descricao_include"></input></td>';
-					echo '<td><input id="idagend" value="'.$age[0]["idAgendamento"].'" hidden></input></td>';
-				echo '</tr>';
+				echo '<row>';
+					echo '<tr>';
+						echo '<td style="text-align: center">Descrição:</td>';
+					echo '</tr>';
+					echo '<tr >';
+						echo '<td style="text-align: center"><input type="text" id="descricao_include" name="descricao_include"></input></td>';
+						echo '<td><input id="idagend" value="'.$age[0]["idAgendamento"].'" hidden></input></td>';
+					echo '</tr>';
+				echo '</row>';
 			echo '</tbody>';
 		echo '</table>';
 		echo '</div>';
@@ -423,7 +427,6 @@ include('navbar.php');
 					$('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
 				},
 				success: function retorno_ajax(retorno) {
-
 					if(retorno==3){
 						alert("ERRO AO EDITAR AGENDAMENTO, A HORA DE FIM PRECISA SER DEPOIS DA HORA DE INÍCIO! " + retorno); 
 					}
@@ -521,8 +524,6 @@ include('navbar.php');
 						eventsvar.push(objagend);
 						
 					}
-
-					
 					
 					/* initialize the calendar
 					-----------------------------------------------------------------*/
@@ -542,8 +543,13 @@ include('navbar.php');
 						eventLimit: true,
 						allDayDefault: false,
 						timeFormat: 'H:mm',
-						axisFormat: 'h:mm',
+						axisFormat: 'H:mm',
+						slotMinTime: '06:00',
+						slotDuration: '02:00',
+						slotLabelInterval: '02:00',
+						slotDuration: '02:00:00',
 
+				
 						ignoreTimezone: false,
 						monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
 						monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
@@ -598,7 +604,7 @@ include('navbar.php');
 											$('#mod_formul').modal('show');
 										},
 										success: function retorno_ajax(retorno) {
-											alert(retorno)
+
 											if(retorno){
 												
 											}else{

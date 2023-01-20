@@ -438,7 +438,6 @@ include('navbar.php');
           beforeSend: function(){
               },
           success: function retorno_ajax(retorno) {
-            alert(retorno)
             if(retorno){     
                 location.reload();
                 lista_itens();  
@@ -477,7 +476,6 @@ include('navbar.php');
           beforeSend: function(){
               },
           success: function retorno_ajax(retorno) {
-            alert(retorno)
             if(retorno==1){     
                 location.reload();
                 lista_itens(); 

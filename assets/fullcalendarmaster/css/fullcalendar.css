@@ -554,9 +554,9 @@ table.fc-border-separate {
 .fc-agenda-slots tr.fc-minor th.ui-widget-header {
 	*border-top-style: solid; /* doesn't work with background in IE6/7 */
 	}
-	
-
-
+	.fc-timegrid-slot {
+		height: 10px !important
+	}
 /* Vertical Events
 ------------------------------------------------------------------------*/
 
