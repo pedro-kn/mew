@@ -645,7 +645,6 @@
                     pedido: pedido},
                 
                 success: function retorno_ajax(retorno) {
-                    alert(retorno);
                     //$('#numpedido').val(pedido);
                     if(!retorno){
                         alert("ERRO AO INLUIR ITEM NO PEDIDO!");

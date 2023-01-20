@@ -112,7 +112,7 @@ include('navbar.php');
 						</div>
 						<div class="form-group">
 							<label>Senha:</label>
-							<input type="text" id="senha_login" name="senha_login" class="form-control p_input">
+							<input type="password" id="senha_login" name="senha_login" class="form-control p_input">
 						</div>
 						<div class="form-group d-flex align-items-center justify-content-between">
 							<div class="form-check">

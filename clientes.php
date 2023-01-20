@@ -34,6 +34,7 @@ if (isset($_GET["a"])) {
 			echo '<th style="text-align: center">Telefone</th>';
 			echo '<th style="text-align: center">E-mail</th>';
 			echo '<th style="text-align: center">Observação</th>';
+			echo '<th style="text-align: center">Relatórios</th>';
 			if($_COOKIE['permissao']==2){
 				echo '<th style="text-align: center">Status</th>';
 				echo '<th style="text-align: center">Editar</th>';
@@ -44,12 +45,13 @@ if (isset($_GET["a"])) {
 			echo '<tbody>';
 			foreach ($res as $r) {
 
-				echo '<tr onclick="get_item_rel('. $r["idCliente"] .')">';
 				echo '<td style="text-align: left">' . $r["nome"] . '</td>';
 				echo '<td style="text-align: center">' . $r["cpf"] . '</td>';
 				echo '<td style="text-align: center">' . $r["telefone"] . '</td>';
 				echo '<td style="text-align: center">' . $r["email"] . '</td>';
 				echo '<td style="text-align: center">' . $r["obs"] . '</td>';
+				echo '<td style="text-align: center" class="mdi mdi-information-outline" onclick="get_item_rel('. $r["idCliente"] .')"></td>';
+				
 				if($_COOKIE['permissao']==2){
 					echo '<td style="text-align: center">' . $r["statuscli"] . '</td>';
 					echo '<td style="text-align: center">';
@@ -539,8 +541,7 @@ include('navbar.php');
 <style>
 	.table{
   color: #ffffff; }
- 
-	
+
 	</style>
 
 	<!-- Modal formulário de inclusao-->
@@ -563,7 +564,7 @@ include('navbar.php');
 						<div class="row">
 							<div class="col">
 								<label for="Nome" class="form-label">Nome:</label>
-								<input type="text" style="text-align: left" aria-describedby="Nome" class="form-control form-control-lg" name="Nome" id="Nome" placeholder="" style="max-width: 300 px">
+								<input type="text" style="text-align: left" aria-describedby="Nome" class="form-control form-control-lg text-white" name="Nome" id="Nome" placeholder="" style="max-width: 300 px">
 							</div>
 						</div>
 
