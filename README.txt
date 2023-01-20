@@ -14,7 +14,7 @@ Instale o MySQL em uma pasta de preferência sua.
 Após a instalação, dentro do MySQL, crie um novo banco de dados.
 
 Configure o banco de dados com:
-	host = 127.0.0.3
+	host = 127.0.0.1
 	port = 3306
 	username = root
 	password = 
@@ -32,7 +32,8 @@ Ao executar o XAMPP, de um Start nos Modules 'Apache' e 'MySQL'.
 *** Abrino a Pagina no Navegador ***
 
 Digite no seu navegador: localhost/mew
-
+Login de Administrador: admin Senha:123
+Login de usuario: empregado Senha:123
 
 ----------
 
@@ -52,7 +53,7 @@ Install MySQL in a folder of your choice.
 After the instalation, in MySQL, create a new database.
 
 Configure the database as follows:
-	host = 127.0.0.3
+	host = 127.0.0.1
 	port = 3306
 	username = root
 	password = 
@@ -68,4 +69,8 @@ Then, execute XAMPP, and Start the Modules 'Apache' and 'MySQL'.
 *** Open your Browser ***
 
 Type in the browse bar: localhost/mew
+
+Admin Login: admin Password:123
+User Login: empregado Password:123
+
 
