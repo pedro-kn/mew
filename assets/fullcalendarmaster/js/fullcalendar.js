@@ -2999,12 +2999,12 @@ function AgendaView(element, calendar, viewName) {
 		for (i=0; d < maxd; i++) {
 			minutes = d.getMinutes();
 			s +=
-				"<tr class='fc-slot" + i + ' ' + (!minutes ? '' : 'fc-minor') + " >" +
+				"<tr class='fc-slot" + i + ' ' + (!minutes ? '' : 'fc-minor') + "' >" +
 				"<th class='fc-agenda-axis " + headerClass + "'>" +
 				((!slotNormal || !minutes) ? formatDate(d, opt('axisFormat')) : '&nbsp;') +
 				"</th>" +
 				"<td class='" + contentClass + "'>" +
-				"<div style='position:relative'>&nbsp;</div>" +
+				"<div style='position:relative;height:35px'>&nbsp;</div>" +
 				"</td>" +
 				"</tr>";
 			addMinutes(d, opt('slotMinutes'));
