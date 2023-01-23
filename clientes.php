@@ -26,7 +26,7 @@ if (isset($_GET["a"])) {
 
 		if (count($res) > 0) {
 			echo '<div class="table-responsive">';
-			echo '<table id="tb_lista" class="table table-hover table-md" style="font-size: 10pt">';
+			echo '<table id="tb_lista" class="table table-md" style="font-size: 10pt">';
 			echo '<thead>';
 			echo '<tr>';
 			echo '<th style="text-align: left">Nome</th>';
@@ -86,7 +86,7 @@ if (isset($_GET["a"])) {
 		$status = 1;
 		
 
-		$res = $db->_exec("INSERT INTO clientes (idCliente,nome,cpf,telefone,email,obs,statuscli) VALUES ('','$nome','$cpf','$telefone','$email','$obs','$status')");
+		$res = $db->_exec("INSERT INTO clientes (nome,cpf,telefone,email,obs,statuscli) VALUES ('$nome','$cpf','$telefone','$email','$obs','$status')");
 
 		echo $res;
 	}

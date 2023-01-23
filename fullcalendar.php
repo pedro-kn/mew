@@ -105,7 +105,7 @@ if (isset($_GET['a'])) {
 				SET idCliente = $cliente, idUsuario = $usuario
 				WHERE idAgendamento = {$id}");
 		}else{
-			$ped = $db->_exec("INSERT INTO agendamentos (idAgendamento,idCliente,idUsuario) VALUES ('',$cliente,$usuario)");
+			$ped = $db->_exec("INSERT INTO agendamentos (idCliente,idUsuario) VALUES ($cliente,$usuario)");
 		}
 
 		$age = $db->select("SELECT idAgendamento, hora_ini, hora_fim FROM agendamentos ORDER BY idAgendamento DESC LIMIT 1");
@@ -136,7 +136,7 @@ if (isset($_GET['a'])) {
 		}
 			
 		echo '<div class="table-responsive">';
-		echo '<table id="tb_lista" class="table table-striped table-hover table-sm" style="font-size: 10pt">';
+		echo '<table id="tb_lista" class="table table-striped table-sm" style="font-size: 10pt">';
 			echo '<thead>';
 				echo '<tr>';
 					echo '<th style="text-align: center">Dia e Horario de Início</th>';
@@ -548,7 +548,7 @@ include('navbar.php');
 						slotDuration: '02:00',
 						slotLabelInterval: '02:00',
 						slotDuration: '02:00:00',
-						
+
 
 				
 						ignoreTimezone: false,

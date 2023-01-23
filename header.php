@@ -68,6 +68,9 @@
 		--bs-text-opacity: 1;
 		color: rgba(var(--bs-white-rgb), var(--bs-text-opacity)) !important;
 	}
+  .dropdown-item:hover{
+    color: #ffffff;
+  }
 	</style>		
  
     <div class="container-scroller">
