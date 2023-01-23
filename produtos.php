@@ -75,7 +75,7 @@ if (isset($_GET["a"])) {
 		$codbar = $_POST["codbar"];
 		$obs = $_POST["obs"];
 		
-		$res = $db->_exec("INSERT INTO produtos (idProduto,descricao,valor,obs,codbar,quantidade) VALUES ('','$descricao','$valor','$obs', '$codbar', '$quantidade')");
+		$res = $db->_exec("INSERT INTO produtos (descricao,valor,obs,codbar,quantidade) VALUES ('$descricao','$valor','$obs', '$codbar', '$quantidade')");
 
 		echo $res;
 	}

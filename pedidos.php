@@ -45,7 +45,7 @@
             
             if(count($res) > 0){
                 echo '<div class="table-responsive">';
-                echo '<table id="tb_lista" class="table table-hover table-md" style="font-size: 10pt">';
+                echo '<table id="tb_lista" class="table table-md" style="font-size: 10pt">';
                     echo '<thead>';
                         echo '<tr>';
                             echo '<th style="text-align: left">idPedido</th>';
@@ -112,7 +112,7 @@
             $usuario = $_POST["usuario"];
             $cliente = $_POST["cliente"];
 
-            $ped = $db->_exec("INSERT INTO pedidos (idPedido,idCliente,idUsuario,statusped) VALUES ('',$cliente,$usuario,'1')");
+            $ped = $db->_exec("INSERT INTO pedidos (idCliente,idUsuario,statusped) VALUES ($cliente,$usuario,'1')");
             
             $s = $db->select("SELECT idPedido FROM pedidos WHERE idCliente = $cliente AND idUsuario = '$usuario' ORDER BY idPedido DESC LIMIT 1");
 
@@ -124,7 +124,7 @@
             
             if(count($res) > 0){
                 echo '<div class="table-responsive">';
-                echo '<table id="tb_lista" class="table table-striped table-hover table-sm" style="font-size: 10pt">';
+                echo '<table id="tb_lista" class="table table-striped table-sm" style="font-size: 10pt">';
                     echo '<thead>';
                         echo '<tr>';
                             echo '<th style="text-align: left">Descrição</th>';
@@ -160,7 +160,7 @@
             $usuario = $_POST["usuario"];
             $cliente = $_POST["cliente"];
 
-            $ped = $db->_exec("INSERT INTO pedidos (idPedido,idCliente,idUsuario,statusped) VALUES ('',$cliente,$usuario,'1')");
+            $ped = $db->_exec("INSERT INTO pedidos (idCliente,idUsuario,statusped) VALUES ($cliente,$usuario,'1')");
             
             $s = $db->select("SELECT idPedido FROM pedidos WHERE idCliente = $cliente AND idUsuario = '$usuario' ORDER BY idPedido DESC LIMIT 1");
 
@@ -172,7 +172,7 @@
             
             if(count($res) > 0){
                 echo '<div class="table-responsive">';
-                echo '<table id="tb_lista" class="table table-striped table-hover table-sm" style="font-size: 10pt">';
+                echo '<table id="tb_lista" class="table table-striped table-sm" style="font-size: 10pt">';
                     echo '<thead>';
                         echo '<tr>';
                             echo '<th style="text-align: left">Descrição</th>';
@@ -1168,7 +1168,7 @@
                             <div class="col">			
                                 <label for="frm_vallista_edit" class="form-label"><b>Produtos:</b></label>
                                     <div class="table-responsive">
-                                        <table id="tb_lista" class="table table-striped table-hover table-sm" style="font-size: 10pt">
+                                        <table id="tb_lista" class="table table-striped table-sm" style="font-size: 10pt">
                                             <thead>
                                                 <tr>
                                                     <th style="text-align: left">Descrição do Produto</th>
@@ -1251,7 +1251,7 @@
                             <div class="col">			
                                 <label for="frm_vallista_exibe" class="form-label"><b>Produtos:</b></label>
                                     <div class="table-responsive">
-                                        <table id="tb_lista" class="table table-striped table-hover table-sm" style="font-size: 10pt">
+                                        <table id="tb_lista" class="table table-striped table-sm" style="font-size: 10pt">
                                             <thead>
                                                 <tr>
                                                     <th style="text-align: left">Descrição do Produto</th>

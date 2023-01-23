@@ -78,7 +78,7 @@ if (isset($_GET["a"])) {
 		$senha = md5($_POST["senha"]);
 		$status = $_POST["permissao"];;
 		
-		$res = $db->_exec("INSERT INTO usuarios (idUsuario,nome,telefone,email,statuscli,senha) VALUES ('','$nome','$telefone','$email',{$status},'$senha')");
+		$res = $db->_exec("INSERT INTO usuarios (nome,telefone,email,statuscli,senha) VALUES ('$nome','$telefone','$email',{$status},'$senha')");
 
 		echo $res;
 	}

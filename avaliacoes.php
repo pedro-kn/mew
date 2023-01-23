@@ -114,13 +114,14 @@ if (isset($_GET["a"])) {
         $descricao = $_POST["descricao"];
         $usuario = $_POST["usuario"];
         $cliente = $_POST["cliente"];
-        $checklist = $_POST["checklist"];
+        $checklist1 = $_POST["checklist1"];
+
 
         $res = $db->_exec("INSERT INTO avaliacoes (idCliente,idUsuario,data_hora,descricao,stats) VALUES ($cliente,$usuario,LOCALTIME(),'{$descricao}',1)");
         
         $sel = $db->select("SELECT idAvaliacoes FROM avaliacoes ORDER BY idAvaliacoes DESC LIMIT 1");
 
-        foreach($checklist as $c){
+        foreach($checklist1 as $c){
             $res = $db->_exec("INSERT INTO list_perg_ava (idPergunta,idAvaliacoes) VALUES ($c,{$sel[0]['idAvaliacoes']})");
         }
 
@@ -170,20 +171,20 @@ if (isset($_GET["a"])) {
         $perg = array();
         echo '<form action="#" method="post">';
         foreach($res as $r){
-            
+            $countr++; 
             echo '<div class="preview-list">';
                 echo '<div class="preview-item border-bottom">';
                     echo '<div class="preview-thumbnail">';
-                    echo '<input type="checkbox" onclick="check_sel();" id="pergts" name="pergts" value="'.$r['idPergunta'].'">';
+                    echo '<input type="checkbox" id="pergts'.$countr.'" name="pergts" value="'.$r['idPergunta'].'">';
                     echo '</div>';
                         echo '<div class="preview-item-content d-sm-flex flex-grow">';
                             echo '<div class="flex-grow">';
                                 //echo '<h6 class="preview-subject">'.$r['pergunta'].'</h6>';
                                 
-                                echo '<label for="pergts">'.$r['pergunta'].'</label><br>';
+                                echo '<label for="pergts'.$countr.'">'.$r['pergunta'].'</label><br>';
                             echo '</div>';
                         echo '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
-                        $countr++;
+                        
                             echo '<p class="text-muted">'.$countr.'</p>';
                         echo '</div>';
                     echo '</div>';
@@ -398,30 +399,22 @@ include('navbar.php');
         $('#mod_formul').modal("show");
     }
 
-    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-	* Função para obter os valores das perguntas selecionaas via checkbox:
-	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-    var a_perguntas = [];
-    $(document).on("click", "input[type=checkbox]", function(e) {
-		if ($(this).is(":checked")) {
-			a_perguntas.push($(this).val());
-		}
-	});
-   //nao esta sendo usado ->
-    var a_itens = [];
-    function check_sel(){
-		$('input[name=pergts]').each(function () {
-			if(this.checked){
-				a_itens.push($(this).val());
-			}
-		});
-    }    
+ 
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	* Incluir a nova avaliação a partir do modal de inclusao de avaliacao:
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var ajax_div = $.ajax(null);
 	const incluiAvaliacao = () => {
+
+        //obter o valor das checkboxes 
+        var checkedBoxes = document.querySelectorAll('input[type=checkbox]:checked');
+
+        var array_perg = [];
+        for(var i=1;i<=checkedBoxes.length;i++){
+            array_perg[i-1]=checkedBoxes[i-1].value;
+        }
+
         if(ajax_div){ ajax_div.abort(); }
         ajax_div = $.ajax({
           cache: false,
@@ -432,12 +425,12 @@ include('navbar.php');
                 descricao: $('#frm_val0_insert').val(),
                 usuario: $('#frm_val1_insert').val(),
                 cliente: $('#frm_val2_insert').val(),
-                checklist: a_perguntas,
-                checklist1: a_itens,
+                checklist1: array_perg,
               },
           beforeSend: function(){
               },
           success: function retorno_ajax(retorno) {
+
             if(retorno){     
                 location.reload();
                 lista_itens();  
