@@ -548,6 +548,7 @@ include('navbar.php');
 						slotDuration: '02:00',
 						slotLabelInterval: '02:00',
 						slotDuration: '02:00:00',
+						
 
 				
 						ignoreTimezone: false,
