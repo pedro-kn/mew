@@ -225,8 +225,14 @@ if (isset($_GET["a"])) {
 
 		$id = $_POST["id"];
 
-		$res = $db->_exec("DELETE FROM perguntas WHERE idPergunta = '{$id}'");
+        $sel = $db->select("SELECT idPergunta FROM list_perg_ava WHERE idPergunta = $id");
 
+        if($sel==NULL){
+		    $res = $db->_exec("DELETE FROM perguntas WHERE idPergunta = '{$id}'");
+        }else{
+            $res=2;
+        }    
+        
 		echo $res;
 	}
 
@@ -621,10 +627,12 @@ include('navbar.php');
                     id: id,
                 },
 		    	success: function retorno_ajax(retorno) {
-                    if(retorno){
+                    if(retorno==1){
 						location.reload();
                     	lista_itens();  
-                	}else{
+                	}else if(retorno==2){
+                        alert("Não é possível excluir essa pergunta pois ela está vinculada a outros questionários!");
+                    }else{
                     	alert("ERRO AO DELETAR USUÁRIO! " + retorno);
                 	}
 		    	}
