@@ -133,11 +133,11 @@ if (isset($_GET["a"])) {
 		$res = $db->select("SELECT nome, cpf, telefone, email, obs FROM clientes WHERE idCliente = '{$id}'");
 
 		if (count($res) > 0) {
-			$res[0]['nome'] = utf8_encode($res[0]['nome']);
-			$res[0]['cpf'] = utf8_encode($res[0]['cpf']);
-			$res[0]['telefone'] = utf8_encode($res[0]['telefone']);
-			$res[0]['email'] = utf8_encode($res[0]['email']);
-			$res[0]['obs'] = utf8_encode($res[0]['obs']);
+			$res[0]['nome'] = $res[0]['nome'];
+			$res[0]['cpf'] = $res[0]['cpf'];
+			$res[0]['telefone'] = $res[0]['telefone'];
+			$res[0]['email'] = $res[0]['email'];
+			$res[0]['obs'] = $res[0]['obs'];
 
 			$a_retorno["res"] = $res;
 			$c_retorno = json_encode($a_retorno["res"]);
@@ -218,73 +218,70 @@ if (isset($_GET["a"])) {
 
         $body = "";
 
-        //$body .= '<div class="row">';
-            $body .= '<div class=" col-md-12 grid-margin stretch-card">';
-                $body .= '<div class="card">';
-                    $body .= '<div class="card-body">';
-                        $body .= '<div class="d-flex flex-row justify-content-between">';
-                        $body .= '<h4 class="card-title mb-1">'.$res[0]['descricao'].'</h4>';
-						if($res[0]['stats']!==2){
-							$body .= '<h6 class="card-title mb-1">Respostas Pendentes!</h6>';
-						}   
-                            $body .= '</div>';
-                            $body .= '<div class="row">';
-                                $body .= '<div class="col-6">';
-                                $body .= '<p class="text-muted mb-0">Usuário:</p>';
-                                $body .= '<h6 class="mb-1">'.$res[0]['nomev'].'</h6>';
-                            $body .= '</div>'; 
-                            $body .= '<div class="col-6">';
-                                $body .= '<p class="text-muted mb-0">Cliente:</p>';
-                                $body .= '<h6 class="mb-1">'.$res[0]['nomec'].'</h6>';
-                            $body .= '</div>'; 
-                        $body .= '</div>';
-                            $body .= '<div class="row">';
-                            $body .= '<div class="col-12">';
+		$body .= '<div class=" col-md-12 grid-margin stretch-card">';
+			$body .= '<div class="card">';
+				$body .= '<div class="card-body">';
+					$body .= '<div class="d-flex flex-row justify-content-between">';
+					$body .= '<h4 class="card-title mb-1">'.$res[0]['descricao'].'</h4>';
+					if($res[0]['stats']!==2){
+						$body .= '<h6 class="card-title mb-1">Respostas Pendentes!</h6>';
+					}   
+						$body .= '</div>';
+						$body .= '<div class="row">';
+							$body .= '<div class="col-6">';
+							$body .= '<p class="text-muted mb-0">Usuário:</p>';
+							$body .= '<h6 class="mb-1">'.$res[0]['nomev'].'</h6>';
+						$body .= '</div>'; 
+						$body .= '<div class="col-6">';
+							$body .= '<p class="text-muted mb-0">Cliente:</p>';
+							$body .= '<h6 class="mb-1">'.$res[0]['nomec'].'</h6>';
+						$body .= '</div>'; 
+					$body .= '</div>';
+						$body .= '<div class="row">';
+						$body .= '<div class="col-12">';
 
-                                if($sel>0){
-                                $countr = 0;
-                                $array_res = array();
-                                foreach($sel as $s){
-                                        $countr++;
-                                        $body .= '<div class="preview-list">';
-                                            $body .= '<div class="preview-item border-bottom">';
-                                                $body .= '<div class="preview-thumbnail">';
-                                                $body .= '<i class="mdi mdi-chevron-double-right"></i>';
-                                            $body .= '</div>';
-                                            $body .= '<div class="preview-item-content d-sm-flex flex-grow">';
-                                                $body .= '<div class="flex-grow">';
-                                                $body .= '<h6 class="preview-subject">'.$s['pergunta'].'</h6>';
-                                                $body .= '<input id="resp_input'.$countr.'" "type="text" size="60"';
-                                                    //if($res[0]['stats']==2){
-                                                        $body .= 'disabled';
-                                                    //}
-                                                $body .= '>';
-                                            $body .= '</div>';
-                                            $body .= '<td style="text-align: center">';
-                                                $body .= '<i title="Deletar" onclick="del_perg_ava(\'' . $s["idLPA"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
-                                                    
-                                            $body .= '</td>';
-                                            $body .= '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
-                                                $body .= '<p class="text-muted">'.$countr.'</p>';
-                                            $body .= '</div>';
-                                        $body .= '</div>';
-                                    $body .= '</div>';
-                                $body .= '</div>';
-                                }  
-                                }else{
-                                $body .= '<div class="alert alert-warning" role="alert">';
-                                    $body .= 'Nenhum registro localizado!';
-                                $body .= '</div>';
-                                }
-                            $body .= '</div>';
-                        $body .= '</div>';
-                    $body .= '<div class="modal-footer">';
+							if($sel>0){
+							$countr = 0;
+							$array_res = array();
+							foreach($sel as $s){
+									$countr++;
+									$body .= '<div class="preview-list">';
+										$body .= '<div class="preview-item border-bottom">';
+											$body .= '<div class="preview-thumbnail">';
+											$body .= '<i class="mdi mdi-chevron-double-right"></i>';
+										$body .= '</div>';
+										$body .= '<div class="preview-item-content d-sm-flex flex-grow">';
+											$body .= '<div class="flex-grow">';
+											$body .= '<h6 class="preview-subject">'.$s['pergunta'].'</h6>';
+											$body .= '<input id="resp_input'.$countr.'" "type="text" size="60"';
+											$body .= 'disabled';
+											$body .= '>';
+										$body .= '</div>';
+										$body .= '<td style="text-align: center">';
+											$body .= '<i title="Deletar" onclick="del_perg_ava(\'' . $s["idLPA"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
+												
+										$body .= '</td>';
+										$body .= '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
+											$body .= '<p class="text-muted">'.$countr.'</p>';
+										$body .= '</div>';
+									$body .= '</div>';
+								$body .= '</div>';
+							$body .= '</div>';
+							}  
+							}else{
+							$body .= '<div class="alert alert-warning" role="alert">';
+								$body .= 'Nenhum registro localizado!';
+							$body .= '</div>';
+							}
+						$body .= '</div>';
+					$body .= '</div>';
+				$body .= '<div class="modal-footer">';
 
-                    $body .= '</div>';
-                $body .= '</div>';
-            $body .= '</div>';
-        $body .= '</div>';
-    //$body .= '</div>';
+				$body .= '</div>';
+			$body .= '</div>';
+		$body .= '</div>';
+	$body .= '</div>';
+
 
     //exibe as respostas nos campos de input
 

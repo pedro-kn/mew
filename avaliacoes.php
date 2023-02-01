@@ -28,8 +28,8 @@ if (isset($_GET["a"])) {
                         echo '<button type="button" onclick="modal_cad_ava();" class="btn btn-inverse-light btn-fw btn-md" style="height: 32px"><i class="mdi mdi-library-plus" style="margin-right: 5px"></i>Incluir Nova Avaliação</button>';
                         if($sel>0){
                             foreach($sel as $s){
-                            echo '<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">';
-                                echo '<div onclick="get_item(\'' . $s["idAvaliacoes"] . '\')" class="text-md-center text-xl-left">';
+                            echo '<div class="table-hover bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">';
+                                echo '<div style="cursor: pointer" onclick="get_item(\'' . $s["idAvaliacoes"] . '\')" class="text-md-center text-xl-left">';
                                     echo '<h6 class="mb-1">'.$s['descricao'].'</h6>';
                                     echo '<p class="text-muted mb-0">'.$s['nome'].'</p>';
                                 echo '</div>';
@@ -69,13 +69,12 @@ if (isset($_GET["a"])) {
                                         echo '<div class="preview-item-content d-sm-flex flex-grow">';
                                         echo '<div class="flex-grow">';
                                             echo '<h6 class="preview-subject">'.$r['pergunta'].'</h6>';
-                                            //echo '<p class="text-muted mb-0">Broadcast web app mockup</p>';
                                         echo '</div>';
                                         echo '<td style="text-align: center">';
                                             echo '<i title="Deletar" onclick="del_item(\'' . $r["idPergunta"] . '\')" class="mdi mdi-delete" style="cursor: pointer"></i>';
                                         echo '</td>';
                                         echo '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
-                                            echo '<p class="text-muted">'.$countr.'</p>';
+
                                         echo '</div>';
                                         echo '</div>';
                                     echo '</div>';
@@ -179,13 +178,9 @@ if (isset($_GET["a"])) {
                     echo '</div>';
                         echo '<div class="preview-item-content d-sm-flex flex-grow">';
                             echo '<div class="flex-grow">';
-                                //echo '<h6 class="preview-subject">'.$r['pergunta'].'</h6>';
-                                
                                 echo '<label for="pergts'.$countr.'">'.$r['pergunta'].'</label><br>';
                             echo '</div>';
                         echo '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
-                        
-                            echo '<p class="text-muted">'.$countr.'</p>';
                         echo '</div>';
                     echo '</div>';
                 echo '</div>';
@@ -331,7 +326,6 @@ if (isset($_GET["a"])) {
                                                     
                                             $body .= '</td>';
                                             $body .= '<div class="mr-auto text-sm-center pt-2 pt-sm-0">';
-                                                $body .= '<p class="text-muted">'.$countr.'</p>';
                                             $body .= '</div>';
                                         $body .= '</div>';
                                     $body .= '</div>';
@@ -605,7 +599,7 @@ include('navbar.php');
                     location.reload();
                     lista_itens();  
                 }else{
-                    alert("ERRO AO EDITAR USUÁRIO! " + retorno);
+                    alert("ERRO AO EDITAR AVALIAÇÂO! " + retorno);
                 }
 			}
 		});
@@ -633,7 +627,7 @@ include('navbar.php');
                 	}else if(retorno==2){
                         alert("Não é possível excluir essa pergunta pois ela está vinculada a outros questionários!");
                     }else{
-                    	alert("ERRO AO DELETAR USUÁRIO! " + retorno);
+                    	alert("ERRO AO DELETAR AVALIAÇÃO! " + retorno);
                 	}
 		    	}
 		    });
@@ -662,7 +656,7 @@ include('navbar.php');
 						location.reload();
                     	lista_itens();  
                 	}else{
-                    	alert("ERRO AO DELETAR USUÁRIO! " + retorno);
+                    	alert("ERRO AO DELETAR AVALIAÇÃO! " + retorno);
                 	}
 		    	}
 		    });
@@ -691,7 +685,7 @@ include('navbar.php');
 						location.reload();
                     	lista_itens();  
                 	}else{
-                    	alert("ERRO AO DELETAR USUÁRIO! " + retorno);
+                    	alert("ERRO AO DELETAR PERGUNTA! " + retorno);
                 	}
 		    	}
 		    });
@@ -705,72 +699,72 @@ include('navbar.php');
 
 <!-- Modal formulário de inclusao-->
 <div class="modal" id='mod_formul'>
-		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 50%;">
-			<div class="modal-content">
-				<div class="modal-header" style="align-items: center">
-					<div style="display: flex; align-items: center">
-						<div style="margin-right: 5px">
-							<h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
-						</div>
-						<div>
-							<h5 id="tit_frm_formul" class="modal-title">Incluir Nova Avaliação</h5>
-						</div>
-					</div>
-					<button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul').modal('hide');">X</button>
-				</div>
-				<div class="modal-body modal-dialog-scrollable container-fluid" style="max-width: 300 px">
-					<form id="frm_general" name="frm_general" class= "col">
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label for="frm_val0_insert" class="form-label">Nome da Avaliação:</label>
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 50%;">
+        <div class="modal-content">
+            <div class="modal-header" style="align-items: center">
+                <div style="display: flex; align-items: center">
+                    <div style="margin-right: 5px">
+                        <h2 style="margin: 0"><span class="badge bg-info text-white" style="padding: 8px" id="span_endereco_nome"></span></h2>
+                    </div>
+                    <div>
+                        <h5 id="tit_frm_formul" class="modal-title">Incluir Nova Avaliação</h5>
+                    </div>
+                </div>
+                <button type="button" style="cursor: pointer; border: 1px solid #ccc; border-radius: 10px" aria-label="Fechar" onclick="$('#mod_formul').modal('hide');">X</button>
+            </div>
+            <div class="modal-body modal-dialog-scrollable container-fluid" style="max-width: 300 px">
+                <form id="frm_general" name="frm_general" class= "col">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="frm_val0_insert" class="form-label">Nome da Avaliação:</label>
+                            <div class="scrollable">
+                            <input id="frm_val0_insert"  class="select form-control form-control-lg" name="frm_val0_insert" type="text" style="color: #ffffff"></input>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="frm_val1_insert" class="form-label">Usuário:</label>
                                 <div class="scrollable">
-                                <input id="frm_val0_insert"  class="select form-control form-control-lg" name="frm_val0_insert" type="text" style="color: #ffffff"></input>
-                                </div>
+                                <select id="frm_val1_insert"  class="select form-control form-control-lg" name="frm_val1_insert" type="text" style="color: #ffffff" >
+                                    <option value="" selected></option>
+                                    <?php
+                                        $desc = $db->select('SELECT idUsuario, nome FROM usuarios');
+                                        foreach($desc as $s){
+                                            echo  '<option value="'.$s["idUsuario"].'">'.$s["nome"].'</option>';
+                                        }
+                                    ?>
+                                </select>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label for="frm_val1_insert" class="form-label">Usuário:</label>
-                                    <div class="scrollable">
-                                    <select id="frm_val1_insert"  class="select form-control form-control-lg" name="frm_val1_insert" type="text" style="color: #ffffff" >
-                                        <option value="" selected></option>
-                                        <?php
-                                            $desc = $db->select('SELECT idUsuario, nome FROM usuarios');
-                                            foreach($desc as $s){
-                                                echo  '<option value="'.$s["idUsuario"].'">'.$s["nome"].'</option>';
-                                            }
-                                        ?>
-                                    </select>
-                                </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="frm_val2_insert" class="form-label">Cliente:</label>
+                                <div class="scrollable">
+                                <select id="frm_val2_insert"  onchange="listaModinsert()" class="select form-control form-control-lg" name="frm_val2_insert" type="text" style="color: #ffffff" >
+                                    <option value="" selected></option>
+                                    <?php
+                                        $desc = $db->select('SELECT idCliente, nome FROM clientes');
+                                        foreach($desc as $s){
+                                            echo  '<option value="'.$s["idCliente"].'">'.$s["nome"].'</option>';
+                                        }
+                                    ?>
+                                </select>
+                                <input id="numpedido" hidden></input>
                             </div>
                         </div>
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label for="frm_val2_insert" class="form-label">Cliente:</label>
-                                    <div class="scrollable">
-                                    <select id="frm_val2_insert"  onchange="listaModinsert()" class="select form-control form-control-lg" name="frm_val2_insert" type="text" style="color: #ffffff" >
-                                        <option value="" selected></option>
-                                        <?php
-                                            $desc = $db->select('SELECT idCliente, nome FROM clientes');
-                                            foreach($desc as $s){
-                                                echo  '<option value="'.$s["idCliente"].'">'.$s["nome"].'</option>';
-                                            }
-                                        ?>
-                                    </select>
-                                    <input id="numpedido" hidden></input>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="mod_insert"></div>	
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" onclick="$('#mod_formul').modal('hide');">Cancelar</button>
-					<button type="button" class="btn btn-primary" id="OK" onclick="incluiAvaliacao();"><img id="img_btn_ok" style="width: 15px; color: black; display: none; margin-right: 10px">OK</button>
-				</div>
-			</div>
-		</div>
-	</div>
+                    </div>
+                    <div id="mod_insert"></div>	
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="$('#mod_formul').modal('hide');">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="OK" onclick="incluiAvaliacao();"><img id="img_btn_ok" style="width: 15px; color: black; display: none; margin-right: 10px">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <body>

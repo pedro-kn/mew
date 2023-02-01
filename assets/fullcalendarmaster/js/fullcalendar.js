@@ -3938,6 +3938,7 @@ function AgendaEventRenderer() {
 			seg = segs[i];
 			if (eventElement = seg.element) {
 				eventElement[0].style.width = Math.max(0, seg.outerWidth - seg.hsides) + 'px';
+				
 				height = Math.max(0, seg.outerHeight - seg.vsides);
 				eventElement[0].style.height = height + 'px';
 				event = seg.event;
@@ -3985,9 +3986,10 @@ function AgendaEventRenderer() {
 				"position:absolute;" +
 				"top:" + seg.top + "px;" +
 				"left:" + seg.left + "px;" +
-				skinCss +
+				skinCss + 
 				"'" +
 			">" +
+
 			"<div class='fc-event-inner'>" +
 			"<div class='fc-event-time'>" +
 			htmlEscape(formatDates(event.start, event.end, opt('timeFormat'))) +

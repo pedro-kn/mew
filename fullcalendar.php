@@ -34,21 +34,18 @@ if (isset($_GET['a'])) {
 		$end = $_POST['end'];
 
 		//tratamento para o formato de data
-		
-			//$mes = array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "0300 - (Horário Padrão de Brasília)");
-			//$mesn = array("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "");
-			
-			$mes = array("GMT-0300 (Horário Padrão de Brasília)");
-			$mesn = array("");
 
-			$start2 = str_replace($mes, $mesn, $_POST['start']);
-			$start1 = strtotime($start2);
-			$start = date("Y-m-d\TH:i",$start1);
+		$mes = array("GMT-0300 (Horário Padrão de Brasília)");
+		$mesn = array("");
 
-			$end2 = str_replace($mes, $mesn, $_POST['end']);
-			$end1 = strtotime($end2);
-			$ender = $end1 + 5400;
-			$end = date("Y-m-d\TH:i",$ender);
+		$start2 = str_replace($mes, $mesn, $_POST['start']);
+		$start1 = strtotime($start2);
+		$start = date("Y-m-d\TH:i",$start1);
+
+		$end2 = str_replace($mes, $mesn, $_POST['end']);
+		$end1 = strtotime($end2);
+		$ender = $end1 + 5400;
+		$end = date("Y-m-d\TH:i",$ender);
 			
 			
 		$res = $db->_exec("INSERT INTO agendamentos (hora_ini, hora_fim)
@@ -353,7 +350,7 @@ include('navbar.php');
 	* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	var ajax_div = $.ajax(null);
 	function delete_Event(){
-		if( confirm( "Deseja excluir o pedido?")){
+		if( confirm( "Deseja excluir o agendamento?")){
 			if(ajax_div){ ajax_div.abort(); }
 				ajax_div = $.ajax({
 				cache: false,
@@ -461,32 +458,25 @@ include('navbar.php');
 		var m = date.getMonth();
 		var y = date.getFullYear();
 
-		/*  className colors
-
-		className: default(transparent), important(red), chill(pink), success(green), info(blue)
-
-		*/
-
-
-		/* initialize the external events
+		/* inicializa eventos externos
 		-----------------------------------------------------------------*/
 
 		$('#external-events div.external-event').each(function() {
 
-			// create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
-			// it doesn't need to have a start or end
+			// cria um Objeto Evento
+			// não precisa de start ou end
 			var eventObject = {
-				title: $.trim($(this).text()) // use the element's text as the event title
+				title: $.trim($(this).text()) // usa o texto to elemento como titulo
 			};
 
-			// store the Event Object in the DOM element so we can get to it later
+			// salva um Objeto Evento na DOM para ser usado futuramente
 			$(this).data('eventObject', eventObject);
 
-			// make the event draggable using jQuery UI
+			// deixa o evento arrastavel usando jQuery UI
 			$(this).draggable({
 				zIndex: 999,
-				revert: true, // will cause the event to go back to its
-				revertDuration: 0 //  original position after the drag
+				revert: true, // faz o evento voltar para a posição original
+				revertDuration: 0 
 			});
 
 		});
@@ -504,8 +494,7 @@ include('navbar.php');
 				type: 'post',
 				data: {},
 				beforeSend: function(){
-					//$('#calendar').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
-				},
+					},
 				success: function retorno_ajax(retorno) {
 										
 					var objlista = JSON.parse(retorno);  
@@ -525,7 +514,7 @@ include('navbar.php');
 						
 					}
 					
-					/* initialize the calendar
+					/* inicializa o calendario
 					-----------------------------------------------------------------*/
 					
 					var calendar = $('#calendar').fullCalendar({
@@ -536,7 +525,7 @@ include('navbar.php');
 							right: 'prev,next today'
 						},
 						editable: true,
-						firstDay: 0, //  1(Monday) this can be changed to 0(Sunday) for the USA system
+						firstDay: 0, //  1(segunda) pode ser mudado para 0 (domingo) 
 						selectable: true,
 						defaultView: 'agendaWeek',
 						editable: true,
@@ -549,8 +538,6 @@ include('navbar.php');
 						slotLabelInterval: '02:00',
 						slotDuration: '02:00:00',
 
-
-				
 						ignoreTimezone: false,
 						monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
 						monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
@@ -616,28 +603,26 @@ include('navbar.php');
 							
 							
 						},
-						droppable: true, // this allows things to be dropped onto the calendar !!!
-						drop: function(date, allDay) { // this function is called when something is dropped
+						droppable: true, // permite que eventos sejam dropados no calendario !!!
+						drop: function(date, allDay) { // chama algo quando ocorre um drop
 
-							// retrieve the dropped element's stored Event Object
+							// puxa o evento previamente salvo na DOM
 							var originalEventObject = $(this).data('eventObject');
 
-							// we need to copy it, so that multiple events don't have a reference to the same object
+							// copia o evento
 							var copiedEventObject = $.extend({}, originalEventObject);
 
-							// assign it the date that was reported
+							// copia a data
 							copiedEventObject.start = date;
 							copiedEventObject.allDay = allDay;
 
 							location.reload();
 
-							// render the event on the calendar
-							// the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
+							// renderiza o evento no calendario
+							// true para o evento grudar no calendario (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
 							$('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
 							
-							// is the "remove after drop" checkbox checked?
 							if ($('#drop-remove').is(':checked')) {
-								// if so, remove the element from the "Draggable Events" list
 								$(this).remove();
 							}
 							
@@ -650,34 +635,29 @@ include('navbar.php');
 							* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 							var ajax_div = $.ajax(null);
 							
-								if(ajax_div){ ajax_div.abort(); }
-								ajax_div = $.ajax({
-									cache: false,
-									async: true,
-									url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_client_auto',
-									type: 'post',
-									data: { 
-										id: copiedEventObject.id,
-										start: copiedEventObject.start,
-										end: copiedEventObject.end,
+							if(ajax_div){ ajax_div.abort(); }
+							ajax_div = $.ajax({
+								cache: false,
+								async: true,
+								url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_client_auto',
+								type: 'post',
+								data: { 
+									id: copiedEventObject.id,
+									start: copiedEventObject.start,
+									end: copiedEventObject.end,
 
-									},
-									beforeSend: function(){
-										//$('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
-									},
-									success: function retorno_ajax(retorno) {
-										
-										if(retorno){
-											//$('#mod_formul_edit').modal('hide');
-											location.reload();
-											lista_itens_agenda();  
-										}else{
-											alert("ERRO AO EDITAR USUÁRIO! " + retorno);
-										}
+								},
+								beforeSend: function(){},
+								success: function retorno_ajax(retorno) {
+									
+									if(retorno){
+										location.reload();
+										lista_itens_agenda();  
+									}else{
+										alert("ERRO AO EDITAR USUÁRIO! " + retorno);
 									}
-								});
-								
-							
+								}
+							});	
 						},
 
 						eventResize: function(copiedEventObject){
@@ -687,32 +667,28 @@ include('navbar.php');
 							* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 							var ajax_div = $.ajax(null);
 							
-								if(ajax_div){ ajax_div.abort(); }
-								ajax_div = $.ajax({
-									cache: false,
-									async: true,
-									url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_client_auto',
-									type: 'post',
-									data: { 
-										id: copiedEventObject.id,
-										start: copiedEventObject.start,
-										end: copiedEventObject.end,
+							if(ajax_div){ ajax_div.abort(); }
+							ajax_div = $.ajax({
+								cache: false,
+								async: true,
+								url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=edit_client_auto',
+								type: 'post',
+								data: { 
+									id: copiedEventObject.id,
+									start: copiedEventObject.start,
+									end: copiedEventObject.end,
 
-									},
-									beforeSend: function(){
-										//$('#mod_formul_edit').html('<div class="spinner-grow m-3 text-primary" role="status"><span class="visually-hidden">Aguarde...</span></div>');
-									},
-									success: function retorno_ajax(retorno) {
+								},
+								beforeSend: function(){},
+								success: function retorno_ajax(retorno) {
+									
+									if(retorno){
 										
-										if(retorno){
-											
-										}else{
-											alert("ERRO AO EDITAR USUÁRIO! " + retorno);
-										}
+									}else{
+										alert("ERRO AO EDITAR USUÁRIO! " + retorno);
 									}
-								});
-								
-							
+								}
+							});
 						},
 						
 						viewRender: function (view) {
@@ -729,49 +705,46 @@ include('navbar.php');
 							* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 							var ajax_div = $.ajax(null);
 							
-								if(ajax_div){ ajax_div.abort(); }
-								ajax_div = $.ajax({
-									cache: false,
-									async: true,
-									url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_client',
-									type: 'post',
-									data: { 
-										
-										id: eventsvar.id,
-										title: eventsvar.title,
+							if(ajax_div){ ajax_div.abort(); }
+							ajax_div = $.ajax({
+								cache: false,
+								async: true,
+								url: '?uid=<?php echo $_COOKIE['idUsuario']; ?>&a=get_client',
+								type: 'post',
+								data: { 
+									
+									id: eventsvar.id,
+									title: eventsvar.title,
 
-									},
-									beforeSend: function(){
-										$('#mod_formul_edit').modal("show");
-										
-									},
-									success: function retorno_ajax(retorno) {
-										
-								
-										var obj = JSON.parse(retorno);
+								},
+								beforeSend: function(){
+									$('#mod_formul_edit').modal("show");
+									
+								},
+								success: function retorno_ajax(retorno) {
+									
+							
+									var obj = JSON.parse(retorno);
 
-										$("#frm_id_edit").val(obj.id);
-										
-										if(obj.nomec != undefined){
-										
-											$("#frm_val1_edit_option").html(obj.nomeu);
-											$("#frm_val2_edit_option").html(obj.nomec);
-											$("#frm_val1_edit_option").val(obj.idUsuario);
-											$("#frm_val2_edit_option").val(obj.idCliente);
-										}
-										
-										$("#frm_val3_edit").val(obj.start)
-										$("#frm_val4_edit").val(obj.end);
-
-										$("#frm_val5_edit").val(obj.idPedido);	
-										$("#frm_val6_edit").val(obj.title);	
- 
-										
+									$("#frm_id_edit").val(obj.id);
+									
+									if(obj.nomec != undefined){
+									
+										$("#frm_val1_edit_option").html(obj.nomeu);
+										$("#frm_val2_edit_option").html(obj.nomec);
+										$("#frm_val1_edit_option").val(obj.idUsuario);
+										$("#frm_val2_edit_option").val(obj.idCliente);
 									}
-								});
-							
-							
+									
+									$("#frm_val3_edit").val(obj.start)
+									$("#frm_val4_edit").val(obj.end);
 
+									$("#frm_val5_edit").val(obj.idPedido);	
+									$("#frm_val6_edit").val(obj.title);	
+
+									
+								}
+							});
 						},
 						
 						events: [
@@ -779,14 +752,10 @@ include('navbar.php');
 						],
 						
 						eventColor: '#422FD6',
-						
-						
-						
+					
 					});
 				} // fim da success do lista itens agenda
 			});
-				
-			
 		} // fim do ajax lista itens agenda
 
 		// Evento inicial:
@@ -804,6 +773,10 @@ include('navbar.php');
 	font-size: 15px;
 	}
 
+	.fc-event-bg{
+		height:120%;
+	}
+
 	.fc .fc-event{
 		color: black;
 	}
@@ -817,12 +790,17 @@ include('navbar.php');
 		color: black;
 	}
 
+	.fc-time-grid .fc-slats {
+  position: absolute;
+  bottom: 0;
+  top: 0;
+}
 	
-/* Cell Styles
+/* estilo das celulas
 ------------------------------------------------------------------------*/
 
-    /* <th>, usually */
-.fc-widget-content {  /* <td>, usually */
+
+.fc-widget-content {  
 	border: 1px solid #FFF;
 	}
 .fc-widget-header{
@@ -837,10 +815,10 @@ include('navbar.php');
     margin: 4px;
 }
 	
-.fc-cell-overlay { /* semi-transparent rectangle while dragging */
+.fc-cell-overlay { 
 	background: #bce8f1;
 	opacity: .3;
-	filter: alpha(opacity=30); /* for IE */
+	filter: alpha(opacity=30);
 	}
 
 	.fc-state-default {
@@ -854,8 +832,6 @@ include('navbar.php');
 	color: #000;
 	background-color: #e5e5e5;
 	}
-
-
 	body {
 		margin-top: 40px;
 		text-align: center;
@@ -883,7 +859,7 @@ include('navbar.php');
 	}
 
 	.external-event {
-		/* try to mimick the look of a real event */
+
 		margin: 10px 0;
 		padding: 2px 4px;
 		background: #3366CC;
@@ -904,7 +880,7 @@ include('navbar.php');
 	}
 
 	#calendar {
-		/* 		float: right; */
+
 		margin: auto auto;
 		width: 1000px;
 		background-color: #EEEEEE;
@@ -913,13 +889,9 @@ include('navbar.php');
 	}
 </style>
 </head>
-<body   style="background-image: url('assets/coronafree/template/assets/images/pillars.png');  background-repeat: no-repeat; background-size: cover">
+
+<body style="background-image: url('assets/coronafree/template/assets/images/pillars.png');  background-repeat: no-repeat; background-size: cover">
 		<div id='wrap'>
-			<!--
-			<div>
-				<button type="button" class="btn btn-primary topright" id="incluireventos" onclick="$('#mod_formul').modal('show');"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">Adicionar Novo Evento</button>
-			</div>
--->
 			<div id='calendar'></div>
 			<div style='clear:both'></div>
 		</div>
@@ -975,9 +947,7 @@ include('navbar.php');
 								</div>
 							</div>
 						</div>
-							
-							<div id="mod_insert"></div>	
-		
+						<div id="mod_insert"></div>	
 						</form>
 					</div>
 					<div class="modal-footer">

@@ -127,11 +127,11 @@ if (isset($_GET["a"])) {
 		$res = $db->select("SELECT descricao, valor, obs, codbar, quantidade FROM produtos WHERE idProduto = '{$id}'");
 
 		if (count($res) > 0) {
-			$res[0]['descricao'] = utf8_encode($res[0]['descricao']);
-			$res[0]['valor'] = utf8_encode($res[0]['valor']);
-			$res[0]['obs'] = utf8_encode($res[0]['obs']);
-			$res[0]['codbar'] = utf8_encode($res[0]['codbar']);
-			$res[0]['quantidade'] = utf8_encode($res[0]['quantidade']);
+			$res[0]['descricao'] = $res[0]['descricao'];
+			$res[0]['valor'] = $res[0]['valor'];
+			$res[0]['obs'] = $res[0]['obs'];
+			$res[0]['codbar'] = $res[0]['codbar'];
+			$res[0]['quantidade'] = $res[0]['quantidade'];
 
 			$a_retorno["res"] = $res;
 			$c_retorno = json_encode($a_retorno["res"]);
