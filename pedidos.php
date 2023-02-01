@@ -404,20 +404,6 @@ if (isset($_GET["a"])) {
             $res = 2;
             echo $res;
         } else {
-
-            /* Lógica para readicionar itens ao estoque, não está sendo usado no momento
-                $sel1 = $db->select("SELECT p.idProduto, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
-                                    FROM itens_pedido p 
-                                    INNER JOIN produtos e ON e.idProduto = p.idProduto
-                                    WHERE p.idPedido = $id");
-
-                    foreach($sel1 as $s){
-
-                            $idp = $s["eidprod"];
-                            $soma = floatval($s["equant"]) + floatval($s["pquant"]);
-                            $baixa = $db->_exec("UPDATE produtos SET quantidade = $soma WHERE idProduto = $idp");
-                    }*/
-
             $del = $db->_exec("DELETE FROM itens_pedido WHERE idPedido = '{$id}'");
             $res = $db->_exec("DELETE FROM pedidos WHERE idPedido = '{$id}'");
 
@@ -432,21 +418,6 @@ if (isset($_GET["a"])) {
 
             $idItens = $_POST["id"];
             $numpedido = $_POST["idPed"];
-    
-            /* Lógica para readicionar itens ao estoque, não está sendo usado no momento
-                $sel1 = $db->select("SELECT p.idProduto, e.idProduto as eidprod, e.quantidade as equant, p.quantidade as pquant 
-                                    FROM itens_pedido p 
-                                    INNER JOIN produtos e ON e.idProduto = p.idProduto
-                                    WHERE p.idPedido = $id");
-
-                    foreach($sel1 as $s){
-
-                            $idp = $s["eidprod"];
-                            $soma = floatval($s["equant"]) + floatval($s["pquant"]);
-                            $baixa = $db->_exec("UPDATE produtos SET quantidade = $soma WHERE idProduto = $idp");
-                    }*/
-
-
 
             //obtem o numerdo do pedido da tabela itens pedido a ser incluso
 
@@ -481,8 +452,8 @@ if (isset($_GET["a"])) {
         }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        * Busca conteúdo para exibir na div de edição do pedido:
-        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    * Busca conteúdo para exibir na div de edição do pedido:
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     if ($_GET["a"] == "get_client") {
 
 
@@ -502,6 +473,7 @@ if (isset($_GET["a"])) {
                                 WHERE p.idPedido = {$id}");
 
             if (count($res) > 0) {
+                
                 $res[0]['nomev'] = remove_acento($res[0]['nomev']);
                 $res[0]['idCliente'] = remove_acento($res[0]['idCliente']);
                 $res[0]['nomec'] = remove_acento($res[0]['nomec']);
@@ -581,8 +553,8 @@ if (isset($_GET["a"])) {
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        * Encontra os novos valores dos produtos na tela de edição
-        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    * Encontra os novos valores dos produtos na tela de edição
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     if ($_GET["a"] == "get_val_prod") {
 
         $id = $_POST["id"];
@@ -608,8 +580,8 @@ if (isset($_GET["a"])) {
     }
 
     /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-        * Busca conteúdo para a exibição dos detalhes do pedido:
-        * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    * Busca conteúdo para a exibição dos detalhes do pedido:
+    * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     if ($_GET["a"] == "get_det_ped") {
 
         $id = $_POST["id"];
@@ -726,7 +698,7 @@ include('navbar.php');
      * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
     var ajax_div = $.ajax(null);
     const inclui_item_edit = (id) => {
-        //$('#numpedido').val(pedido);
+
         if (ajax_div) {
             ajax_div.abort();
         }
@@ -1122,7 +1094,7 @@ include('navbar.php');
                     } else if (retorno == 2) {
                         alert("Não foi possível deletar o pedido pois a nota fiscal já foi emitida!");
                     } else {
-                        alert("ERRO AO DELETAR ITENS! " + retorno);
+                        alert("ERRO AO DELETAR PEDIDO! " + retorno);
                     }
                 }
             });
@@ -1415,8 +1387,6 @@ include('navbar.php');
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="$('#mod_formul_exibe').modal('hide');">Cancelar</button>
                     <button type="button" class="btn btn-primary" id="frm_OK" onclick="$('#mod_formul_exibe').modal('hide');"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
-                    <!--<button type="button" class="btn btn-primary" id="frm_faturar" onclick="$('#mod_formul_exibe').modal('hide');"><img id="img_btn_faturar" style="width: 15px; display: none; margin-right: 10px">Faturar Pedido</button>
-                                        -->
                 </div>
             </div>
         </div>
