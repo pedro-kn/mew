@@ -124,9 +124,9 @@ if (isset($_GET["a"])) {
 		$res = $db->select("SELECT nome, telefone, email FROM usuarios WHERE idUsuario = '{$id}'");
 
 		if (count($res) > 0) {
-			$res[0]['nome'] = utf8_encode($res[0]['nome']);
-			$res[0]['telefone'] = utf8_encode($res[0]['telefone']);
-			$res[0]['email'] = utf8_encode($res[0]['email']);
+			$res[0]['nome'] = $res[0]['nome'];
+			$res[0]['telefone'] = $res[0]['telefone'];
+			$res[0]['email'] = $res[0]['email'];
 
 			$a_retorno["res"] = $res;
 			$c_retorno = json_encode($a_retorno["res"]);

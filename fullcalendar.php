@@ -107,7 +107,11 @@ if (isset($_GET['a'])) {
 
 		$age = $db->select("SELECT idAgendamento, hora_ini, hora_fim FROM agendamentos ORDER BY idAgendamento DESC LIMIT 1");
 
-		$s = $db->select("SELECT idPedido FROM pedidos WHERE idCliente = $cliente ORDER BY idPedido");
+		$s = $db->select("SELECT a.idPedido, c.descricao, a.qtd_usada
+							FROM pedidos a
+							INNER JOIN itens_pedido b ON a.idPedido = b.idPedido 
+							INNER JOIN produtos c ON c.idProduto = b.idProduto
+							WHERE idCliente = $cliente ORDER BY idPedido");
 		
 		if(count($s) > 0){
 			
@@ -119,7 +123,8 @@ if (isset($_GET['a'])) {
 								echo '<option value="" selected></option>';
 								
 									foreach($s as $s1){
-										echo  '<option value="'.$s1["idPedido"].'">'.$s1["idPedido"].'</option>';
+										$qnt_add = $s1["qnd_usada"]+1;		
+										echo  '<option value="'.$s1["idPedido"].'">'.$s1["descricao"].' - Sessão '.$qnt_add.'</option>';
 									}
 								
 							echo '</select>';
@@ -1048,7 +1053,8 @@ include('navbar.php');
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="location.reload();">Cancelar</button>
+					<button type="button" class="btn btn-primary" id="frm_OK" onclick="editClient();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">Confirmar Presença?</button>
+					<button type="button" class="btn btn-secondary" onclick="location.reload();">Cancelar</button>
 					<button type="button" class="btn btn-danger btn-fw" id="frm_DELETE" onclick="delete_Event();"><img id="img_btn_DELETE" style="width: 15px; display: none; margin-right: 10px">Deletar</button>
 					<button type="button" class="btn btn-primary" id="frm_OK" onclick="editClient();"><img id="img_btn_ok" style="width: 15px; display: none; margin-right: 10px">OK</button>
 				</div>
